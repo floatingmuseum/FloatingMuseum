@@ -4,13 +4,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tv_tags"
+    <Button
+        android:id="@+id/bt_tags"
         style="@style/text_title"
         android:text="标签" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/black" />
 </LinearLayout>

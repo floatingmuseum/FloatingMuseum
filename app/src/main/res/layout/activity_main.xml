@@ -8,33 +8,18 @@
     android:padding="2dp"
     tools:context="com.floatingmuseum.androidtest.MainActivity">
 
-    <TextView
-        android:id="@+id/tv_views"
+    <Button
+        android:id="@+id/bt_views"
         style="@style/text_title"
         android:text="View相关" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/black" />
-
-    <TextView
-        android:id="@+id/tv_functions"
+    <Button
+        android:id="@+id/bt_functions"
         style="@style/text_title"
         android:text="功能相关" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/black" />
-
-    <TextView
-        android:id="@+id/tv_third_parties"
+    <Button
+        android:id="@+id/bt_third_parties"
         style="@style/text_title"
         android:text="第三方相关" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/black" />
 </LinearLayout>

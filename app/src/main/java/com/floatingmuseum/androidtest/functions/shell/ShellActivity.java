@@ -3,7 +3,7 @@ package com.floatingmuseum.androidtest.functions.shell;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.Button;
 
 import com.floatingmuseum.androidtest.R;
 import com.floatingmuseum.androidtest.base.BaseActivity;
@@ -23,10 +23,10 @@ import butterknife.ButterKnife;
 
 public class ShellActivity extends BaseActivity implements View.OnClickListener {
 
-    @BindView(R.id.tv_su_available)
-    TextView tvSuAvailable;
-    @BindView(R.id.tv_sh_command)
-    TextView tvShCommand;
+    @BindView(R.id.bt_su_available)
+    Button btSuAvailable;
+    @BindView(R.id.bt_sh_command)
+    Button btShCommand;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -34,19 +34,19 @@ public class ShellActivity extends BaseActivity implements View.OnClickListener 
         setContentView(R.layout.activity_shell);
         ButterKnife.bind(this);
 
-        tvSuAvailable.setOnClickListener(this);
-        tvShCommand.setOnClickListener(this);
+        btSuAvailable.setOnClickListener(this);
+        btShCommand.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
-            case R.id.tv_su_available:
+            case R.id.bt_su_available:
                 Logger.d("Is SU available: " + isSuAvailable());
                 ToastUtil.show("Is SU available: " + isSuAvailable());
                 break;
-            case R.id.tv_sh_command:
+            case R.id.bt_sh_command:
                 test();
                 break;
         }

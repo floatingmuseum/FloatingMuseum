@@ -3,7 +3,7 @@ package com.floatingmuseum.androidtest.functions;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.Button;
 
 import com.floatingmuseum.androidtest.R;
 import com.floatingmuseum.androidtest.base.BaseActivity;
@@ -20,12 +20,12 @@ import butterknife.ButterKnife;
 
 public class FunctionsActivity extends BaseActivity implements View.OnClickListener {
 
-    @BindView(R.id.tv_auto_install)
-    TextView tvAutoInstall;
-    @BindView(R.id.tv_shell)
-    TextView tvShell;
-    @BindView(R.id.tv_camera)
-    TextView tvCamera;
+    @BindView(R.id.bt_auto_install)
+    Button btAutoInstall;
+    @BindView(R.id.bt_shell)
+    Button btShell;
+    @BindView(R.id.bt_camera)
+    Button btCamera;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -33,23 +33,23 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
         setContentView(R.layout.activity_functions);
         ButterKnife.bind(this);
 
-        tvAutoInstall.setOnClickListener(this);
-        tvShell.setOnClickListener(this);
-        tvCamera.setOnClickListener(this);
+        btAutoInstall.setOnClickListener(this);
+        btShell.setOnClickListener(this);
+        btCamera.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
-            case R.id.tv_auto_install:
+            case R.id.bt_auto_install:
                 startActivity(AutoInstallActivity.class);
                 break;
 
-            case R.id.tv_shell:
+            case R.id.bt_shell:
                 startActivity(ShellActivity.class);
                 break;
-            case R.id.tv_camera:
+            case R.id.bt_camera:
                 startActivity(CameraActivity.class);
                 break;
         }

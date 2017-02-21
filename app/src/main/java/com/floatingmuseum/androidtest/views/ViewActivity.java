@@ -1,11 +1,9 @@
 package com.floatingmuseum.androidtest.views;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.Button;
 
 import com.floatingmuseum.androidtest.R;
 import com.floatingmuseum.androidtest.base.BaseActivity;
@@ -20,8 +18,8 @@ import butterknife.ButterKnife;
 
 public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
-    @BindView(R.id.tv_tags)
-    TextView tvTags;
+    @BindView(R.id.bt_tags)
+    Button btTags;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -29,15 +27,15 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
         setContentView(R.layout.activity_views);
         ButterKnife.bind(this);
 
-        tvTags.setOnClickListener(this);
+        btTags.setOnClickListener(this);
     }
 
 
     @Override
     public void onClick(View view) {
         int id = view.getId();
-        switch (id){
-            case R.id.tv_tags:
+        switch (id) {
+            case R.id.bt_tags:
                 startActivity(TagsActivity.class);
                 break;
         }

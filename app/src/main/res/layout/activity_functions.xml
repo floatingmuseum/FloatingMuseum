@@ -5,33 +5,18 @@
     android:orientation="vertical">
 
 
-    <TextView
-        android:id="@+id/tv_auto_install"
+    <Button
+        android:id="@+id/bt_auto_install"
         style="@style/text_title"
         android:text="Auto install" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/black" />
-
-    <TextView
-        android:id="@+id/tv_shell"
+    <Button
+        android:id="@+id/bt_shell"
         style="@style/text_title"
         android:text="Execute shell command" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/black" />
-
-    <TextView
-        android:id="@+id/tv_camera"
+    <Button
+        android:id="@+id/bt_camera"
         style="@style/text_title"
         android:text="Photo and Video" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/black" />
 </LinearLayout>
