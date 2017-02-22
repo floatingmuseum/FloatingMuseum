@@ -19,4 +19,9 @@
         android:id="@+id/bt_camera"
         style="@style/text_title"
         android:text="Photo and Video" />
+
+    <Button
+        android:id="@+id/bt_exception"
+        style="@style/text_title"
+        android:text="Exception" />
 </LinearLayout>

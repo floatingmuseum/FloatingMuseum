@@ -9,6 +9,7 @@ import com.floatingmuseum.androidtest.R;
 import com.floatingmuseum.androidtest.base.BaseActivity;
 import com.floatingmuseum.androidtest.functions.autoinstall.AutoInstallActivity;
 import com.floatingmuseum.androidtest.functions.camera.CameraActivity;
+import com.floatingmuseum.androidtest.functions.exception.ExceptionActivity;
 import com.floatingmuseum.androidtest.functions.shell.ShellActivity;
 
 import butterknife.BindView;
@@ -26,6 +27,8 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
     Button btShell;
     @BindView(R.id.bt_camera)
     Button btCamera;
+    @BindView(R.id.bt_exception)
+    Button btException;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,6 +39,7 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
         btAutoInstall.setOnClickListener(this);
         btShell.setOnClickListener(this);
         btCamera.setOnClickListener(this);
+        btException.setOnClickListener(this);
     }
 
     @Override
@@ -51,6 +55,9 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
                 break;
             case R.id.bt_camera:
                 startActivity(CameraActivity.class);
+                break;
+            case R.id.bt_exception:
+                startActivity(ExceptionActivity.class);
                 break;
         }
     }
