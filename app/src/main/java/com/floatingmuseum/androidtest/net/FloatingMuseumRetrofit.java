@@ -28,6 +28,12 @@ public class FloatingMuseumRetrofit {
 
                     }
                 }))
+                .addNetworkInterceptor(new DownloadInterceptor(new DownloadProgressListener() {
+                    @Override
+                    public void update(long read, long count, boolean done) {
+
+                    }
+                }))
 //                .addInterceptor(new HeaderIntercept())
 //                .addInterceptor(new AuthInterceptor())
                 .build();

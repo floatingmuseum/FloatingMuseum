@@ -24,4 +24,14 @@
         android:id="@+id/bt_exception"
         style="@style/text_title"
         android:text="Exception" />
+
+    <Button
+        android:id="@+id/bt_download"
+        style="@style/text_title"
+        android:text="Download List" />
+
+    <Button
+        android:id="@+id/bt_catch_time"
+        style="@style/text_title"
+        android:text="App Time Count" />
 </LinearLayout>

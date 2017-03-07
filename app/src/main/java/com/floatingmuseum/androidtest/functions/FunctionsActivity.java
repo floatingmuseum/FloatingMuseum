@@ -9,6 +9,8 @@ import com.floatingmuseum.androidtest.R;
 import com.floatingmuseum.androidtest.base.BaseActivity;
 import com.floatingmuseum.androidtest.functions.autoinstall.AutoInstallActivity;
 import com.floatingmuseum.androidtest.functions.camera.CameraActivity;
+import com.floatingmuseum.androidtest.functions.catchtime.CatchTimeActivity;
+import com.floatingmuseum.androidtest.functions.download.DownloadListActivity;
 import com.floatingmuseum.androidtest.functions.exception.ExceptionActivity;
 import com.floatingmuseum.androidtest.functions.shell.ShellActivity;
 
@@ -29,6 +31,10 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
     Button btCamera;
     @BindView(R.id.bt_exception)
     Button btException;
+    @BindView(R.id.bt_download)
+    Button btDownload;
+    @BindView(R.id.bt_catch_time)
+    Button btCatchTime;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,6 +46,8 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
         btShell.setOnClickListener(this);
         btCamera.setOnClickListener(this);
         btException.setOnClickListener(this);
+        btDownload.setOnClickListener(this);
+        btCatchTime.setOnClickListener(this);
     }
 
     @Override
@@ -58,6 +66,12 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
                 break;
             case R.id.bt_exception:
                 startActivity(ExceptionActivity.class);
+                break;
+            case R.id.bt_download:
+                startActivity(DownloadListActivity.class);
+                break;
+            case R.id.bt_catch_time:
+                startActivity(CatchTimeActivity.class);
                 break;
         }
     }
