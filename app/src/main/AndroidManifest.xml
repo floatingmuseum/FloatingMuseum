@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name=".App"
@@ -28,24 +29,12 @@
         <activity android:name=".functions.autoinstall.AutoInstallActivity" />
         <activity android:name=".functions.shell.ShellActivity" />
         <activity android:name=".functions.qr.QRCodeActivity" />
+        <activity android:name=".functions.catchtime.CatchTimeActivity" />
+        <activity android:name=".functions.download.DownloadListActivity" />
         <activity
             android:name=".functions.camera.CameraActivity"
             android:theme="@style/ThemeFullscreen" />
         <activity android:name=".functions.exception.ExceptionActivity" />
-
-        <activity
-            android:name="io.github.memfis19.annca.internal.ui.camera.Camera1Activity"
-            android:screenOrientation="portrait"
-            android:theme="@style/ThemeFullscreen" />
-        <activity
-            android:name="io.github.memfis19.annca.internal.ui.camera2.Camera2Activity"
-            android:screenOrientation="portrait"
-            android:theme="@style/ThemeFullscreen" />
-        <activity
-            android:name="io.github.memfis19.annca.internal.ui.preview.PreviewActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/ThemeFullscreen" />
-
 
         <service
             android:name=".functions.autoinstall.AutoInstallService"
@@ -58,13 +47,20 @@
             <meta-data
                 android:name="android.accessibilityservice"
                 android:resource="@xml/auto_install_service" />
-        </service>
-        <!--
+            <!--
         创建一个Service类集成AccessibilityService来处理接收到的事件
         label:是你在系统设置辅助功能中显示的名称。
         resource：指向你配置的xml文件。
         其他都是固定的。
-        -->
+-->
+        </service>
+        <receiver android:name=".functions.catchtime.SystemShutAndBootBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.ACTION_SHUTDOWN"/>
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>
