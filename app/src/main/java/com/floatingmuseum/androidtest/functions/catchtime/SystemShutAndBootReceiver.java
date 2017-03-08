@@ -8,7 +8,7 @@ import android.content.Intent;
  * Created by Floatingmuseum on 2017/3/7.
  */
 
-public class SystemShutAndBootBroadcastReceiver extends BroadcastReceiver {
+public class SystemShutAndBootReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {

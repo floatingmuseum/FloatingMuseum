@@ -4,11 +4,63 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="单一下载"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/tv_net_speed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="下载速度:"
+        android:textSize="20sp" />
+
     <ProgressBar
         android:id="@+id/pb_download"
         style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="10dp" />
+
+    <RadioGroup
+        android:id="@+id/rg_link"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/rb_link_one"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:checked="true"
+            android:text="1" />
+
+        <RadioButton
+            android:id="@+id/rb_link_two"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="2" />
+
+        <RadioButton
+            android:id="@+id/rb_link_three"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="3" />
+
+        <RadioButton
+            android:id="@+id/rb_link_four"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="4" />
+    </RadioGroup>
 
     <Button
         android:id="@+id/bt_start"
@@ -33,4 +85,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="remove" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@android:color/black" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="列表下载"
+        android:textSize="20sp" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_download"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </LinearLayout>

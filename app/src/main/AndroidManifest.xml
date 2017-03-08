@@ -54,7 +54,7 @@
         其他都是固定的。
 -->
         </service>
-        <receiver android:name=".functions.catchtime.SystemShutAndBootBroadcastReceiver">
+        <receiver android:name=".functions.catchtime.SystemShutAndBootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
                 <action android:name="android.intent.action.ACTION_SHUTDOWN"/>

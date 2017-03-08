@@ -7,8 +7,14 @@ import android.os.Looper;
 import android.widget.Toast;
 
 import com.floatingmuseum.androidtest.utils.ToastUtil;
+import com.liulishuo.filedownloader.FileDownloader;
+import com.liulishuo.filedownloader.connection.FileDownloadUrlConnection;
+import com.liulishuo.filedownloader.services.DownloadMgrInitialParams;
+import com.lzy.okgo.OkGo;
 import com.orhanobut.logger.Logger;
 import com.wanjian.cockroach.Cockroach;
+
+import java.net.Proxy;
 
 /**
  * Created by Floatingmuseum on 2017/2/15.
@@ -23,7 +29,20 @@ public class App extends Application {
         super.onCreate();
         context = this;
 
+        OkGo.init(this);
+        initFileDownloader();
         initCockroach();
+    }
+
+    private void initFileDownloader() {
+        FileDownloader.init(getApplicationContext(), new DownloadMgrInitialParams.InitCustomMaker()
+                .connectionCreator(new FileDownloadUrlConnection
+                        .Creator(new FileDownloadUrlConnection.Configuration()
+                        .connectTimeout(15_000) // set connection timeout.
+                        .readTimeout(15_000) // set read timeout.
+                        .proxy(Proxy.NO_PROXY) // set proxy
+                )));
+//        int i = 15_000;
     }
 
     private void initCockroach() {
