@@ -22,6 +22,12 @@ import com.liulishuo.filedownloader.FileDownloader;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.FileCallback;
 import com.lzy.okgo.request.BaseRequest;
+import com.lzy.okgo.request.GetRequest;
+import com.lzy.okserver.download.DownloadInfo;
+import com.lzy.okserver.download.DownloadManager;
+import com.lzy.okserver.download.db.DownloadInfoDao;
+import com.lzy.okserver.download.db.DownloadInfoHelper;
+import com.lzy.okserver.listener.DownloadListener;
 import com.orhanobut.logger.Logger;
 
 import java.io.File;
@@ -98,7 +104,7 @@ public class DownloadListActivity extends BaseActivity implements View.OnClickLi
         rgLink.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int radioButtonId) {
-                switch (radioButtonId){
+                switch (radioButtonId) {
                     case R.id.rb_link_one:
                         currentUrl = url1;
                         break;
@@ -120,35 +126,66 @@ public class DownloadListActivity extends BaseActivity implements View.OnClickLi
         rvDownload.setAdapter(adapter);
     }
 
-    private void initSingleDownload() {
-        OkGo.get(currentUrl)
-                .execute(new FileCallback() {
+    private void initOkGoDownload() {
+        GetRequest request = OkGo.get(currentUrl);
+        //检查数据库中是否有此tag的任务
+        DownloadInfo info = DownloadManager.getInstance().getDownloadInfo(currentUrl);
+        if (info != null) {
+            File file = new File(info.getTargetFolder(), info.getFileName());
+            Logger.d("OkGo信息...DownloadInfo:...FileName:" + info.getFileName() + "...Folder:" + info.getTargetFolder() + "...Path:" + info.getTargetPath() + "..." + file.exists());
 
-                    @Override
-                    public void onBefore(BaseRequest request) {
-                        Logger.d("OkGo下载信息...onBefore:" + Thread.currentThread());
-                    }
+            if (!file.exists()) {//如果数据库存在，文件却不存在，删除数据库信息，才可以重新下载
+                DownloadManager.getInstance().removeTask(currentUrl, true);
+            }
+        }
+        DownloadManager.getInstance().addTask(currentUrl, request, new DownloadListener() {
+            @Override
+            public void onProgress(DownloadInfo info) {
+                Logger.d("OkGo信息:...onProgress:" + "...TotalLength:" + info.getTotalLength() + "...DownloadLength:" + info.getDownloadLength() + "...NetworkSpeed:" + info.getNetworkSpeed() + "...Progress:" + info.getProgress());
+                int intProgress = (int) (info.getProgress() * 100);
+                pbDownload.setProgress(intProgress);
+                tvNetSpeed.setText("下载速度:" + FileUtil.bytesToKb(info.getNetworkSpeed()) + "kb");
+            }
 
-                    @Override
-                    public void onError(Call call, Response response, Exception e) {
-                        Logger.d("OkGo下载信息...onError:" + Thread.currentThread());
-                        e.printStackTrace();
-                    }
+            @Override
+            public void onFinish(DownloadInfo downloadInfo) {
+                Logger.d("OkGo信息:...onFinish");
+            }
 
-                    @Override
-                    public void onSuccess(File file, Call call, Response response) {
-                        ToastUtil.show("下载成功");
-                        Logger.d("OkGo下载信息...onSuccess::" + Thread.currentThread() + "...Path" + file.getAbsolutePath());
-                    }
-
-                    @Override
-                    public void downloadProgress(long currentSize, long totalSize, float progress, long networkSpeed) {
-                        int intProgress = (int) (progress * 100);
-                        pbDownload.setProgress(intProgress);
-                        tvNetSpeed.setText("下载速度:" + FileUtil.bytesToKb(networkSpeed) + "kb");
-                        Logger.d("OkGo下载信息...downloadProgress:CurrentSize:" + currentSize + "...TotalSize:" + totalSize + "...Progress:" + progress + "...NetworkSpeed:" + networkSpeed + "...Thread:" + Thread.currentThread());
-                    }
-                });
+            @Override
+            public void onError(DownloadInfo downloadInfo, String errorMsg, Exception e) {
+                Logger.d("OkGo信息:...onError");
+                e.printStackTrace();
+            }
+        });
+//        OkGo.get(currentUrl)
+//                .execute(new FileCallback() {
+//
+//                    @Override
+//                    public void onBefore(BaseRequest request) {
+//                        Logger.d("OkGo下载信息...onBefore:" + Thread.currentThread());
+//                    }
+//
+//                    @Override
+//                    public void onError(Call call, Response response, Exception e) {
+//                        Logger.d("OkGo下载信息...onError:" + Thread.currentThread());
+//                        e.printStackTrace();
+//                    }
+//
+//                    @Override
+//                    public void onSuccess(File file, Call call, Response response) {
+//                        ToastUtil.show("下载成功");
+//                        Logger.d("OkGo下载信息...onSuccess::" + Thread.currentThread() + "...Path" + file.getAbsolutePath());
+//                    }
+//
+//                    @Override
+//                    public void downloadProgress(long currentSize, long totalSize, float progress, long networkSpeed) {
+//                        int intProgress = (int) (progress * 100);
+//                        pbDownload.setProgress(intProgress);
+//                        tvNetSpeed.setText("下载速度:" + FileUtil.bytesToKb(networkSpeed) + "kb");
+//                        Logger.d("OkGo下载信息...downloadProgress:CurrentSize:" + currentSize + "...TotalSize:" + totalSize + "...Progress:" + progress + "...NetworkSpeed:" + networkSpeed + "...Thread:" + Thread.currentThread());
+//                    }
+//                });
     }
 
     private Disposable disposable;
@@ -228,17 +265,18 @@ public class DownloadListActivity extends BaseActivity implements View.OnClickLi
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.bt_start:
-//                initSingleDownload();
 //                initRxDownload();
                 ToastUtil.show("Start");
-                fileDownloaderTaskId = initFileDownloader().start();
+//                fileDownloaderTaskId = initFileDownloader().start();
+                initOkGoDownload();
                 break;
             case R.id.bt_pause:
 //                if (disposable != null && !disposable.isDisposed()) {
 //                    disposable.dispose();
 //                }
                 ToastUtil.show("Pause");
-                FileDownloader.getImpl().pause(fileDownloaderTaskId);
+//                FileDownloader.getImpl().pause(fileDownloaderTaskId);
+                DownloadManager.getInstance().pauseTask(currentUrl);
                 break;
             case R.id.bt_cancel:
                 break;
