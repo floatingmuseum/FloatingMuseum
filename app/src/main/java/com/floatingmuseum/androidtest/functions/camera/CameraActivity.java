@@ -14,8 +14,6 @@ import com.orhanobut.logger.Logger;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.github.memfis19.annca.Annca;
-import io.github.memfis19.annca.internal.configuration.AnncaConfiguration;
 
 /**
  * Created by Floatingmuseum on 2017/2/20.
@@ -75,8 +73,6 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        AnncaConfiguration.Builder builder = new AnncaConfiguration.Builder(this, CAPTURE_MEDIA);
-        new Annca(builder.build()).launchCamera();
     }
 
     private void openCustomCamera() {
@@ -90,23 +86,8 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        AnncaConfiguration.Builder videoLimited = new AnncaConfiguration.Builder(this, CAPTURE_MEDIA);
-
-        videoLimited.setMediaAction(AnncaConfiguration.MEDIA_ACTION_VIDEO);//模式
-        videoLimited.setMediaQuality(AnncaConfiguration.MEDIA_QUALITY_AUTO);//清晰度
-        videoLimited.setVideoFileSize(5 * 1024 * 1024);//视频文件大小
-        videoLimited.setMinimumVideoDuration(5 * 60 * 1000);//视频长度
-        new Annca(videoLimited.build()).launchCamera();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CAPTURE_MEDIA && resultCode == RESULT_OK) {
-            String filePath = data.getStringExtra(AnncaConfiguration.Arguments.FILE_PATH);
-            Logger.d("filePath:" + filePath);
-        }
-    }
 //
 //    @SuppressWarnings("ResultOfMethodCallIgnored")
 //    @Override

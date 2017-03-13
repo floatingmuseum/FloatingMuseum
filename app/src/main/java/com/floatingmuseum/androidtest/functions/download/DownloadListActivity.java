@@ -27,6 +27,7 @@ import com.lzy.okgo.request.BaseRequest;
 import com.lzy.okgo.request.GetRequest;
 import com.lzy.okserver.download.DownloadInfo;
 import com.lzy.okserver.download.DownloadManager;
+import com.lzy.okserver.download.DownloadService;
 import com.lzy.okserver.download.DownloadTask;
 import com.lzy.okserver.download.db.DownloadInfoDao;
 import com.lzy.okserver.download.db.DownloadInfoHelper;
@@ -100,7 +101,7 @@ public class DownloadListActivity extends BaseActivity implements View.OnClickLi
         setContentView(R.layout.activity_downloadlist);
         ButterKnife.bind(this);
 //        initSingleDownload();
-        okGoManager = DownloadManager.getInstance();
+        okGoManager = DownloadService.getDownloadManager();
         btStart.setOnClickListener(this);
         btPause.setOnClickListener(this);
         btCancel.setOnClickListener(this);
@@ -125,6 +126,7 @@ public class DownloadListActivity extends BaseActivity implements View.OnClickLi
                 }
             }
         });
+
         rvDownload.setLayoutManager(new LinearLayoutManager(this));
         downloadItems = new ArrayList<>();
         initDownloadItems();
@@ -148,9 +150,6 @@ public class DownloadListActivity extends BaseActivity implements View.OnClickLi
     @Override
     protected void onResume() {
         super.onResume();
-//        for (DownloadInfo downloadInfo : okGoManager.getAllTask()) {
-//            updateDownloadItem(downloadInfo);
-//        }
     }
 
     private void startDownload(String url) {
@@ -167,19 +166,22 @@ public class DownloadListActivity extends BaseActivity implements View.OnClickLi
             @Override
             public void onProgress(DownloadInfo info) {
                 Logger.d("OkGo信息:...onProgress:FileName:" + info.getFileName() + "...TotalLength:" + info.getTotalLength() + "...DownloadLength:" + info.getDownloadLength() + "...NetworkSpeed:" + info.getNetworkSpeed() + "...Progress:" + info.getProgress());
-                updateDownloadItem(info);
+//                updateDownloadItem(info);
+                updateItem(info);
             }
 
             @Override
             public void onFinish(DownloadInfo info) {
                 Logger.d("OkGo信息:...onFinish:FileName:" + info.getFileName());
-                updateDownloadItem(info);
+//                updateDownloadItem(info);
+                updateItem(info);
             }
 
             @Override
             public void onError(DownloadInfo info, String errorMsg, Exception e) {
                 Logger.d("OkGo信息:...onError:FileName:" + info.getFileName());
-                updateDownloadItem(info);
+//                updateDownloadItem(info);
+                updateItem(info);
                 e.printStackTrace();
             }
         });
@@ -360,6 +362,46 @@ public class DownloadListActivity extends BaseActivity implements View.OnClickLi
                 break;
             case R.id.bt_remove:
                 break;
+        }
+    }
+
+    private void updateItem(DownloadInfo info) {
+        for (int i = 0; i < downloadItems.size(); i++) {
+            DownloadItem item = downloadItems.get(i);
+            if (item.getUrl().equals(info.getUrl())) {
+                item.setDownloadState(info.getState());
+                item.setPercent((int) (info.getProgress() * 100));
+                item.setNetSpeed(info.getNetworkSpeed());
+                DownloadListAdapter.DownloadListViewHolder holder = (DownloadListAdapter.DownloadListViewHolder) rvDownload.findViewHolderForAdapterPosition(i);
+                holder.tvNetSpeed.setText("下载速度:" + FileUtil.bytesToKb(item.getNetSpeed()) + "kb");
+                holder.pbProgress.setProgress(item.getPercent());
+                int state = item.getDownloadState();
+                String buttonText;
+                switch (state) {
+                    case DownloadManager.NONE:
+                        buttonText = "下载";
+                        break;
+                    case DownloadManager.WAITING:
+                        buttonText = "等待";
+                        break;
+                    case DownloadManager.DOWNLOADING:
+                        buttonText = "下载中";
+                        break;
+                    case DownloadManager.PAUSE:
+                        buttonText = "暂停";
+                        break;
+                    case DownloadManager.FINISH:
+                        buttonText = "完成";
+                        break;
+                    case DownloadManager.ERROR:
+                        buttonText = "错误";
+                        break;
+                    default:
+                        buttonText = "下载";
+                        break;
+                }
+                holder.btDownloadState.setText(buttonText);
+            }
         }
     }
 }

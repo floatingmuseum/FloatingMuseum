@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.floatingmuseum.androidtest">
 
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -35,6 +36,7 @@
             android:name=".functions.camera.CameraActivity"
             android:theme="@style/ThemeFullscreen" />
         <activity android:name=".functions.exception.ExceptionActivity" />
+        <activity android:name=".functions.analysesystem.AnalyseSystemActivity"/>
 
         <service
             android:name=".functions.autoinstall.AutoInstallService"
