@@ -32,11 +32,12 @@
         <activity android:name=".functions.qr.QRCodeActivity" />
         <activity android:name=".functions.catchtime.CatchTimeActivity" />
         <activity android:name=".functions.download.DownloadListActivity" />
+        <activity android:name=".functions.download.DownloadActivity"/>
         <activity
             android:name=".functions.camera.CameraActivity"
             android:theme="@style/ThemeFullscreen" />
         <activity android:name=".functions.exception.ExceptionActivity" />
-        <activity android:name=".functions.analysesystem.AnalyseSystemActivity"/>
+        <activity android:name=".functions.analysesystem.AnalyseSystemActivity" />
 
         <service
             android:name=".functions.autoinstall.AutoInstallService"
@@ -56,10 +57,14 @@
         其他都是固定的。
 -->
         </service>
+
+
+        <service android:name=".functions.download.DownloadService" />
+
         <receiver android:name=".functions.catchtime.SystemShutAndBootReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-                <action android:name="android.intent.action.ACTION_SHUTDOWN"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.ACTION_SHUTDOWN" />
             </intent-filter>
         </receiver>
 

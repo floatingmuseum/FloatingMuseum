@@ -11,6 +11,7 @@ import com.floatingmuseum.androidtest.functions.analysesystem.AnalyseSystemActiv
 import com.floatingmuseum.androidtest.functions.autoinstall.AutoInstallActivity;
 import com.floatingmuseum.androidtest.functions.camera.CameraActivity;
 import com.floatingmuseum.androidtest.functions.catchtime.CatchTimeActivity;
+import com.floatingmuseum.androidtest.functions.download.DownloadActivity;
 import com.floatingmuseum.androidtest.functions.download.DownloadListActivity;
 import com.floatingmuseum.androidtest.functions.exception.ExceptionActivity;
 import com.floatingmuseum.androidtest.functions.shell.ShellActivity;
@@ -72,7 +73,7 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
                 startActivity(ExceptionActivity.class);
                 break;
             case R.id.bt_download:
-                startActivity(DownloadListActivity.class);
+                startActivity(DownloadActivity.class);
                 break;
             case R.id.bt_catch_time:
                 startActivity(CatchTimeActivity.class);

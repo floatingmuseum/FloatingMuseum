@@ -22,15 +22,10 @@ import com.liulishuo.filedownloader.BaseDownloadTask;
 import com.liulishuo.filedownloader.FileDownloadListener;
 import com.liulishuo.filedownloader.FileDownloader;
 import com.lzy.okgo.OkGo;
-import com.lzy.okgo.callback.FileCallback;
-import com.lzy.okgo.request.BaseRequest;
 import com.lzy.okgo.request.GetRequest;
 import com.lzy.okserver.download.DownloadInfo;
 import com.lzy.okserver.download.DownloadManager;
 import com.lzy.okserver.download.DownloadService;
-import com.lzy.okserver.download.DownloadTask;
-import com.lzy.okserver.download.db.DownloadInfoDao;
-import com.lzy.okserver.download.db.DownloadInfoHelper;
 import com.lzy.okserver.listener.DownloadListener;
 import com.orhanobut.logger.Logger;
 
@@ -209,7 +204,7 @@ public class DownloadListActivity extends BaseActivity implements View.OnClickLi
         for (int x = 0; x < urlList.size(); x++) {
             String url = urlList.get(x);
             DownloadItem item = new DownloadItem();
-            item.setFileName(getFileName(url));
+            item.setFileName(FileUtil.getUrlFileName(url));
             item.setUrl(url);
             DownloadInfo info1 = okGoManager.getDownloadInfo(url);
             if (info1 != null) {
@@ -226,12 +221,6 @@ public class DownloadListActivity extends BaseActivity implements View.OnClickLi
             }
             downloadItems.add(item);
         }
-    }
-
-    private String getFileName(String url) {
-        int lastDivideIndex = url.lastIndexOf("/");
-        String fileName = url.substring(lastDivideIndex + 1);
-        return fileName;
     }
 
     private void initOkGoDownload() {
