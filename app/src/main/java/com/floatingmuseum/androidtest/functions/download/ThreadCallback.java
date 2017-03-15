@@ -6,6 +6,5 @@ package com.floatingmuseum.androidtest.functions.download;
 
 public interface ThreadCallback {
 
-    void onFileLength(FileInfo fileInfo);
     void onProgress(ThreadInfo threadInfo);
 }

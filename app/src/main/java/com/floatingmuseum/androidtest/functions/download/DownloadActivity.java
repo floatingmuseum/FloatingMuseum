@@ -43,7 +43,6 @@ public class DownloadActivity extends BaseActivity implements View.OnClickListen
         ButterKnife.bind(this);
 
         initView();
-        initData();
     }
 
     private void initView() {
@@ -51,18 +50,14 @@ public class DownloadActivity extends BaseActivity implements View.OnClickListen
         btSingleTaskStop.setOnClickListener(this);
     }
 
-    private void initData() {
-        singleTaskFileInfo = new FileInfo(0, url1, FileUtil.getUrlFileName(url1), 0, 0);
-    }
-
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.bt_single_task_start:
-                sendCommandToService(new Intent(this, DownloadService.class).setAction(DownloadService.ACTION_START).putExtra(DownloadService.EXTRA_FILE_INFO, singleTaskFileInfo));
+                sendCommandToService(new Intent(this, DownloadService.class).setAction(DownloadService.ACTION_START).putExtra(DownloadService.EXTRA_URL, url3));
                 break;
             case R.id.bt_single_task_stop:
-                sendCommandToService(new Intent(this, DownloadService.class).setAction(DownloadService.ACTION_STOP).putExtra(DownloadService.EXTRA_FILE_INFO, singleTaskFileInfo));
+                sendCommandToService(new Intent(this, DownloadService.class).setAction(DownloadService.ACTION_STOP).putExtra(DownloadService.EXTRA_URL, url3));
                 break;
         }
     }

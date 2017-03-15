@@ -15,7 +15,7 @@ public class DBHelper extends SQLiteOpenHelper {
     //对应ThreadInfo
     //创建表
     private static final String SQL_CREATE = "create table thread_info(_id integer primary key autoincrement," +
-            "thread_id integer,url text,start_position long,end_position long,current_position long)";
+            "thread_id integer,url text,start_position long,end_position long,current_position long,file_size long)";
     //删除表
     private static final String SQL_DROP = "drop table if exists thread_info";
 

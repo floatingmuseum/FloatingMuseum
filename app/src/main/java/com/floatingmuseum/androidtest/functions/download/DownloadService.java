@@ -15,7 +15,8 @@ public class DownloadService extends Service implements ThreadCallback {
 
     public static final String ACTION_START = "ACTION_START";
     public static final String ACTION_STOP = "ACTION_STOP";
-    public static final String EXTRA_FILE_INFO = "EXTRA_FILE_INFO";
+    public static final String EXTRA_URL = "EXTRA_URL";
+    private DownloadTask downloadTask;
 
     @Nullable
     @Override
@@ -27,24 +28,29 @@ public class DownloadService extends Service implements ThreadCallback {
     public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent.getAction();
         if (ACTION_START.equals(action)) {
-            FileInfo fileInfo = (FileInfo) intent.getSerializableExtra(EXTRA_FILE_INFO);
-            Logger.d("DownloadService...ACTION_START:" + fileInfo.toString());
-            DownloadTask downloadTask = new DownloadTask(this, fileInfo, this);
+            String downloadUrl = intent.getStringExtra(EXTRA_URL);
+            Logger.d("DownloadService...ACTION_START:" + downloadUrl);
+            downloadTask = new DownloadTask(this, downloadUrl, this);
             downloadTask.start();
         } else if (ACTION_STOP.equals(action)) {
-            FileInfo fileInfo = (FileInfo) intent.getSerializableExtra(EXTRA_FILE_INFO);
-            Logger.d("DownloadService...ACTION_STOP:" + fileInfo.toString());
+            String downloadUrl = intent.getStringExtra(EXTRA_URL);
+            Logger.d("DownloadService...ACTION_STOP:" + downloadUrl);
+            if (downloadTask != null) {
+                downloadTask.stop();
+            }
+
         }
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
-    public void onFileLength(FileInfo fileInfo) {
-        Logger.d("DownloadService...onFileLength:" + fileInfo.toString());
-    }
-
-    @Override
     public void onProgress(ThreadInfo threadInfo) {
-        Logger.d("DownloadService...onProgress...StartPos:" + threadInfo.getStartPosition() + "...CurrentPos:" + threadInfo.getCurrentPosition() + "...EndPosition:" + threadInfo.getEndPosition());
+//        long start = threadInfo.getStartPosition();
+//        long current = threadInfo.getCurrentPosition();
+//        long end = threadInfo.getEndPosition();
+//        long finished = current-start;
+//        long all = end - start;
+//        if (all)
+        Logger.d("DownloadService...进度更新...Thread:" + threadInfo.getId() + "...StartPos:" + threadInfo.getStartPosition() + "...CurrentPos:" + threadInfo.getCurrentPosition() + "...EndPosition:" + threadInfo.getEndPosition());
     }
 }

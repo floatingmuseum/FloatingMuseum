@@ -8,19 +8,24 @@ public class ThreadInfo {
 
     private int id;
     private String url;
+    //初始位置
     private long startPosition;
+    //结束位置
     private long endPosition;
+    //当前位置
     private long currentPosition;
+    private long fileSize;
 
     public ThreadInfo() {
     }
 
-    public ThreadInfo(int id, String url, long startPosition, long endPosition, long currentPosition) {
+    public ThreadInfo(int id, String url, long startPosition, long endPosition, long currentPosition, long fileSize) {
         this.id = id;
         this.url = url;
         this.startPosition = startPosition;
         this.endPosition = endPosition;
         this.currentPosition = currentPosition;
+        this.fileSize = fileSize;
     }
 
     public int getId() {
@@ -63,6 +68,14 @@ public class ThreadInfo {
         this.currentPosition = currentPosition;
     }
 
+    public long getFileSize() {
+        return fileSize;
+    }
+
+    public void setFileSize(long fileSize) {
+        this.fileSize = fileSize;
+    }
+
     @Override
     public String toString() {
         return "ThreadInfo{" +
@@ -71,6 +84,7 @@ public class ThreadInfo {
                 ", startPosition=" + startPosition +
                 ", endPosition=" + endPosition +
                 ", currentPosition=" + currentPosition +
+                ", fileSize=" + fileSize +
                 '}';
     }
 }
