@@ -1,6 +1,7 @@
 package com.floatingmuseum.androidtest.functions.download;
 
 import android.os.Environment;
+import android.widget.CheckBox;
 
 import com.floatingmuseum.androidtest.utils.FileUtil;
 import com.orhanobut.logger.Logger;
@@ -21,13 +22,16 @@ public class DownloadThread extends Thread {
     private boolean stopThread = false;
 
     //下载文件夹路径
-    private String downloadDirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Downloads/";
+    private String dirPath;
+    private String fileName;
     private ThreadInfo threadInfo;
     private DBUtil dbUtil;
     private ThreadCallback callback;
 
-    public DownloadThread(ThreadInfo threadInfo, DBUtil dbUtil, ThreadCallback callback) {
+    public DownloadThread(ThreadInfo threadInfo, String dirPath,String fileName, DBUtil dbUtil, ThreadCallback callback) {
         this.threadInfo = threadInfo;
+        this.dirPath = dirPath;
+        this.fileName = fileName;
         this.callback = callback;
         this.dbUtil = dbUtil;
     }
@@ -39,9 +43,6 @@ public class DownloadThread extends Thread {
         RandomAccessFile randomAccessFile = null;
         InputStream inputStream = null;
         try {
-            if (!dbUtil.isExists(threadInfo.getUrl(), threadInfo.getId())) {
-                dbUtil.insertOrUpdate(threadInfo);
-            }
             //获取文件长度
             URL url = new URL(threadInfo.getUrl());
             connection = (HttpURLConnection) url.openConnection();
@@ -61,7 +62,7 @@ public class DownloadThread extends Thread {
                 if (contentLength <= 0) {
                     return;
                 }
-                File file = new File(downloadDirPath, FileUtil.getUrlFileName(threadInfo.getUrl()));
+                File file = new File(dirPath, fileName);
                 randomAccessFile = new RandomAccessFile(file, "rwd");
                 //设置写入位置
                 //seek方法 在读写的时候跳过设置的字节数,从下一个字节开始读写.例如seek(100),从101字节开始读写
@@ -82,12 +83,17 @@ public class DownloadThread extends Thread {
                         Logger.d("DownloadService...run:" + threadInfo.getId() + "号线程暂停工作");
                         return;
                     }
+                    if (currentPosition > threadInfo.getEndPosition()) {
+                        break;
+                    }
                 }
                 //当前区块下载完成,删除对应线程信息
                 dbUtil.delete(threadInfo);
                 Logger.d("DownloadService...run:" + threadInfo.getId() + "号线程完成工作");
+                callback.onFinished(threadInfo.getId());
             }
         } catch (Exception e) {
+            Logger.d("DownloadService...run:" + threadInfo.getId() + "号线程出现异常");
             e.printStackTrace();
         } finally {
             try {
@@ -105,15 +111,6 @@ public class DownloadThread extends Thread {
             }
         }
     }
-
-//    public ThreadInfo getDownloadInfo() {
-//        threadInfo = dbUtil.query(threadInfo., downloadUrl);
-//        if (threadInfo == null) {
-//            threadInfo = new ThreadInfo(threadId, downloadUrl, 0, 0, 0, 0);
-//            dbUtil.insertOrUpdate(threadInfo);
-//        }
-//        return threadInfo;
-//    }
 
     public void stopThread() {
         stopThread = true;

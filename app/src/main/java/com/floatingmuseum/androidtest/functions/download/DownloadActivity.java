@@ -54,12 +54,16 @@ public class DownloadActivity extends BaseActivity implements View.OnClickListen
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.bt_single_task_start:
-                sendCommandToService(new Intent(this, DownloadService.class).setAction(DownloadService.ACTION_START).putExtra(DownloadService.EXTRA_URL, url3));
+                startDownload();
                 break;
             case R.id.bt_single_task_stop:
                 sendCommandToService(new Intent(this, DownloadService.class).setAction(DownloadService.ACTION_STOP).putExtra(DownloadService.EXTRA_URL, url3));
                 break;
         }
+    }
+
+    private void startDownload() {
+        sendCommandToService(new Intent(this, DownloadService.class).setAction(DownloadService.ACTION_START).putExtra(DownloadService.EXTRA_URL, url3));
     }
 
     private void sendCommandToService(Intent intent) {

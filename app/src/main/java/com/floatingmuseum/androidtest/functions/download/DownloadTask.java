@@ -1,31 +1,53 @@
 package com.floatingmuseum.androidtest.functions.download;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 
 import com.floatingmuseum.androidtest.utils.FileUtil;
 import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Floatingmuseum on 2017/3/14.
  */
 
-public class DownloadTask implements InitCallback {
+public class DownloadTask implements InitCallback, ThreadCallback {
 
     private Context context;
     private String downloadUrl;
     private DBUtil dbUtil;
     private List<DownloadThread> threads;
     private ThreadCallback callback;
-    private int threadCount = 3;
+    private int threadCount = 5;
+    private List<ThreadInfo> threadInfoList;
+    private Map<Integer, Long> blocksSize;
+    private String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Downloads/";
+    private String fileName;
+    private final DownloadInfo downloadInfo;
 
-    public DownloadTask(Context context, String downloadUrl, ThreadCallback callback) {
+    private static Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+        }
+    };
+
+    public DownloadTask(Context context, String downloadUrl) {
         this.context = context;
         this.downloadUrl = downloadUrl;
         dbUtil = new DBUtil(context);
         threads = new ArrayList<>();
+        blocksSize = new HashMap<>();
+        fileName = FileUtil.getUrlFileName(downloadUrl);
+
+        downloadInfo = new DownloadInfo(downloadUrl, fileName, downloadUrl, dirPath, dirPath + fileName, 0, 0, 0, 0, 0);
         this.callback = callback;
         initDownloadThread();
     }
@@ -44,16 +66,24 @@ public class DownloadTask implements InitCallback {
 
     private void initDownloadThreadInfo(List<ThreadInfo> threadInfoList) {
         Logger.d("DownloadService...initDownloadThreadInfo:" + threadInfoList.size());
+        long currentLength = 0;
         for (ThreadInfo info : threadInfoList) {
+            downloadInfo.setTotalLength(info.getFileSize());
+            // TODO: 2017/3/16 如果有线程执行完了，有的没执行完，这里就拿不到正确的size，据估计
+            currentLength += (info.getCurrentPosition() - info.getStartPosition());
+            blocksSize.put(info.getId(), info.getCurrentPosition() - info.getStartPosition());
             Logger.d("DownloadService...线程" + info.getId() + "号...初始位置:" + info.getStartPosition() + "...当前位置:" + info.getCurrentPosition() + "...末尾位置:" + info.getEndPosition());
-            DownloadThread thread = new DownloadThread(info, dbUtil, callback);
+            DownloadThread thread = new DownloadThread(info, dirPath, fileName, dbUtil, this);
             threads.add(thread);
         }
+        downloadInfo.setCurrentLength(currentLength);
+        downloadInfo.setProgress(getProgress(currentLength, downloadInfo.getTotalLength()));
     }
 
     public void start() {
         Logger.d("DownloadService...start:" + threads.size());
         for (DownloadThread thread : threads) {
+            Logger.d("DownloadService...start:" + thread.getName() + "..." + thread.getState() + "..." + thread.isAlive());
             thread.start();
         }
     }
@@ -67,7 +97,7 @@ public class DownloadTask implements InitCallback {
     @Override
     public void onGetContentLength(long contentLength) {
         Logger.d("DownloadService...onGetContentLength总文件大小:" + contentLength + "..." + FileUtil.bytesToMb(contentLength) + "mb");
-        List<ThreadInfo> threadInfoList = new ArrayList<>();
+        threadInfoList = new ArrayList<>();
         long blockLength = contentLength / threadCount;
 
         for (int x = 1; x <= threadCount; x++) {
@@ -76,15 +106,8 @@ public class DownloadTask implements InitCallback {
             long current = start;
             ThreadInfo threadInfo = new ThreadInfo(x, downloadUrl, start, end, current, contentLength);
             threadInfoList.add(threadInfo);
+            dbUtil.insertOrUpdate(threadInfo);//第一次初始化，存储线程信息到数据库
         }
-        //区块大小
-//        ThreadInfo threadInfo1 = new ThreadInfo(1, downloadUrl, 0, blockLength, 0, contentLength);
-//        ThreadInfo threadInfo2 = new ThreadInfo(2, downloadUrl, blockLength + 1, blockLength * 2, blockLength + 1, contentLength);
-//        ThreadInfo threadInfo3 = new ThreadInfo(3, downloadUrl, blockLength * 2 + 1, contentLength, blockLength * 2 + 1, contentLength);
-//
-//        threadInfoList.add(threadInfo1);
-//        threadInfoList.add(threadInfo2);
-//        threadInfoList.add(threadInfo3);
         initDownloadThreadInfo(threadInfoList);
         start();
     }
@@ -92,5 +115,37 @@ public class DownloadTask implements InitCallback {
     @Override
     public void onError() {
 
+    }
+
+    @Override
+    public void onProgress(ThreadInfo threadInfo) {
+//        blocksSize.put(threadInfo.getId(), threadInfo.getCurrentPosition() - threadInfo.getStartPosition());
+//        long currentFileSize = 0;
+//        for (Integer id : blocksSize.keySet()) {
+//            currentFileSize += blocksSize.get(id);
+//        }
+        Logger.d("DownloadService...进度更新...Thread:" + threadInfo.getId() + "...StartPos:" + threadInfo.getStartPosition() + "...CurrentPos:" + threadInfo.getCurrentPosition() + "...EndPosition:" + threadInfo.getEndPosition());
+//        Logger.d("DownloadService...当前进度:" + currentFileSize + "...总长度:" + threadInfo.getFileSize() + "...百分比:" + (double) currentFileSize / (double) threadInfo.getFileSize());
+    }
+
+    private void buildMessage(ThreadInfo info, int state) {
+        Bundle bundle = new Bundle();
+        bundle.putLong("currentLength", 1);
+        bundle.putInt("progress", getProgress(1, 1));
+        bundle.putInt("state", state);
+//        handler.obtainMessage().setData(bundle);
+    }
+
+    @Override
+    public void onFinished(int threadId) {
+        threadCount--;
+        if (threadCount == 0) {
+            Logger.d("DownloadService...onFinished...下载结束");
+        }
+    }
+
+    private int getProgress(long currentLength, long totalLength) {
+        // TODO: 2017/3/16 不准
+        return (int) ((double) currentLength / (double) totalLength);
     }
 }

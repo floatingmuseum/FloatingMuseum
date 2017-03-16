@@ -7,4 +7,6 @@ package com.floatingmuseum.androidtest.functions.download;
 public interface ThreadCallback {
 
     void onProgress(ThreadInfo threadInfo);
+
+    void onFinished(int threadId);
 }

@@ -238,6 +238,7 @@ public class DownloadListActivity extends BaseActivity implements View.OnClickLi
         okGoManager.addTask(currentUrl, request, new DownloadListener() {
             @Override
             public void onProgress(DownloadInfo info) {
+
                 Logger.d("OkGo信息:...onProgress:" + "...TotalLength:" + info.getTotalLength() + "...DownloadLength:" + info.getDownloadLength() + "...NetworkSpeed:" + info.getNetworkSpeed() + "...Progress:" + info.getProgress());
                 int intProgress = (int) (info.getProgress() * 100);
                 pbDownload.setProgress(intProgress);

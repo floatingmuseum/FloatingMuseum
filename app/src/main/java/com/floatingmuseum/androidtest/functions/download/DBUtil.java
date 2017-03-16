@@ -18,24 +18,24 @@ public class DBUtil {
     private DBHelper dbHelper;
 
     public DBUtil(Context context) {
-        dbHelper = new DBHelper(context);
+        dbHelper = DBHelper.getInstance(context);
     }
 
-    public void insertOrUpdate(ThreadInfo info) {
+    public synchronized void insertOrUpdate(ThreadInfo info) {
         String insertSql = "insert into thread_info(thread_id,url,start_position,end_position,current_position,file_size) values(?,?,?,?,?,?)";
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         db.execSQL(insertSql, new Object[]{info.getId(), info.getUrl(), info.getStartPosition(), info.getEndPosition(), info.getCurrentPosition(), info.getFileSize()});
         db.close();
     }
 
-    public void update(ThreadInfo info) {
+    public synchronized void update(ThreadInfo info) {
         String updateSql = "update thread_info set current_position = ? where thread_id = ? and url=?";
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         db.execSQL(updateSql, new Object[]{info.getCurrentPosition(), info.getId(), info.getUrl()});
         db.close();
     }
 
-    public boolean isExists(String url, int thread_id) {
+    public synchronized boolean isExists(String url, int thread_id) {
         String querySql = "select * from thread_info where thread_id=? and url=?";
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery(querySql, new String[]{String.valueOf(thread_id), url});
@@ -45,14 +45,14 @@ public class DBUtil {
         return isExists;
     }
 
-    public void delete(ThreadInfo info) {
+    public synchronized void delete(ThreadInfo info) {
         String deleteSql = "delete from thread_info where thread_id=? and url=?";
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         db.execSQL(deleteSql, new Object[]{info.getId(), info.getUrl()});
         db.close();
     }
 
-    public ThreadInfo query(int id, String url) {
+    public synchronized ThreadInfo query(int id, String url) {
         String querySql = "select * from thread_info where thread_id=? and url=?";
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery(querySql, new String[]{String.valueOf(id), url});
@@ -73,7 +73,7 @@ public class DBUtil {
         return null;
     }
 
-    public List<ThreadInfo> getAllThreadInfo(String url) {
+    public synchronized List<ThreadInfo> getAllThreadInfo(String url) {
         String queryAllSql = "select * from thread_info where url=?";
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery(queryAllSql, new String[]{url});

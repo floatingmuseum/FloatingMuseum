@@ -7,16 +7,24 @@ import android.support.annotation.Nullable;
 
 import com.orhanobut.logger.Logger;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by Floatingmuseum on 2017/3/14.
  */
 
-public class DownloadService extends Service implements ThreadCallback {
+public class DownloadService extends Service {
 
     public static final String ACTION_START = "ACTION_START";
     public static final String ACTION_STOP = "ACTION_STOP";
+    public static final String ACTION_STOP_ALL = "ACTION_STOP_ALL";
     public static final String EXTRA_URL = "EXTRA_URL";
-    private DownloadTask downloadTask;
+    //    private List<DownloadTask> tasks;
+    private Map<String, DownloadTask> tasks;
 
     @Nullable
     @Override
@@ -25,32 +33,46 @@ public class DownloadService extends Service implements ThreadCallback {
     }
 
     @Override
+    public void onCreate() {
+        super.onCreate();
+        tasks = new HashMap<>();
+    }
+
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent.getAction();
-        if (ACTION_START.equals(action)) {
+        if (ACTION_START.equals(action)) {//开始
             String downloadUrl = intent.getStringExtra(EXTRA_URL);
             Logger.d("DownloadService...ACTION_START:" + downloadUrl);
-            downloadTask = new DownloadTask(this, downloadUrl, this);
-            downloadTask.start();
-        } else if (ACTION_STOP.equals(action)) {
+            startTask(downloadUrl);
+        } else if (ACTION_STOP.equals(action)) {//停止
             String downloadUrl = intent.getStringExtra(EXTRA_URL);
             Logger.d("DownloadService...ACTION_STOP:" + downloadUrl);
-            if (downloadTask != null) {
-                downloadTask.stop();
-            }
-
+            stopTask(downloadUrl);
+        } else if (ACTION_STOP_ALL.equals(action)) {//停止全部
+            stopAllTask();
         }
         return super.onStartCommand(intent, flags, startId);
     }
 
-    @Override
-    public void onProgress(ThreadInfo threadInfo) {
-//        long start = threadInfo.getStartPosition();
-//        long current = threadInfo.getCurrentPosition();
-//        long end = threadInfo.getEndPosition();
-//        long finished = current-start;
-//        long all = end - start;
-//        if (all)
-        Logger.d("DownloadService...进度更新...Thread:" + threadInfo.getId() + "...StartPos:" + threadInfo.getStartPosition() + "...CurrentPos:" + threadInfo.getCurrentPosition() + "...EndPosition:" + threadInfo.getEndPosition());
+    private void startTask(String downloadUrl) {
+        DownloadTask downloadTask = new DownloadTask(this, downloadUrl);
+        tasks.put(downloadUrl, downloadTask);
+        downloadTask.start();
+    }
+
+    private void stopTask(String downloadUrl) {
+        if (tasks.containsKey(downloadUrl)) {
+            //停止线程
+            tasks.get(downloadUrl).stop();
+            //移除任务
+            tasks.remove(downloadUrl);
+        }
+    }
+
+    private void stopAllTask() {
+        for (String key : tasks.keySet()) {
+            tasks.get(key).stop();
+        }
     }
 }
