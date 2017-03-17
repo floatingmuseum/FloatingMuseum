@@ -34,4 +34,14 @@
         android:id="@+id/bt_catch_time"
         style="@style/text_title"
         android:text="App Time Count" />
+
+    <Button
+        android:id="@+id/bt_analyse_system"
+        style="@style/text_title"
+        android:text="Get system info" />
+
+    <Button
+        android:id="@+id/bt_communicate"
+        style="@style/text_title"
+        android:text="Communicate with other device" />
 </LinearLayout>

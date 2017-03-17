@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -74,18 +75,6 @@
         android:layout_height="wrap_content"
         android:text="pause" />
 
-    <Button
-        android:id="@+id/bt_cancel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="cancel" />
-
-    <Button
-        android:id="@+id/bt_remove"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="remove" />
-
     <View
         android:layout_width="match_parent"
         android:layout_height="2dp"
@@ -98,6 +87,27 @@
         android:padding="5dp"
         android:text="列表下载"
         android:textSize="20sp" />
+    <!--tools:itemlayotu=""-->
+    <LinearLayout
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/bt_cancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="cancel" />
+
+        <Button
+            android:id="@+id/bt_remove"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="remove" />
+    </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_download"

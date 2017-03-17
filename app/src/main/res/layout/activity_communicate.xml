@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/bt_advertising"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Start advertising" />
+
+    <Button
+        android:id="@+id/bt_discovering"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Start discovering" />
+
+    <EditText
+        android:id="@+id/et_connect_to_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Input other device endpoint id" />
+
+    <Button
+        android:id="@+id/bt_connect_to"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Request connect to" />
+
+    <Button
+        android:id="@+id/bt_disconnect_from"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Disconnect" />
+
+    <Button
+        android:id="@+id/bt_disconnect_all"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Disconnect all" />
+
+    <EditText
+        android:id="@+id/et_send_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Which message to send" />
+
+    <Button
+        android:id="@+id/bt_send_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Send message" />
+</LinearLayout>

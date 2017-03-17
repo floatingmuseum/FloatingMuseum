@@ -28,27 +28,34 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.1.1'
     compile 'com.android.support:support-v4:25.1.1'
     compile 'com.android.support:support-vector-drawable:25.1.1'
+    compile 'com.android.support:design:25.1.1'
     testCompile 'junit:junit:4.12'
+    //控件注解绑定
     compile 'com.jakewharton:butterknife:8.5.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
+    //Log
     compile 'com.orhanobut:logger:1.15'
-    compile 'com.jrummyapps:android-shell:1.0.1'
-    //    compile 'com.github.florent37:camerafragment:1.0.3'
-    //    compile 'com.sandrios.android:sandriosCamera:1.0.9'
-    //    compile 'com.afollestad:material-camera:0.4.4'
-    compile 'io.github.memfis19:annca:0.3.4'
+    //防Crash
     compile 'com.wanjian:cockroach:0.0.5'
+    //Rx
     compile 'io.reactivex.rxjava2:rxjava:2.0.6'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    //网络
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
-    compile 'com.android.support:design:25.1.1'
+    //增强Adapter
     compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.8.4'
+    //下载相关
     compile 'com.lzy.net:okgo:2.1.4'
     compile 'com.lzy.net:okserver:1.1.3'
     compile 'zlc.season:rxdownload2:2.0.0-beta3'
     compile 'com.liulishuo.filedownloader:library:1.4.1'
+    //Shell工具
+    compile 'com.jrummyapps:android-shell:1.0.1'
+    //play service
+//    compile 'com.google.android.gms:play-services:10.2.0'
+    compile 'com.google.android.gms:play-services-nearby:10.2.0'
 }

@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.floatingmuseum.androidtest">
 
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -15,6 +16,12 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <!-- Required for Nearby Connections API -->
+        <meta-data
+            android:name="com.google.android.gms.nearby.connection.SERVICE_ID"
+            android:value="@string/floating_museum_service_id" />
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,11 +38,17 @@
         <activity android:name=".functions.qr.QRCodeActivity" />
         <activity android:name=".functions.catchtime.CatchTimeActivity" />
         <activity android:name=".functions.download.DownloadListActivity" />
+        <activity android:name=".functions.download.DownloadActivity" />
         <activity
             android:name=".functions.camera.CameraActivity"
             android:theme="@style/ThemeFullscreen" />
         <activity android:name=".functions.exception.ExceptionActivity" />
+        <activity android:name=".functions.analysesystem.AnalyseSystemActivity" />
+        <activity android:name=".functions.communicate.CommunicateActivity"/>
 
+
+        <service android:name=".functions.catchtime.CatchTimeService" />
+        <service android:name=".functions.download.DownloadService" />
         <service
             android:name=".functions.autoinstall.AutoInstallService"
             android:label="Floatingmuseum的智能安装"
@@ -54,10 +67,30 @@
         其他都是固定的。
 -->
         </service>
+
+        <service
+            android:name=".functions.catchtime.CatchTimeAccessibilityService"
+            android:label="Floatingmuseum的应用时间统计"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/catch_time_service" />
+            <!--
+        创建一个Service类集成AccessibilityService来处理接收到的事件
+        label:是你在系统设置辅助功能中显示的名称。
+        resource：指向你配置的xml文件。
+        其他都是固定的。
+-->
+        </service>
+
         <receiver android:name=".functions.catchtime.SystemShutAndBootReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-                <action android:name="android.intent.action.ACTION_SHUTDOWN"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.ACTION_SHUTDOWN" />
             </intent-filter>
         </receiver>
 

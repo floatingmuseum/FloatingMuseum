@@ -1,7 +1,5 @@
 package com.floatingmuseum.androidtest.net;
 
-import com.floatingmuseum.androidtest.functions.download.DownloadInterceptor;
-import com.floatingmuseum.androidtest.functions.download.DownloadProgressListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -22,18 +20,6 @@ public class FloatingMuseumRetrofit {
     FloatingMuseumRetrofit(){
         OkHttpClient client = new OkHttpClient()
                 .newBuilder()
-                .addInterceptor(new DownloadInterceptor(new DownloadProgressListener() {
-                    @Override
-                    public void update(long read, long count, boolean done) {
-
-                    }
-                }))
-                .addNetworkInterceptor(new DownloadInterceptor(new DownloadProgressListener() {
-                    @Override
-                    public void update(long read, long count, boolean done) {
-
-                    }
-                }))
 //                .addInterceptor(new HeaderIntercept())
 //                .addInterceptor(new AuthInterceptor())
                 .build();
