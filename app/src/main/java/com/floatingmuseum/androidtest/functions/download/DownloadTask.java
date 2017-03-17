@@ -46,9 +46,7 @@ public class DownloadTask implements InitCallback, ThreadCallback {
         threads = new ArrayList<>();
         blocksSize = new HashMap<>();
         fileName = FileUtil.getUrlFileName(downloadUrl);
-
         downloadInfo = new DownloadInfo(downloadUrl, fileName, downloadUrl, dirPath, dirPath + fileName, 0, 0, 0, 0, 0);
-        this.callback = callback;
         initDownloadThread();
     }
 
@@ -140,6 +138,8 @@ public class DownloadTask implements InitCallback, ThreadCallback {
     public void onFinished(int threadId) {
         threadCount--;
         if (threadCount == 0) {
+            //删除所有记录
+            dbUtil.deleteAll(downloadUrl);
             Logger.d("DownloadService...onFinished...下载结束");
         }
     }

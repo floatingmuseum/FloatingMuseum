@@ -52,6 +52,13 @@ public class DBUtil {
         db.close();
     }
 
+    public synchronized void deleteAll(String url) {
+        String deleteSql = "delete from thread_info where url=?";
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.execSQL(deleteSql, new Object[]{url});
+        db.close();
+    }
+
     public synchronized ThreadInfo query(int id, String url) {
         String querySql = "select * from thread_info where thread_id=? and url=?";
         SQLiteDatabase db = dbHelper.getReadableDatabase();

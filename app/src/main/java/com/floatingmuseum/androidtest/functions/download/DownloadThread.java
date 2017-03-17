@@ -28,7 +28,7 @@ public class DownloadThread extends Thread {
     private DBUtil dbUtil;
     private ThreadCallback callback;
 
-    public DownloadThread(ThreadInfo threadInfo, String dirPath,String fileName, DBUtil dbUtil, ThreadCallback callback) {
+    public DownloadThread(ThreadInfo threadInfo, String dirPath, String fileName, DBUtil dbUtil, ThreadCallback callback) {
         this.threadInfo = threadInfo;
         this.dirPath = dirPath;
         this.fileName = fileName;
@@ -87,8 +87,7 @@ public class DownloadThread extends Thread {
                         break;
                     }
                 }
-                //当前区块下载完成,删除对应线程信息
-                dbUtil.delete(threadInfo);
+                //当前区块下载完成
                 Logger.d("DownloadService...run:" + threadInfo.getId() + "号线程完成工作");
                 callback.onFinished(threadInfo.getId());
             }

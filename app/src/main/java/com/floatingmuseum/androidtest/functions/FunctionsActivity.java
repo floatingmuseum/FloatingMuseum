@@ -11,8 +11,8 @@ import com.floatingmuseum.androidtest.functions.analysesystem.AnalyseSystemActiv
 import com.floatingmuseum.androidtest.functions.autoinstall.AutoInstallActivity;
 import com.floatingmuseum.androidtest.functions.camera.CameraActivity;
 import com.floatingmuseum.androidtest.functions.catchtime.CatchTimeActivity;
+import com.floatingmuseum.androidtest.functions.communicate.CommunicateActivity;
 import com.floatingmuseum.androidtest.functions.download.DownloadActivity;
-import com.floatingmuseum.androidtest.functions.download.DownloadListActivity;
 import com.floatingmuseum.androidtest.functions.exception.ExceptionActivity;
 import com.floatingmuseum.androidtest.functions.shell.ShellActivity;
 
@@ -39,6 +39,8 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
     Button btCatchTime;
     @BindView(R.id.bt_analyse_system)
     Button btAnalyseSystem;
+    @BindView(R.id.bt_communicate)
+    Button btCommunicate;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,6 +55,7 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
         btDownload.setOnClickListener(this);
         btCatchTime.setOnClickListener(this);
         btAnalyseSystem.setOnClickListener(this);
+        btCommunicate.setOnClickListener(this);
     }
 
     @Override
@@ -80,6 +83,9 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
                 break;
             case R.id.bt_analyse_system:
                 startActivity(AnalyseSystemActivity.class);
+                break;
+            case R.id.bt_communicate:
+                startActivity(CommunicateActivity.class);
                 break;
         }
     }
