@@ -141,6 +141,7 @@ public class CommunicateActivity extends BaseActivity implements GoogleApiClient
         long NO_TIMEOUT = 0L;
 
         String name = null;
+        Logger.d("CommunicateActivity...startAdvertising:...Nearby.Connections.startAdvertising");
         Nearby.Connections.startAdvertising(googleApiClient, name, appMetadata, NO_TIMEOUT, new Connections.ConnectionRequestListener() {
             @Override
             public void onConnectionRequest(String remoteEndpointId, final String remoteEndpointName, byte[] handshakeData) {
@@ -189,6 +190,7 @@ public class CommunicateActivity extends BaseActivity implements GoogleApiClient
         // Set an appropriate timeout length in milliseconds
         long DISCOVER_TIMEOUT = 1000L;
 
+        Logger.d("CommunicateActivity...startDiscovery:...Nearby.Connections.startDiscovery");
         // Discover nearby apps that are advertising with the required service ID.
         Nearby.Connections.startDiscovery(googleApiClient, serviceId, DISCOVER_TIMEOUT, new EndpointDiscoveryListener() {
             @Override
@@ -203,20 +205,19 @@ public class CommunicateActivity extends BaseActivity implements GoogleApiClient
             public void onEndpointLost(String endpointId) {
                 Logger.d("CommunicateActivity...onEndpointLost...EndPointId:" + endpointId);
             }
-        })
-                .setResultCallback(new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(Status status) {
-                        if (status.isSuccess()) {
-                            // Device is discovering
-                            Logger.d("CommunicateActivity...startDiscovery:..Device is discovering:");
-                        } else {
-                            int statusCode = status.getStatusCode();
-                            Logger.d("CommunicateActivity...startDiscovery:..Discovering failed:" + statusCode);
-                            // Advertising failed - see statusCode for more details
-                        }
-                    }
-                });
+        }).setResultCallback(new ResultCallback<Status>() {
+            @Override
+            public void onResult(Status status) {
+                if (status.isSuccess()) {
+                    // Device is discovering
+                    Logger.d("CommunicateActivity...startDiscovery:..Device is discovering:");
+                } else {
+                    int statusCode = status.getStatusCode();
+                    Logger.d("CommunicateActivity...startDiscovery:..Discovering failed:" + statusCode);
+                    // Advertising failed - see statusCode for more details
+                }
+            }
+        });
     }
 
     private void connectTo(String endpointId, final String endpointName) {
@@ -264,6 +265,7 @@ public class CommunicateActivity extends BaseActivity implements GoogleApiClient
         super.onDestroy();
         if (googleApiClient.isConnected()) {
             googleApiClient.disconnect();
+            Logger.d("CommunicateActivity...onDestroy:...isConnected:" + googleApiClient.isConnected());
         }
     }
 }
