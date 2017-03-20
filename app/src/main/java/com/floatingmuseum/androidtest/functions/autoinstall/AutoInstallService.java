@@ -140,9 +140,13 @@ public class AutoInstallService extends AccessibilityService {
         }
     }
 
-    //服务在设置中被关掉时调用
     @Override
     public void onInterrupt() {
         Logger.d("智能安装onInterrupt");
+    }
+
+    @Override
+    public void onDestroy() {
+        Logger.d("智能安装onDestroy");
     }
 }

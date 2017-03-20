@@ -16,6 +16,8 @@ import com.wanjian.cockroach.Cockroach;
 
 import java.net.Proxy;
 
+import io.realm.Realm;
+
 /**
  * Created by Floatingmuseum on 2017/2/15.
  */
@@ -30,6 +32,7 @@ public class App extends Application {
         context = this;
 
         OkGo.init(this);
+        Realm.init(this);
         initFileDownloader();
         initCockroach();
     }
