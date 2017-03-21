@@ -44,4 +44,14 @@
         android:id="@+id/bt_communicate"
         style="@style/text_title"
         android:text="Communicate with other device" />
+
+    <Button
+        android:id="@+id/bt_bluetooth"
+        style="@style/text_title"
+        android:text="Bluetooth" />
+
+    <Button
+        android:id="@+id/bt_hot_spot"
+        style="@style/text_title"
+        android:text="Hot spot" />
 </LinearLayout>

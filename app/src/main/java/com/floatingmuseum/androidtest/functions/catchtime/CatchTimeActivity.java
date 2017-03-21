@@ -41,7 +41,7 @@ public class CatchTimeActivity extends BaseActivity {
 //        for (AppTimeUsingInfo info : infoList) {
 //            Logger.d("CatchTimeActivity...应用名:" + info.getAppName() + "...包名:" + info.getPackageName() + "...起始时间:" + info.getStartTime() + "...结束时间:" + info.getEndTime() + "...使用时间:" + info.getUsingTime() + "...当天起始时间:" + info.getDayStartTime());
 //        }
-
+        Logger.d("CatchTimeActivity...应用统计*****************************总数据量:" + infoList.size() + "*****************************");
         List<List<AppTimeUsingInfo>> after = ListUtil.subList(infoList);
         for (List<AppTimeUsingInfo> list : after) {
             Logger.d("CatchTimeActivity...应用统计*****************************日起始时间:" + list.get(0).getDayStartTime() + "*****************************");
