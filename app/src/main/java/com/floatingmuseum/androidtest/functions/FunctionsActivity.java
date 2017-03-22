@@ -9,13 +9,15 @@ import com.floatingmuseum.androidtest.R;
 import com.floatingmuseum.androidtest.base.BaseActivity;
 import com.floatingmuseum.androidtest.functions.analysesystem.AnalyseSystemActivity;
 import com.floatingmuseum.androidtest.functions.autoinstall.AutoInstallActivity;
-import com.floatingmuseum.androidtest.functions.bluetooth.BlueToothActivity;
+import com.floatingmuseum.androidtest.functions.bluetooth.BluetoothActivity;
 import com.floatingmuseum.androidtest.functions.camera.CameraActivity;
 import com.floatingmuseum.androidtest.functions.catchtime.CatchTimeActivity;
 import com.floatingmuseum.androidtest.functions.communicate.CommunicateActivity;
 import com.floatingmuseum.androidtest.functions.download.DownloadActivity;
 import com.floatingmuseum.androidtest.functions.exception.ExceptionActivity;
+import com.floatingmuseum.androidtest.functions.hotspot.ClientActivity;
 import com.floatingmuseum.androidtest.functions.hotspot.HotSpotActivity;
+import com.floatingmuseum.androidtest.functions.hotspot.ServerActivity;
 import com.floatingmuseum.androidtest.functions.shell.ShellActivity;
 
 import butterknife.BindView;
@@ -47,6 +49,10 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
     Button btBluetooth;
     @BindView(R.id.bt_hot_spot)
     Button btHotSpot;
+    @BindView(R.id.bt_server)
+    Button btServer;
+    @BindView(R.id.bt_client)
+    Button btClient;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,6 +70,9 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
         btCommunicate.setOnClickListener(this);
         btBluetooth.setOnClickListener(this);
         btHotSpot.setOnClickListener(this);
+
+        btServer.setOnClickListener(this);
+        btClient.setOnClickListener(this);
     }
 
     @Override
@@ -96,10 +105,16 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
                 startActivity(CommunicateActivity.class);
                 break;
             case R.id.bt_bluetooth:
-                startActivity(BlueToothActivity.class);
+                startActivity(BluetoothActivity.class);
                 break;
             case R.id.bt_hot_spot:
                 startActivity(HotSpotActivity.class);
+                break;
+            case R.id.bt_server:
+                startActivity(ServerActivity.class);
+                break;
+            case R.id.bt_client:
+                startActivity(ClientActivity.class);
                 break;
         }
     }

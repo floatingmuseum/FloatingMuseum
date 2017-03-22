@@ -1,57 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
+        <Button
+            android:id="@+id/bt_auto_install"
+            style="@style/text_title"
+            android:text="Auto install" />
 
-    <Button
-        android:id="@+id/bt_auto_install"
-        style="@style/text_title"
-        android:text="Auto install" />
+        <Button
+            android:id="@+id/bt_shell"
+            style="@style/text_title"
+            android:text="Execute shell command" />
 
-    <Button
-        android:id="@+id/bt_shell"
-        style="@style/text_title"
-        android:text="Execute shell command" />
+        <Button
+            android:id="@+id/bt_camera"
+            style="@style/text_title"
+            android:text="Photo and Video" />
 
-    <Button
-        android:id="@+id/bt_camera"
-        style="@style/text_title"
-        android:text="Photo and Video" />
+        <Button
+            android:id="@+id/bt_exception"
+            style="@style/text_title"
+            android:text="Exception" />
 
-    <Button
-        android:id="@+id/bt_exception"
-        style="@style/text_title"
-        android:text="Exception" />
+        <Button
+            android:id="@+id/bt_download"
+            style="@style/text_title"
+            android:text="Download List" />
 
-    <Button
-        android:id="@+id/bt_download"
-        style="@style/text_title"
-        android:text="Download List" />
+        <Button
+            android:id="@+id/bt_catch_time"
+            style="@style/text_title"
+            android:text="App Time Count" />
 
-    <Button
-        android:id="@+id/bt_catch_time"
-        style="@style/text_title"
-        android:text="App Time Count" />
+        <Button
+            android:id="@+id/bt_analyse_system"
+            style="@style/text_title"
+            android:text="Get system info" />
 
-    <Button
-        android:id="@+id/bt_analyse_system"
-        style="@style/text_title"
-        android:text="Get system info" />
+        <Button
+            android:id="@+id/bt_communicate"
+            style="@style/text_title"
+            android:text="Communicate with other device" />
 
-    <Button
-        android:id="@+id/bt_communicate"
-        style="@style/text_title"
-        android:text="Communicate with other device" />
+        <Button
+            android:id="@+id/bt_bluetooth"
+            style="@style/text_title"
+            android:text="Bluetooth" />
 
-    <Button
-        android:id="@+id/bt_bluetooth"
-        style="@style/text_title"
-        android:text="Bluetooth" />
+        <Button
+            android:id="@+id/bt_hot_spot"
+            style="@style/text_title"
+            android:text="Hot spot" />
 
-    <Button
-        android:id="@+id/bt_hot_spot"
-        style="@style/text_title"
-        android:text="Hot spot" />
-</LinearLayout>
+        <Button
+            android:id="@+id/bt_server"
+            style="@style/text_title"
+            android:text="Server" />
+
+        <Button
+            android:id="@+id/bt_client"
+            style="@style/text_title"
+            android:text="Client" />
+    </LinearLayout>
+</ScrollView>

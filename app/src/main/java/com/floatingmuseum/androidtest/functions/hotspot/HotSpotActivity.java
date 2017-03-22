@@ -8,6 +8,8 @@ import com.floatingmuseum.androidtest.base.BaseActivity;
 
 /**
  * Created by Floatingmuseum on 2017/3/20.
+ * <p>
+ * 创建热点，进行点对点传输
  */
 
 public class HotSpotActivity extends BaseActivity {
