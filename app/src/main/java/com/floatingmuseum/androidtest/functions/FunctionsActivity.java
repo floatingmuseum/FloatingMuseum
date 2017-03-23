@@ -18,6 +18,7 @@ import com.floatingmuseum.androidtest.functions.exception.ExceptionActivity;
 import com.floatingmuseum.androidtest.functions.hotspot.ClientActivity;
 import com.floatingmuseum.androidtest.functions.hotspot.HotSpotActivity;
 import com.floatingmuseum.androidtest.functions.hotspot.ServerActivity;
+import com.floatingmuseum.androidtest.functions.nsd.NsdChatActivity;
 import com.floatingmuseum.androidtest.functions.shell.ShellActivity;
 
 import butterknife.BindView;
@@ -53,6 +54,8 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
     Button btServer;
     @BindView(R.id.bt_client)
     Button btClient;
+    @BindView(R.id.bt_nsd)
+    Button btNsd;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,6 +76,8 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
 
         btServer.setOnClickListener(this);
         btClient.setOnClickListener(this);
+
+        btNsd.setOnClickListener(this);
     }
 
     @Override
@@ -115,6 +120,9 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
                 break;
             case R.id.bt_client:
                 startActivity(ClientActivity.class);
+                break;
+            case R.id.bt_nsd:
+                startActivity(NsdChatActivity.class);
                 break;
         }
     }

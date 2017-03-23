@@ -3,87 +3,183 @@ package com.floatingmuseum.androidtest.functions.hotspot;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.Nullable;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.floatingmuseum.androidtest.R;
 import com.floatingmuseum.androidtest.base.BaseActivity;
+import com.orhanobut.logger.Logger;
 
-import java.io.BufferedReader;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
+import android.os.Bundle;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.view.View.OnClickListener;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
-
-/**
- * Created by Floatingmuseum on 2017/3/22.
- */
+import java.net.SocketException;
+import java.util.Enumeration;
 
 public class ServerActivity extends BaseActivity {
-    ServerSocket ss = null;
-    String mClientMsg = "";
-    Thread myCommsThread = null;
-    protected static final int MSG_ID = 0x1337;
-    public static final int SERVERPORT = 6000;
+
+    TextView info, infoip, msg;
+    String message = "";
+    ServerSocket serverSocket;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_server);
-        TextView tv = (TextView) findViewById(R.id.TextView01);
-        tv.setText("Nothing from client yet");
-        this.myCommsThread = new Thread(new CommsThread());
-        this.myCommsThread.start();
+        info = (TextView) findViewById(R.id.info);
+        infoip = (TextView) findViewById(R.id.infoip);
+        msg = (TextView) findViewById(R.id.msg);
+
+        infoip.setText(getIpAddress());
+
+        Thread socketServerThread = new Thread(new SocketServerThread());
+        socketServerThread.start();
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        try {
-            // 确保你退出时要关闭socket连接
-            ss.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (serverSocket != null) {
+            try {
+                serverSocket.close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
     }
 
-    Handler myUpdateHandler = new Handler() {
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case MSG_ID:
-                    TextView tv = (TextView) findViewById(R.id.TextView01);
-                    tv.setText(mClientMsg);
-                    break;
-                default:
-                    break;
-            }
-            super.handleMessage(msg);
-        }
-    };
+    private class SocketServerThread extends Thread {
 
-    class CommsThread implements Runnable {
+        static final int SocketServerPORT = 8080;
+        int count = 0;
+
+        @Override
         public void run() {
-            Socket s = null;
             try {
-                ss = new ServerSocket(SERVERPORT);
+                serverSocket = new ServerSocket(SocketServerPORT);
+                ServerActivity.this.runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        info.setText("I'm waiting here: "
+                                + serverSocket.getLocalPort());
+                    }
+                });
+
+                while (true) {
+                    Socket socket = serverSocket.accept();
+                    count++;
+                    message += "#" + count + " from " + socket.getInetAddress()
+                            + ":" + socket.getPort() + "\n";
+
+                    ServerActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            msg.setText(message);
+                        }
+                    });
+
+                    SocketServerReplyThread socketServerReplyThread = new SocketServerReplyThread(
+                            socket, count);
+                    socketServerReplyThread.run();
+
+                }
             } catch (IOException e) {
+                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            while (!Thread.currentThread().isInterrupted()) {
-                Message m = new Message();
-                m.what = MSG_ID;
-                try {
-                    if (s == null)
-                        s = ss.accept();
-                    BufferedReader input = new BufferedReader(new InputStreamReader(s.getInputStream()));
-                    String st = null;
-                    st = input.readLine();
-                    mClientMsg = st;
-                    myUpdateHandler.sendMessage(m);
-                } catch (IOException e) {
-                    e.printStackTrace();
+        }
+
+    }
+
+    private class SocketServerReplyThread extends Thread {
+
+        private Socket hostThreadSocket;
+        int cnt;
+
+        SocketServerReplyThread(Socket socket, int c) {
+            hostThreadSocket = socket;
+            cnt = c;
+        }
+
+        @Override
+        public void run() {
+            OutputStream outputStream;
+            String msgReply = "Hello from Android, you are #" + cnt;
+
+            try {
+                outputStream = hostThreadSocket.getOutputStream();
+                PrintStream printStream = new PrintStream(outputStream);
+                printStream.print(msgReply);
+                printStream.close();
+
+                message += "replayed: " + msgReply + "\n";
+
+                ServerActivity.this.runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        msg.setText(message);
+                    }
+                });
+
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                message += "Something wrong! " + e.toString() + "\n";
+            }
+
+            ServerActivity.this.runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    msg.setText(message);
+                }
+            });
+        }
+
+    }
+
+    private String getIpAddress() {
+        String ip = "";
+        try {
+            Enumeration<NetworkInterface> enumNetworkInterfaces = NetworkInterface
+                    .getNetworkInterfaces();
+            while (enumNetworkInterfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = enumNetworkInterfaces
+                        .nextElement();
+                Enumeration<InetAddress> enumInetAddress = networkInterface
+                        .getInetAddresses();
+                while (enumInetAddress.hasMoreElements()) {
+                    InetAddress inetAddress = enumInetAddress.nextElement();
+
+                    if (inetAddress.isSiteLocalAddress()) {
+                        ip += "SiteLocalAddress: " + inetAddress.getHostAddress() + "\n";
+                    }
                 }
             }
+        } catch (SocketException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            ip += "Something Wrong! " + e.toString() + "\n";
         }
+
+        return ip;
     }
 }

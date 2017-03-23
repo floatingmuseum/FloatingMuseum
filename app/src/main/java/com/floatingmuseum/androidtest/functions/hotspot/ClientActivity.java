@@ -1,7 +1,7 @@
 package com.floatingmuseum.androidtest.functions.hotspot;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,60 +10,117 @@ import android.widget.TextView;
 import com.floatingmuseum.androidtest.R;
 import com.floatingmuseum.androidtest.base.BaseActivity;
 
-import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.InetAddress;
+import java.io.InputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
 /**
- * Created by Floatingmuseum on 2017/3/22.
+ * Created by Floatingmuseum on 2017/3/23.
  */
 
 public class ClientActivity extends BaseActivity {
 
-    private Button bt;
-    private TextView tv;
-    private Socket socket;
-    private String serverIpAddress = "192.168.1.104";
-
-    private static final int REDIRECTED_SERVERPORT = 6000;
+    TextView textResponse;
+    EditText editTextAddress, editTextPort;
+    Button buttonConnect, buttonClear;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client);
-        bt = (Button) findViewById(R.id.myButton);
-        tv = (TextView) findViewById(R.id.myTextView);
-        try {
-            InetAddress serverAddr = InetAddress.getByName(serverIpAddress);
-            socket = new Socket(serverAddr, REDIRECTED_SERVERPORT);
-        } catch (UnknownHostException e1) {
-            e1.printStackTrace();
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
-        bt.setOnClickListener(new View.OnClickListener() {
+
+        editTextAddress = (EditText) findViewById(R.id.address);
+        editTextPort = (EditText) findViewById(R.id.port);
+        buttonConnect = (Button) findViewById(R.id.connect);
+        buttonClear = (Button) findViewById(R.id.clear);
+        textResponse = (TextView) findViewById(R.id.response);
+
+        buttonConnect.setOnClickListener(buttonConnectOnClickListener);
+
+        buttonClear.setOnClickListener(new View.OnClickListener() {
+
+            @Override
             public void onClick(View v) {
-                try {
-                    EditText et = (EditText) findViewById(R.id.EditText01);
-                    String str = et.getText().toString();
-                    PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
-                    out.println(str);
-                    Log.d("Client", "Client sent message");
-                } catch (UnknownHostException e) {
-                    tv.setText("Error1");
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    tv.setText("Error2");
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    tv.setText("Error3");
-                    e.printStackTrace();
-                }
+                textResponse.setText("");
             }
         });
+    }
+
+    View.OnClickListener buttonConnectOnClickListener =
+            new View.OnClickListener() {
+
+                @Override
+                public void onClick(View arg0) {
+                    MyClientTask myClientTask = new MyClientTask(
+                            editTextAddress.getText().toString(),
+                            Integer.parseInt(editTextPort.getText().toString()));
+                    myClientTask.execute();
+                }
+            };
+
+    public class MyClientTask extends AsyncTask<Void, Void, Void> {
+
+        String dstAddress;
+        int dstPort;
+        String response = "";
+
+        MyClientTask(String addr, int port) {
+            dstAddress = addr;
+            dstPort = port;
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+
+            Socket socket = null;
+
+            try {
+                socket = new Socket(dstAddress, dstPort);
+
+                ByteArrayOutputStream byteArrayOutputStream =
+                        new ByteArrayOutputStream(1024);
+                byte[] buffer = new byte[1024];
+
+                int bytesRead;
+                InputStream inputStream = socket.getInputStream();
+
+    /*
+     * notice:
+     * inputStream.read() will block if no data return
+     */
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    byteArrayOutputStream.write(buffer, 0, bytesRead);
+                    response += byteArrayOutputStream.toString("UTF-8");
+                }
+
+            } catch (UnknownHostException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                response = "UnknownHostException: " + e.toString();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                response = "IOException: " + e.toString();
+            } finally {
+                if (socket != null) {
+                    try {
+                        socket.close();
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            textResponse.setText(response);
+            super.onPostExecute(result);
+        }
+
     }
 }
