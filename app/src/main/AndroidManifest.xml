@@ -2,12 +2,28 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.floatingmuseum.androidtest">
 
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!--相机-->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <!--记录声音-->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!--写权限-->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!--读权限-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!--开机广播-->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!--蓝牙-->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <!--WIFI-->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name=".App"
@@ -44,8 +60,12 @@
             android:theme="@style/ThemeFullscreen" />
         <activity android:name=".functions.exception.ExceptionActivity" />
         <activity android:name=".functions.analysesystem.AnalyseSystemActivity" />
-        <activity android:name=".functions.communicate.CommunicateActivity"/>
-
+        <activity android:name=".functions.communicate.CommunicateActivity" />
+        <activity android:name=".functions.bluetooth.BluetoothActivity"/>
+        <activity android:name=".functions.hotspot.HotSpotActivity"/>
+        <activity android:name=".functions.hotspot.ServerActivity"/>
+        <activity android:name=".functions.hotspot.ClientActivity"/>
+        <activity android:name=".functions.nsd.NsdChatActivity"/>
 
         <service android:name=".functions.catchtime.CatchTimeService" />
         <service android:name=".functions.download.DownloadService" />
@@ -56,7 +76,6 @@
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
-
             <meta-data
                 android:name="android.accessibilityservice"
                 android:resource="@xml/auto_install_service" />
@@ -75,7 +94,6 @@
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
-
             <meta-data
                 android:name="android.accessibilityservice"
                 android:resource="@xml/catch_time_service" />

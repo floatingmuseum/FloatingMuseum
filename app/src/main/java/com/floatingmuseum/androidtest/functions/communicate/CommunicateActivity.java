@@ -31,6 +31,10 @@ import butterknife.ButterKnife;
 
 /**
  * Created by Floatingmuseum on 2017/3/17.
+ *
+ * Using Google connections api
+ * https://developers.google.cn/nearby/connections/overview
+ * failed on most devices
  */
 
 public class CommunicateActivity extends BaseActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, Connections.MessageListener, View.OnClickListener {

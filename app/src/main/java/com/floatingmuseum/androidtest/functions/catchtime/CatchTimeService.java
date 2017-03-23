@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
+import com.floatingmuseum.androidtest.net.Repository;
 import com.orhanobut.logger.Logger;
 
 /**
@@ -25,10 +26,12 @@ public class CatchTimeService extends Service {
     public void onCreate() {
         Logger.d("CatchTimeService:开启");
         isRunning = true;
+
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Repository.getInstance().getRandomArticle();
         return super.onStartCommand(intent, flags, startId);
     }
 

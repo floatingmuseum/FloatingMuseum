@@ -26,7 +26,7 @@ public class FloatingMuseumRetrofit {
 
         Retrofit retrofit = new Retrofit.Builder()
                 //baseUrl方法指定了请求地址的前半部分，即服务器地址
-                .baseUrl("")
+                .baseUrl("http://gank.io/api/")
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())

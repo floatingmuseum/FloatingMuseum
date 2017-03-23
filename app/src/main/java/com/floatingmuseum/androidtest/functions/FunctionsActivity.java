@@ -9,11 +9,16 @@ import com.floatingmuseum.androidtest.R;
 import com.floatingmuseum.androidtest.base.BaseActivity;
 import com.floatingmuseum.androidtest.functions.analysesystem.AnalyseSystemActivity;
 import com.floatingmuseum.androidtest.functions.autoinstall.AutoInstallActivity;
+import com.floatingmuseum.androidtest.functions.bluetooth.BluetoothActivity;
 import com.floatingmuseum.androidtest.functions.camera.CameraActivity;
 import com.floatingmuseum.androidtest.functions.catchtime.CatchTimeActivity;
 import com.floatingmuseum.androidtest.functions.communicate.CommunicateActivity;
 import com.floatingmuseum.androidtest.functions.download.DownloadActivity;
 import com.floatingmuseum.androidtest.functions.exception.ExceptionActivity;
+import com.floatingmuseum.androidtest.functions.hotspot.ClientActivity;
+import com.floatingmuseum.androidtest.functions.hotspot.HotSpotActivity;
+import com.floatingmuseum.androidtest.functions.hotspot.ServerActivity;
+import com.floatingmuseum.androidtest.functions.nsd.NsdChatActivity;
 import com.floatingmuseum.androidtest.functions.shell.ShellActivity;
 
 import butterknife.BindView;
@@ -41,6 +46,16 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
     Button btAnalyseSystem;
     @BindView(R.id.bt_communicate)
     Button btCommunicate;
+    @BindView(R.id.bt_bluetooth)
+    Button btBluetooth;
+    @BindView(R.id.bt_hot_spot)
+    Button btHotSpot;
+    @BindView(R.id.bt_server)
+    Button btServer;
+    @BindView(R.id.bt_client)
+    Button btClient;
+    @BindView(R.id.bt_nsd)
+    Button btNsd;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,6 +71,13 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
         btCatchTime.setOnClickListener(this);
         btAnalyseSystem.setOnClickListener(this);
         btCommunicate.setOnClickListener(this);
+        btBluetooth.setOnClickListener(this);
+        btHotSpot.setOnClickListener(this);
+
+        btServer.setOnClickListener(this);
+        btClient.setOnClickListener(this);
+
+        btNsd.setOnClickListener(this);
     }
 
     @Override
@@ -86,6 +108,21 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
                 break;
             case R.id.bt_communicate:
                 startActivity(CommunicateActivity.class);
+                break;
+            case R.id.bt_bluetooth:
+                startActivity(BluetoothActivity.class);
+                break;
+            case R.id.bt_hot_spot:
+                startActivity(HotSpotActivity.class);
+                break;
+            case R.id.bt_server:
+                startActivity(ServerActivity.class);
+                break;
+            case R.id.bt_client:
+                startActivity(ClientActivity.class);
+                break;
+            case R.id.bt_nsd:
+                startActivity(NsdChatActivity.class);
                 break;
         }
     }
