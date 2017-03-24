@@ -18,7 +18,9 @@ import com.floatingmuseum.androidtest.functions.exception.ExceptionActivity;
 import com.floatingmuseum.androidtest.functions.hotspot.ClientActivity;
 import com.floatingmuseum.androidtest.functions.hotspot.HotSpotActivity;
 import com.floatingmuseum.androidtest.functions.hotspot.ServerActivity;
-import com.floatingmuseum.androidtest.functions.nsd.NsdChatActivity;
+import com.floatingmuseum.androidtest.functions.nsd.NsdActivity;
+import com.floatingmuseum.androidtest.functions.nsd.NsdClientActivity;
+import com.floatingmuseum.androidtest.functions.nsd.NsdServerActivity;
 import com.floatingmuseum.androidtest.functions.shell.ShellActivity;
 
 import butterknife.BindView;
@@ -54,8 +56,12 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
     Button btServer;
     @BindView(R.id.bt_client)
     Button btClient;
-    @BindView(R.id.bt_nsd)
-    Button btNsd;
+//    @BindView(R.id.bt_nsd)
+//    Button btNsd;
+//    @BindView(R.id.bt_nsd_server)
+//    Button btNsdServer;
+//    @BindView(R.id.bt_nsd_client)
+//    Button btNsdClient;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -77,7 +83,9 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
         btServer.setOnClickListener(this);
         btClient.setOnClickListener(this);
 
-        btNsd.setOnClickListener(this);
+//        btNsd.setOnClickListener(this);
+//        btNsdServer.setOnClickListener(this);
+//        btNsdClient.setOnClickListener(this);
     }
 
     @Override
@@ -87,7 +95,6 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
             case R.id.bt_auto_install:
                 startActivity(AutoInstallActivity.class);
                 break;
-
             case R.id.bt_shell:
                 startActivity(ShellActivity.class);
                 break;
@@ -121,9 +128,18 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
             case R.id.bt_client:
                 startActivity(ClientActivity.class);
                 break;
-            case R.id.bt_nsd:
-                startActivity(NsdChatActivity.class);
+            case R.id.bt_wifip2p:
+                startActivity(HotSpotActivity.class);
                 break;
+//            case R.id.bt_nsd:
+//                startActivity(NsdActivity.class);
+//                break;
+//            case R.id.bt_nsd_server:
+//                startActivity(NsdServerActivity.class);
+//                break;
+//            case R.id.bt_nsd_client:
+//                startActivity(NsdClientActivity.class);
+//                break;
         }
     }
 }

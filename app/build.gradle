@@ -59,4 +59,5 @@ dependencies {
     //play service
 //    compile 'com.google.android.gms:play-services:10.2.0'
     compile 'com.google.android.gms:play-services-nearby:10.2.0'
+    compile 'com.github.rafakob:NsdHelper:0.1.4'
 }

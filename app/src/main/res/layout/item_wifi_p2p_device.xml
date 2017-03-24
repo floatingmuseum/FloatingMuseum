@@ -4,15 +4,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <Button
-        android:id="@+id/bt_register"
+    <TextView
+        android:id="@+id/tv_device_name"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Register" />
+        android:layout_height="wrap_content" />
 
-    <Button
-        android:id="@+id/bt_discover"
+    <TextView
+        android:id="@+id/tv_device_address"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Discover" />
+        android:layout_height="wrap_content" />
 </LinearLayout>

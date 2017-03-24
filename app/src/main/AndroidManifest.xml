@@ -65,7 +65,10 @@
         <activity android:name=".functions.hotspot.HotSpotActivity"/>
         <activity android:name=".functions.hotspot.ServerActivity"/>
         <activity android:name=".functions.hotspot.ClientActivity"/>
-        <activity android:name=".functions.nsd.NsdChatActivity"/>
+        <!--<activity android:name=".functions.nsd.NsdChatActivity"/>-->
+        <!--<activity android:name=".functions.nsd.NsdActivity"/>-->
+        <!--<activity android:name=".functions.nsd.NsdServerActivity"/>-->
+        <!--<activity android:name=".functions.nsd.NsdClientActivity"/>-->
 
         <service android:name=".functions.catchtime.CatchTimeService" />
         <service android:name=".functions.download.DownloadService" />

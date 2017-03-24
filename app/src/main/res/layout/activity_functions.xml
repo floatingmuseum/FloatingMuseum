@@ -69,8 +69,23 @@
             android:text="Client" />
 
         <Button
-            android:id="@+id/bt_nsd"
+            android:id="@+id/bt_wifip2p"
             style="@style/text_title"
-            android:text="Network Service Discovery Chat" />
+            android:text="WiFi P2P" />
+
+        <!--<Button-->
+            <!--android:id="@+id/bt_nsd"-->
+            <!--style="@style/text_title"-->
+            <!--android:text="Network Service Discovery Chat" />-->
+
+        <!--<Button-->
+            <!--android:id="@+id/bt_nsd_server"-->
+            <!--style="@style/text_title"-->
+            <!--android:text="NSD Server" />-->
+
+        <!--<Button-->
+            <!--android:id="@+id/bt_nsd_client"-->
+            <!--style="@style/text_title"-->
+            <!--android:text="NSD Client" />-->
     </LinearLayout>
 </ScrollView>
