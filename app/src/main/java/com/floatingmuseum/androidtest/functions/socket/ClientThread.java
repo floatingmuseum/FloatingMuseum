@@ -26,7 +26,7 @@ public class ClientThread extends Thread {
     public void run() {
         try {
             socket = new Socket(serverAddress,port);
-
+            // TODO: 2017/3/24 to be continue
         } catch (IOException e) {
             e.printStackTrace();
         }
