@@ -76,7 +76,7 @@
         <!--<Button-->
             <!--android:id="@+id/bt_nsd"-->
             <!--style="@style/text_title"-->
-            <!--android:text="Network Service Discovery Chat" />-->
+            <!--android:text="Network MyService Discovery Chat" />-->
 
         <!--<Button-->
             <!--android:id="@+id/bt_nsd_server"-->

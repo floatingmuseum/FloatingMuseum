@@ -12,6 +12,8 @@ import android.widget.EditText;
 import com.floatingmuseum.androidtest.R;
 import com.floatingmuseum.androidtest.base.BaseActivity;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
@@ -66,12 +68,27 @@ public class CommunicateActivity extends BaseActivity implements GoogleApiClient
         setContentView(R.layout.activity_communicate);
         ButterKnife.bind(this);
         initView();
+        Logger.d("CommunicateActivity...isGooglePlayServicesAvailable:"+checkPlayServices());
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Nearby.CONNECTIONS_API)
                 .build();
         googleApiClient.connect();
+    }
+
+    private int PLAY_SERVICES_RESOLUTION_REQUEST = 233;
+    private boolean checkPlayServices() {
+        GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
+        int result = googleAPI.isGooglePlayServicesAvailable(this);
+        if(result != ConnectionResult.SUCCESS) {
+            if(googleAPI.isUserResolvableError(result)) {
+                googleAPI.getErrorDialog(this, result, PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            }
+            return false;
+        }
+
+        return true;
     }
 
     private void initView() {
@@ -120,7 +137,7 @@ public class CommunicateActivity extends BaseActivity implements GoogleApiClient
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Logger.d("CommunicateActivity...onConnected:" + connectionResult.getErrorMessage());
+        Logger.d("CommunicateActivity...onConnected:" + connectionResult.toString());
     }
 
     private void startAdvertising() {
