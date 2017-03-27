@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.multidex.MultiDexApplication;
 import android.widget.Toast;
 
 import com.floatingmuseum.androidtest.utils.ToastUtil;
@@ -22,7 +23,7 @@ import io.realm.Realm;
  * Created by Floatingmuseum on 2017/2/15.
  */
 
-public class App extends Application {
+public class App extends MultiDexApplication {
 
     public static Context context;
 

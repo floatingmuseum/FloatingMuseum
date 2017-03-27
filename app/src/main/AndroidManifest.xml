@@ -16,8 +16,8 @@
     <!--蓝牙-->
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <!--WIFI-->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
@@ -37,6 +37,10 @@
         <meta-data
             android:name="com.google.android.gms.nearby.connection.SERVICE_ID"
             android:value="@string/floating_museum_service_id" />
+        <!--Required for Nearby Messages API-->
+        <meta-data
+            android:name="com.google.android.nearby.messages.API_KEY"
+            android:value="AIzaSyA0KKhQGbPFHTsqz4FtYyJ12lCFRR-qk00" />
 
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -61,10 +65,12 @@
         <activity android:name=".functions.exception.ExceptionActivity" />
         <activity android:name=".functions.analysesystem.AnalyseSystemActivity" />
         <activity android:name=".functions.communicate.CommunicateActivity" />
-        <activity android:name=".functions.bluetooth.BluetoothActivity"/>
-        <activity android:name=".functions.hotspot.HotSpotActivity"/>
-        <activity android:name=".functions.hotspot.ServerActivity"/>
-        <activity android:name=".functions.hotspot.ClientActivity"/>
+        <activity android:name=".functions.bluetooth.BluetoothActivity" />
+        <activity android:name=".functions.hotspot.HotSpotActivity" />
+        <activity android:name=".functions.hotspot.ServerActivity" />
+        <activity android:name=".functions.hotspot.ClientActivity" />
+        <activity android:name=".functions.socket.SocketActivity" />
+        <activity android:name=".functions.messages.MessagesActivity" />
         <!--<activity android:name=".functions.nsd.NsdChatActivity"/>-->
         <!--<activity android:name=".functions.nsd.NsdActivity"/>-->
         <!--<activity android:name=".functions.nsd.NsdServerActivity"/>-->

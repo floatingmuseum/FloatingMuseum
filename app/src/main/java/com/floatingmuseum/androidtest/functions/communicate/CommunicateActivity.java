@@ -13,7 +13,6 @@ import com.floatingmuseum.androidtest.R;
 import com.floatingmuseum.androidtest.base.BaseActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
@@ -33,7 +32,7 @@ import butterknife.ButterKnife;
 
 /**
  * Created by Floatingmuseum on 2017/3/17.
- *
+ * <p>
  * Using Google connections api
  * https://developers.google.cn/nearby/connections/overview
  * failed on most devices
@@ -68,7 +67,7 @@ public class CommunicateActivity extends BaseActivity implements GoogleApiClient
         setContentView(R.layout.activity_communicate);
         ButterKnife.bind(this);
         initView();
-        Logger.d("CommunicateActivity...isGooglePlayServicesAvailable:"+checkPlayServices());
+        Logger.d("CommunicateActivity...isGooglePlayServicesAvailable:" + checkPlayServices());
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -78,11 +77,12 @@ public class CommunicateActivity extends BaseActivity implements GoogleApiClient
     }
 
     private int PLAY_SERVICES_RESOLUTION_REQUEST = 233;
+
     private boolean checkPlayServices() {
         GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
         int result = googleAPI.isGooglePlayServicesAvailable(this);
-        if(result != ConnectionResult.SUCCESS) {
-            if(googleAPI.isUserResolvableError(result)) {
+        if (result != ConnectionResult.SUCCESS) {
+            if (googleAPI.isUserResolvableError(result)) {
                 googleAPI.getErrorDialog(this, result, PLAY_SERVICES_RESOLUTION_REQUEST).show();
             }
             return false;
@@ -110,6 +110,9 @@ public class CommunicateActivity extends BaseActivity implements GoogleApiClient
                 startDiscovery();
                 break;
             case R.id.bt_connect_to:
+                String remoteEndpoint = etConnectToId.getText().toString();
+                Logger.d("CommunicateActivity...bt_connect_to:" + remoteEndpoint);
+                connectTo(remoteEndpoint);
                 break;
             case R.id.bt_disconnect_from:
 //                Nearby.Connections.disconnectFromEndpoint(googleApiClient, remoteEndpointId);
@@ -241,19 +244,21 @@ public class CommunicateActivity extends BaseActivity implements GoogleApiClient
         });
     }
 
-    private void connectTo(String endpointId, final String endpointName) {
+    private void connectTo(String remoteEndpoint) {
         // Send a connection request to a remote endpoint. By passing 'null' for
         // the name, the Nearby Connections API will construct a default name
         // based on device model such as 'LGE Nexus 5'.
         String myName = "Floatingmuseum";
         byte[] myPayload = myName.getBytes();
-        Nearby.Connections.sendConnectionRequest(googleApiClient, myName, endpointId, myPayload, new Connections.ConnectionResponseCallback() {
+        Nearby.Connections.sendConnectionRequest(googleApiClient, myName, remoteEndpoint, myPayload, new Connections.ConnectionResponseCallback() {
             @Override
             public void onConnectionResponse(String remoteEndpointId, Status status,
                                              byte[] bytes) {
                 if (status.isSuccess()) {
+                    Logger.d("CommunicateActivity...connectTo:..onConnectionResponse Success:" + remoteEndpointId + "..." + status.toString() + "..." + bytes);
                     // Successful connection
                 } else {
+                    Logger.d("CommunicateActivity...connectTo:..onConnectionResponse Failed:" + remoteEndpointId + "..." + status.toString() + "..." + bytes);
                     // Failed connection
                 }
             }
