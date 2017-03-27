@@ -11,6 +11,8 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        // Enabling multidex support.
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -58,6 +60,8 @@ dependencies {
     compile 'com.jrummyapps:android-shell:1.0.1'
     //play service
 //    compile 'com.google.android.gms:play-services:10.2.0'
-    compile 'com.google.android.gms:play-services-nearby:10.2.0'
+//    compile 'com.google.android.gms:play-services-nearby:10.2.1'
     compile 'com.github.rafakob:NsdHelper:0.1.4'
+    compile 'com.google.android.gms:play-services:10.2.1'
+    compile 'com.android.support:multidex:1.0.0'
 }

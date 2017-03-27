@@ -73,19 +73,29 @@
             style="@style/text_title"
             android:text="WiFi P2P" />
 
-        <!--<Button-->
-            <!--android:id="@+id/bt_nsd"-->
-            <!--style="@style/text_title"-->
-            <!--android:text="Network MyService Discovery Chat" />-->
+        <Button
+            android:id="@+id/bt_socket"
+            style="@style/text_title"
+            android:text="Socket" />
+
+        <Button
+            android:id="@+id/bt_messages"
+            style="@style/text_title"
+            android:text="Nearby messages" />
 
         <!--<Button-->
-            <!--android:id="@+id/bt_nsd_server"-->
-            <!--style="@style/text_title"-->
-            <!--android:text="NSD Server" />-->
+        <!--android:id="@+id/bt_nsd"-->
+        <!--style="@style/text_title"-->
+        <!--android:text="Network MyService Discovery Chat" />-->
 
         <!--<Button-->
-            <!--android:id="@+id/bt_nsd_client"-->
-            <!--style="@style/text_title"-->
-            <!--android:text="NSD Client" />-->
+        <!--android:id="@+id/bt_nsd_server"-->
+        <!--style="@style/text_title"-->
+        <!--android:text="NSD Server" />-->
+
+        <!--<Button-->
+        <!--android:id="@+id/bt_nsd_client"-->
+        <!--style="@style/text_title"-->
+        <!--android:text="NSD Client" />-->
     </LinearLayout>
 </ScrollView>

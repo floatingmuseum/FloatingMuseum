@@ -18,10 +18,9 @@ import com.floatingmuseum.androidtest.functions.exception.ExceptionActivity;
 import com.floatingmuseum.androidtest.functions.hotspot.ClientActivity;
 import com.floatingmuseum.androidtest.functions.hotspot.HotSpotActivity;
 import com.floatingmuseum.androidtest.functions.hotspot.ServerActivity;
-import com.floatingmuseum.androidtest.functions.nsd.NsdActivity;
-import com.floatingmuseum.androidtest.functions.nsd.NsdClientActivity;
-import com.floatingmuseum.androidtest.functions.nsd.NsdServerActivity;
+import com.floatingmuseum.androidtest.functions.messages.MessagesActivity;
 import com.floatingmuseum.androidtest.functions.shell.ShellActivity;
+import com.floatingmuseum.androidtest.functions.socket.SocketActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -56,6 +55,12 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
     Button btServer;
     @BindView(R.id.bt_client)
     Button btClient;
+    @BindView(R.id.bt_wifip2p)
+    Button btWifip2p;
+    @BindView(R.id.bt_socket)
+    Button btSocket;
+    @BindView(R.id.bt_messages)
+    Button btMessages;
 //    @BindView(R.id.bt_nsd)
 //    Button btNsd;
 //    @BindView(R.id.bt_nsd_server)
@@ -79,7 +84,8 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
         btCommunicate.setOnClickListener(this);
         btBluetooth.setOnClickListener(this);
         btHotSpot.setOnClickListener(this);
-
+        btSocket.setOnClickListener(this);
+        btMessages.setOnClickListener(this);
         btServer.setOnClickListener(this);
         btClient.setOnClickListener(this);
 
@@ -130,6 +136,12 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
                 break;
             case R.id.bt_wifip2p:
                 startActivity(HotSpotActivity.class);
+                break;
+            case R.id.bt_socket:
+                startActivity(SocketActivity.class);
+                break;
+            case R.id.bt_messages:
+                startActivity(MessagesActivity.class);
                 break;
 //            case R.id.bt_nsd:
 //                startActivity(NsdActivity.class);
