@@ -1,8 +1,11 @@
 package com.floatingmuseum.androidtest.functions.catchtime;
 
+import android.app.usage.UsageStats;
+import android.app.usage.UsageStatsManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.format.DateUtils;
 import android.widget.TextView;
 
 import com.floatingmuseum.androidtest.R;
@@ -17,6 +20,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import io.realm.RealmResults;
 
@@ -38,6 +42,7 @@ public class CatchTimeActivity extends BaseActivity {
         Logger.d("CatchTimeActivity...今日结束时间:" + TimeUtil.getTodayEndTime().toString() + "...毫秒:" + TimeUtil.getTodayEndTime().getTime());
 //        initCatchTimeService();
         queryAppUsingInfo();
+//        getHistoryApps();
     }
 
     private void queryAppUsingInfo() {
@@ -64,6 +69,29 @@ public class CatchTimeActivity extends BaseActivity {
         Logger.d("CatchTimeActivity...应用统计*****************************总使用时间*****************************");
         for (String appName : appTotalTime.keySet()) {
             Logger.d("CatchTimeActivity...应用统计...应用名:" + appName + "...总使用时间:" + appTotalTime.get(appName));
+        }
+    }
+
+    private void getHistoryApps() {
+        UsageStatsManager usageStatsManager = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
+        Calendar calendar = Calendar.getInstance();
+        long endTime = calendar.getTimeInMillis();
+        calendar.add(Calendar.YEAR, -1);
+        long startTime = calendar.getTimeInMillis();
+        List<UsageStats> list = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            list = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_YEARLY, startTime, endTime);
+            Logger.d("应用使用情况:" + list);
+            Logger.d("应用使用情况:" + list.size());
+            if (!ListUtil.isEmpty(list)) {
+                for (UsageStats stats : list) {
+                    Logger.d("应用使用情况:" + stats.getPackageName()
+                            + "...firstStamp:" + new Date(stats.getFirstTimeStamp()).toString()
+                            + "...lastStamp:" + new Date(stats.getLastTimeStamp()).toString()
+                            + "...lastUsed:" + new Date(stats.getLastTimeUsed()).toString()
+                            + "...TotalForeground:" + TimeUnit.MILLISECONDS.toMinutes(stats.getTotalTimeInForeground()));
+                }
+            }
         }
     }
 
