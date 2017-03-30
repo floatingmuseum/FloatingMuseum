@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.realm.RealmResults;
+import okhttp3.WebSocket;
 
 /**
  * Created by Floatingmuseum on 2017/3/7.
@@ -70,6 +71,7 @@ public class CatchTimeActivity extends BaseActivity {
         for (String appName : appTotalTime.keySet()) {
             Logger.d("CatchTimeActivity...应用统计...应用名:" + appName + "...总使用时间:" + appTotalTime.get(appName));
         }
+
     }
 
     private void getHistoryApps() {

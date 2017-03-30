@@ -46,6 +46,7 @@ public class CatchTimeAccessibilityService extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
+        // TODO: 2017/3/30 当屏幕熄灭时，应该结算当前应用的使用时间，屏幕点亮时开始下一个应用计时 
         CharSequence csPackageName = event.getPackageName();
         CharSequence csClassName = event.getClassName();
         Logger.d("CatchTimeAccessibilityService...当前包名1:" + csPackageName + "...类名:" + event.getClassName());
