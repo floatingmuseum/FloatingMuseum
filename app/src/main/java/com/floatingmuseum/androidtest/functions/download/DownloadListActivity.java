@@ -225,6 +225,7 @@ public class DownloadListActivity extends BaseActivity implements View.OnClickLi
     }
 
     private void initOkGoDownload() {
+        DownloadService.getDownloadManager();
         GetRequest request = OkGo.get(currentUrl);
         //检查数据库中是否有此tag的任务
         DownloadInfo info = okGoManager.getDownloadInfo(currentUrl);
@@ -236,6 +237,7 @@ public class DownloadListActivity extends BaseActivity implements View.OnClickLi
                 DownloadManager.getInstance().removeTask(currentUrl, true);
             }
         }
+
         okGoManager.addTask(currentUrl, request, new DownloadListener() {
             @Override
             public void onProgress(DownloadInfo info) {

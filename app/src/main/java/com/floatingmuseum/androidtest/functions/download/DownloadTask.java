@@ -30,7 +30,7 @@ public class DownloadTask implements InitCallback, ThreadCallback {
     private Map<Integer, Long> blocksSize;
     private String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Downloads/";
     private String fileName;
-    private final DownloadInfo downloadInfo;
+    private DownloadInfo downloadInfo;
 
     private static Handler handler = new Handler() {
         @Override

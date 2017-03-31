@@ -1,5 +1,6 @@
 package com.floatingmuseum.androidtest.utils;
 
+import java.io.File;
 import java.math.BigDecimal;
 
 /**
@@ -28,5 +29,12 @@ public class FileUtil {
         int lastDivideIndex = url.lastIndexOf("/");
         String fileName = url.substring(lastDivideIndex + 1);
         return fileName;
+    }
+
+    public static void initDir(String dirPath) {
+        File dir = new File(dirPath);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
     }
 }
