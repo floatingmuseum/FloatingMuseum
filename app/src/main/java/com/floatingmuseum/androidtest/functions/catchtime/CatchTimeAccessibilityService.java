@@ -71,6 +71,8 @@ public class CatchTimeAccessibilityService extends AccessibilityService {
         try {
             PackageInfo packageInfo = pm.getPackageInfo(newPackageName, PackageManager.GET_ACTIVITIES);
             ActivityInfo[] info = packageInfo.activities;
+            // TODO: 2017/4/11 重启时这里为null 
+            Logger.d("CatchTimeAccessibilityService...ActivityInfo:" + info);
             for (ActivityInfo activityInfo : info) {
 //                Logger.d("CatchTimeAccessibilityService...包名:" + newPackageName + "...所含类名:" + activityInfo.name + "..." + activityInfo.toString());
                 if (className.equals(activityInfo.name)) {
