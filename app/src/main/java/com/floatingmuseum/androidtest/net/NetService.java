@@ -1,6 +1,5 @@
 package com.floatingmuseum.androidtest.net;
 
-import com.floatingmuseum.androidtest.functions.catchtime.RandomArticle;
 
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;

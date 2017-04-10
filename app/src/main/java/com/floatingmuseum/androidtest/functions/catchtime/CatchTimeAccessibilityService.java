@@ -16,7 +16,6 @@ import com.floatingmuseum.androidtest.utils.TimeUtil;
 import com.orhanobut.logger.Logger;
 
 
-
 /**
  * Created by Floatingmuseum on 2017/3/17.
  */
@@ -35,6 +34,7 @@ public class CatchTimeAccessibilityService extends AccessibilityService {
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
+        // TODO: 2017/4/10 重启时这里联网出错，还是放到activity里吧 
         startService(new Intent(this, CatchTimeService.class));
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_SCREEN_ON);//亮屏
