@@ -1,26 +1,20 @@
 package com.floatingmuseum.androidtest.functions.catchtime;
 
 import android.accessibilityservice.AccessibilityService;
-import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.text.format.DateUtils;
-import android.util.TimeUtils;
 import android.view.accessibility.AccessibilityEvent;
 
 import com.floatingmuseum.androidtest.utils.RealmManager;
 import com.floatingmuseum.androidtest.utils.TimeUtil;
 import com.orhanobut.logger.Logger;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
-import java.util.Map;
-
-import io.realm.RealmModel;
 
 
 /**
@@ -31,6 +25,7 @@ public class CatchTimeAccessibilityService extends AccessibilityService {
 
     private String currentPackageName;
     private AppTimeUsingInfo currentAppTimeUsingInfo;
+    private ScreenReceiver screenReceiver;
 
     @Override
     public void onCreate() {
@@ -41,11 +36,18 @@ public class CatchTimeAccessibilityService extends AccessibilityService {
     protected void onServiceConnected() {
         super.onServiceConnected();
         startService(new Intent(this, CatchTimeService.class));
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_SCREEN_ON);//亮屏
+        filter.addAction(Intent.ACTION_SCREEN_OFF);//熄屏
+        filter.addAction(Intent.ACTION_USER_PRESENT);//解锁
+        screenReceiver = new ScreenReceiver();
+        registerReceiver(screenReceiver, filter);
         Logger.d("CatchTimeAccessibilityService...onServiceConnected");
     }
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
+        // TODO: 2017/3/30 当屏幕熄灭时，应该结算当前应用的使用时间，屏幕点亮时开始下一个应用计时 
         CharSequence csPackageName = event.getPackageName();
         CharSequence csClassName = event.getClassName();
         Logger.d("CatchTimeAccessibilityService...当前包名1:" + csPackageName + "...类名:" + event.getClassName());
@@ -70,7 +72,7 @@ public class CatchTimeAccessibilityService extends AccessibilityService {
             PackageInfo packageInfo = pm.getPackageInfo(newPackageName, PackageManager.GET_ACTIVITIES);
             ActivityInfo[] info = packageInfo.activities;
             for (ActivityInfo activityInfo : info) {
-                Logger.d("CatchTimeAccessibilityService...包名:" + newPackageName + "...所含类名:" + activityInfo.name + "..." + activityInfo.toString());
+//                Logger.d("CatchTimeAccessibilityService...包名:" + newPackageName + "...所含类名:" + activityInfo.name + "..." + activityInfo.toString());
                 if (className.equals(activityInfo.name)) {
                     return true;
                 }
@@ -86,27 +88,44 @@ public class CatchTimeAccessibilityService extends AccessibilityService {
         try {
             ApplicationInfo applicationInfo = pm.getApplicationInfo(newPackageName, 0);
             String appName = applicationInfo.loadLabel(pm).toString();
-            if (currentPackageName == null) {//first time
-                currentAppTimeUsingInfo = new AppTimeUsingInfo(appName, newPackageName, TimeUtil.getTodayStartTime().getTime(), System.currentTimeMillis(), 0, 0);
-            } else {
-                //不等于null说明,数据库中存在未结算使用时间的应用,先结算,再记录新应用
-                long endTime = System.currentTimeMillis();
-                long usingTime = endTime - currentAppTimeUsingInfo.getStartTime();
-                currentAppTimeUsingInfo.setEndTime(endTime);
-                currentAppTimeUsingInfo.setUsingTime(usingTime);
-                RealmManager.insertOrUpdate(currentAppTimeUsingInfo);
-                Date today = TimeUtil.getTodayStartTime();
-                currentAppTimeUsingInfo = new AppTimeUsingInfo(appName, newPackageName, TimeUtil.getTodayStartTime().getTime(), System.currentTimeMillis(), 0, 0);
-                RealmManager.insertOrUpdate(currentAppTimeUsingInfo);
-                Date newToday = TimeUtil.getTodayStartTime();
-                Logger.d("CatchTimeAccessibilityService...时间:" + today.before(newToday) + "..." + today.after(newToday) + "..." + DateUtils.isToday(today.getTime()) + "..." + DateUtils.isToday(newToday.getTime()));
+            if (currentPackageName != null) {//first time
+                countingUsingTime();
             }
-
+            prepareNewAppTimeUsingInfo(appName, newPackageName);
             Logger.d("CatchTimeAccessibilityService...当前应用名:" + appName + "..." + TimeUtil.getTodayStartTime().getTime() + "..." + TimeUtil.getTodayStartTime());
         } catch (Exception e) {
             e.printStackTrace();
         }
         currentPackageName = newPackageName;
+    }
+
+    private void countingUsingTime() {
+        if (!isTooShort()) {
+            Logger.d("CatchTimeAccessibilityService...时间充足...进行计算应用名:" + currentAppTimeUsingInfo.getAppName() + "..." + currentAppTimeUsingInfo.getPackageName());
+            //结算数据
+            long endTime = System.currentTimeMillis();
+            long usingTime = endTime - currentAppTimeUsingInfo.getStartTime();
+            currentAppTimeUsingInfo.setEndTime(endTime);
+            currentAppTimeUsingInfo.setUsingTime(usingTime);
+            //插入到数据库
+            RealmManager.insertOrUpdate(currentAppTimeUsingInfo);
+        } else {
+            Logger.d("CatchTimeAccessibilityService...间隔过短...忽略计算应用名:" + currentAppTimeUsingInfo.getAppName() + "..." + currentAppTimeUsingInfo.getPackageName());
+        }
+    }
+
+    /**
+     * 包名切换间隔是否过短
+     */
+    private boolean isTooShort() {
+        return System.currentTimeMillis() - currentAppTimeUsingInfo.getStartTime() < 3000;
+    }
+
+    /**
+     * 更新currentAppTimeUsingInfo
+     */
+    private void prepareNewAppTimeUsingInfo(String appName, String packageName) {
+        currentAppTimeUsingInfo = new AppTimeUsingInfo(appName, packageName, TimeUtil.getTodayStartTime().getTime(), System.currentTimeMillis(), 0, 0);
     }
 
     @Override
@@ -117,6 +136,32 @@ public class CatchTimeAccessibilityService extends AccessibilityService {
     @Override
     public void onDestroy() {
         stopService(new Intent(this, CatchTimeService.class));
+        unregisterReceiver(screenReceiver);
         Logger.d("CatchTimeAccessibilityService...onDestroy");
+    }
+
+    private class ScreenReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action != null) {
+                switch (action) {
+                    case Intent.ACTION_SCREEN_ON:
+                        Logger.d("CatchTimeAccessibilityService:亮屏广播");
+                        break;
+                    case Intent.ACTION_SCREEN_OFF:
+                        // 熄屏时结算当前应用使用时间，并将当前数据置空
+                        countingUsingTime();
+                        currentAppTimeUsingInfo = null;
+                        currentPackageName = null;
+                        Logger.d("CatchTimeAccessibilityService:熄屏广播");
+                        break;
+                    case Intent.ACTION_USER_PRESENT:
+                        Logger.d("CatchTimeAccessibilityService:解锁广播");
+                        break;
+                }
+            }
+        }
     }
 }

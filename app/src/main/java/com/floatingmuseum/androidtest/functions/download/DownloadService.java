@@ -23,7 +23,7 @@ public class DownloadService extends Service {
     public static final String ACTION_STOP = "ACTION_STOP";
     public static final String ACTION_STOP_ALL = "ACTION_STOP_ALL";
     public static final String EXTRA_URL = "EXTRA_URL";
-    //    private List<DownloadTask> tasks;
+    //    private List<TaskInfo> tasks;
     private Map<String, DownloadTask> tasks;
 
     @Nullable

@@ -30,6 +30,20 @@ public class RealmManager {
         });
     }
 
+    public static void delete(final long startTime) {
+        Realm.getDefaultInstance().executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                RealmResults<AppTimeUsingInfo> results = realm.where(AppTimeUsingInfo.class)
+                        .equalTo("startTime", startTime)
+                        .findAll();
+                if (ListUtil.isEmpty(results)) {
+                    results.deleteAllFromRealm();
+                }
+            }
+        });
+    }
+
     public static RealmResults<? extends RealmModel> query(final Class<? extends RealmModel> clazz) {
         RealmResults<?> results = Realm.getDefaultInstance()
                 .where(clazz)
