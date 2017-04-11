@@ -37,9 +37,9 @@ public class CatchTimeAccessibilityService extends AccessibilityService {
         // TODO: 2017/4/10 重启时这里联网出错，还是放到activity里吧 
         startService(new Intent(this, CatchTimeService.class));
         IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_SCREEN_ON);//亮屏
+//        filter.addAction(Intent.ACTION_SCREEN_ON);//亮屏
         filter.addAction(Intent.ACTION_SCREEN_OFF);//熄屏
-        filter.addAction(Intent.ACTION_USER_PRESENT);//解锁
+//        filter.addAction(Intent.ACTION_USER_PRESENT);//解锁
         screenReceiver = new ScreenReceiver();
         registerReceiver(screenReceiver, filter);
         Logger.d("CatchTimeAccessibilityService...onServiceConnected");
@@ -47,17 +47,16 @@ public class CatchTimeAccessibilityService extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        // TODO: 2017/3/30 当屏幕熄灭时，应该结算当前应用的使用时间，屏幕点亮时开始下一个应用计时 
         CharSequence csPackageName = event.getPackageName();
         CharSequence csClassName = event.getClassName();
-        Logger.d("CatchTimeAccessibilityService...当前包名1:" + csPackageName + "...类名:" + event.getClassName());
+        Logger.d("CatchTimeAccessibilityService...当前包名(捕捉所有):" + csPackageName + "...类名:" + event.getClassName());
         String newPackageName;
         if (csPackageName != null && csClassName != null) {
             newPackageName = csPackageName.toString();
             String className = csClassName.toString();
             if (!newPackageName.equals(currentPackageName) && hasActivity(newPackageName, className)) {
                 packageNameChanged(newPackageName);
-                Logger.d("CatchTimeAccessibilityService...当前包名2:" + currentPackageName + "...类名:" + event.getClassName());
+                Logger.d("CatchTimeAccessibilityService...当前包名(捕捉需要):" + currentPackageName + "...类名:" + event.getClassName());
             }
         }
     }
@@ -71,12 +70,13 @@ public class CatchTimeAccessibilityService extends AccessibilityService {
         try {
             PackageInfo packageInfo = pm.getPackageInfo(newPackageName, PackageManager.GET_ACTIVITIES);
             ActivityInfo[] info = packageInfo.activities;
-            // TODO: 2017/4/11 重启时这里为null 
             Logger.d("CatchTimeAccessibilityService...ActivityInfo:" + info);
-            for (ActivityInfo activityInfo : info) {
+            if (info != null) {
+                for (ActivityInfo activityInfo : info) {
 //                Logger.d("CatchTimeAccessibilityService...包名:" + newPackageName + "...所含类名:" + activityInfo.name + "..." + activityInfo.toString());
-                if (className.equals(activityInfo.name)) {
-                    return true;
+                    if (className.equals(activityInfo.name)) {
+                        return true;
+                    }
                 }
             }
         } catch (PackageManager.NameNotFoundException e) {
@@ -85,6 +85,9 @@ public class CatchTimeAccessibilityService extends AccessibilityService {
         return false;
     }
 
+    /**
+     * 包名变换时，结算应用时间，更新当前包名
+     */
     private void packageNameChanged(String newPackageName) {
         PackageManager pm = getPackageManager();
         try {
@@ -101,6 +104,9 @@ public class CatchTimeAccessibilityService extends AccessibilityService {
         currentPackageName = newPackageName;
     }
 
+    /**
+     * 结算时间，插入数据库
+     */
     private void countingUsingTime() {
         if (!isTooShort()) {
             Logger.d("CatchTimeAccessibilityService...时间充足...进行计算应用名:" + currentAppTimeUsingInfo.getAppName() + "..." + currentAppTimeUsingInfo.getPackageName());
@@ -142,6 +148,9 @@ public class CatchTimeAccessibilityService extends AccessibilityService {
         Logger.d("CatchTimeAccessibilityService...onDestroy");
     }
 
+    /**
+     * 熄屏广播
+     */
     private class ScreenReceiver extends BroadcastReceiver {
 
         @Override
@@ -149,19 +158,21 @@ public class CatchTimeAccessibilityService extends AccessibilityService {
             String action = intent.getAction();
             if (action != null) {
                 switch (action) {
-                    case Intent.ACTION_SCREEN_ON:
-                        Logger.d("CatchTimeAccessibilityService:亮屏广播");
-                        break;
+//                    case Intent.ACTION_SCREEN_ON:
+//                        Logger.d("CatchTimeAccessibilityService:亮屏广播");
+//                        break;
                     case Intent.ACTION_SCREEN_OFF:
                         // 熄屏时结算当前应用使用时间，并将当前数据置空
-                        countingUsingTime();
-                        currentAppTimeUsingInfo = null;
-                        currentPackageName = null;
+                        if (currentAppTimeUsingInfo != null && currentPackageName != null) {
+                            countingUsingTime();
+                            currentAppTimeUsingInfo = null;
+                            currentPackageName = null;
+                        }
                         Logger.d("CatchTimeAccessibilityService:熄屏广播");
                         break;
-                    case Intent.ACTION_USER_PRESENT:
-                        Logger.d("CatchTimeAccessibilityService:解锁广播");
-                        break;
+//                    case Intent.ACTION_USER_PRESENT:
+//                        Logger.d("CatchTimeAccessibilityService:解锁广播");
+//                        break;
                 }
             }
         }
