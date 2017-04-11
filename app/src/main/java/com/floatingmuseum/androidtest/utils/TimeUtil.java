@@ -7,6 +7,7 @@ import android.text.format.DateUtils;
 import com.floatingmuseum.androidtest.App;
 import com.liulishuo.filedownloader.i.IFileDownloadIPCCallback;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -39,9 +40,10 @@ public class TimeUtil {
         return currentDate.getTime();
     }
 
-    public static void getTime(long time) {
-        Date date = new Date();
-        DateUtils.formatDateTime(App.context, time, DateUtils.FORMAT_SHOW_TIME);
+    public static String getTime(long time) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date(time);
+        return format.format(date);
     }
 
     private static long hourMillis = 1000 * 60 * 60;

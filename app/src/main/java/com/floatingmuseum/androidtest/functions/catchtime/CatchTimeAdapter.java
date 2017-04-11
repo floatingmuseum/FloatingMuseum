@@ -26,8 +26,9 @@ public class CatchTimeAdapter extends BaseQuickAdapter<AppTimeInfo, BaseViewHold
     @Override
     protected void convert(BaseViewHolder helper, AppTimeInfo item) {
         if (helper.getLayoutPosition() == 0 || item.getDayStartTime() != showingList.get(helper.getLayoutPosition() - 1).getDayStartTime()) {//可见
-            helper.setVisible(R.id.tv_day_time, true)
-                    .setText(R.id.tv_day_time, "日期:" + DateUtils.formatDateTime(App.context, item.getDayStartTime(), DateUtils.FORMAT_SHOW_DATE));
+            helper.setText(R.id.tv_day_time, "日期:" + TimeUtil.getTime(item.getDayStartTime()))
+                    .setVisible(R.id.tv_day_time, true);
+//            DateUtils.formatDateTime(App.context, item.getDayStartTime(), DateUtils.FORMAT_SHOW_DATE)
         } else {
             helper.setVisible(R.id.tv_day_time, false);
         }
