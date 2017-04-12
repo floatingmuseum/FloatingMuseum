@@ -49,6 +49,7 @@ public class AppTimeUsingManager {
         return appTimeUsingManager;
     }
 
+    // TODO: 2017/4/12 所有操作在主线程，可替换到子线程 
     public void countingAppUsingTime(AccessibilityEvent event) {
         if (event == null) {
             return;
@@ -60,6 +61,7 @@ public class AppTimeUsingManager {
         if (csPackageName != null && csClassName != null) {
             newPackageName = csPackageName.toString();
             String className = csClassName.toString();
+            String currentPackageName = currentAppTimeUsingInfo == null ? "" : currentAppTimeUsingInfo.getPackageName();
             if (!newPackageName.equals(currentPackageName) && hasActivity(newPackageName, className)) {
                 packageNameChanged(newPackageName);
                 Logger.d("AppTimeUsingManager...当前包名(捕捉需要):" + currentPackageName + "...类名:" + event.getClassName());
@@ -99,7 +101,7 @@ public class AppTimeUsingManager {
         try {
             ApplicationInfo applicationInfo = pm.getApplicationInfo(newPackageName, 0);
             String appName = applicationInfo.loadLabel(pm).toString();
-            if (currentPackageName != null) {//first time
+            if (currentAppTimeUsingInfo != null) {//first time
                 countingUsingTime();
             }
             prepareNewAppTimeUsingInfo(appName, newPackageName);
@@ -107,7 +109,6 @@ public class AppTimeUsingManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        currentPackageName = newPackageName;
     }
 
     /**
@@ -116,13 +117,20 @@ public class AppTimeUsingManager {
     private void countingUsingTime() {
         if (!isTooShort()) {
             Logger.d("AppTimeUsingManager...时间充足...进行计算应用名:" + currentAppTimeUsingInfo.getAppName() + "..." + currentAppTimeUsingInfo.getPackageName());
-            //结算数据
             long endTime = System.currentTimeMillis();
-            long usingTime = endTime - currentAppTimeUsingInfo.getStartTime();
-            currentAppTimeUsingInfo.setEndTime(endTime);
-            currentAppTimeUsingInfo.setUsingTime(usingTime);
-            //插入到数据库
-            RealmManager.insertOrUpdate(currentAppTimeUsingInfo);
+            //如果当前应用日起始时间小于今日起始时间，表示使用时段跨天。分割结算
+            if (currentAppTimeUsingInfo.getDayStartTime() < TimeUtil.getTodayStartTime().getTime()) {
+                Logger.d("AppTimeUsingManager...时间充足...进行计算应用名(跨天分割结算):" + currentAppTimeUsingInfo.getAppName() + "..." + currentAppTimeUsingInfo.getPackageName() + "..." + currentAppTimeUsingInfo.getStartTime() + "..." + System.currentTimeMillis());
+                //结算应用 由应用开始时间到应用开始时间所在当天的结束时间
+                long firstEndTime = currentAppTimeUsingInfo.getDayStartTime() + TimeUtil.getWholeDayMillis();
+                insertIntoDB(firstEndTime, firstEndTime - currentAppTimeUsingInfo.getStartTime());
+                //结算应用 由今天开始时间到当前时间
+                AppTimeUsingInfo appTimeUsingInfo = new AppTimeUsingInfo(currentAppTimeUsingInfo.getAppName(), currentAppTimeUsingInfo.getPackageName(), TimeUtil.getTodayStartTime().getTime(), TimeUtil.getTodayStartTime().getTime(), endTime, endTime - TimeUtil.getTodayStartTime().getTime());
+                RealmManager.insertOrUpdate(appTimeUsingInfo);
+                return;
+            }
+            //结算数据，插入到数据库
+            insertIntoDB(endTime, endTime - currentAppTimeUsingInfo.getStartTime());
         } else {
             Logger.d("AppTimeUsingManager...间隔过短...忽略计算应用名:" + currentAppTimeUsingInfo.getAppName() + "..." + currentAppTimeUsingInfo.getPackageName());
         }
@@ -142,6 +150,15 @@ public class AppTimeUsingManager {
         currentAppTimeUsingInfo = new AppTimeUsingInfo(appName, packageName, TimeUtil.getTodayStartTime().getTime(), System.currentTimeMillis(), 0, 0);
     }
 
+    /**
+     * 插入到数据库
+     */
+    private void insertIntoDB(long endTime, long usingTime) {
+        currentAppTimeUsingInfo.setEndTime(endTime);
+        currentAppTimeUsingInfo.setUsingTime(usingTime);
+        RealmManager.insertOrUpdate(currentAppTimeUsingInfo);
+    }
+
     public void destroy() {
 //        App.context.stopService(new Intent(App.context, CatchTimeService.class));
         App.context.unregisterReceiver(screenReceiver);
@@ -158,10 +175,9 @@ public class AppTimeUsingManager {
             if (action != null) {
                 if (action.equals(Intent.ACTION_SCREEN_OFF)) {
                     // 熄屏时结算当前应用使用时间，并将当前数据置空
-                    if (currentAppTimeUsingInfo != null && currentPackageName != null) {
+                    if (currentAppTimeUsingInfo != null) {
                         countingUsingTime();
                         currentAppTimeUsingInfo = null;
-                        currentPackageName = null;
                     }
                 }
             }

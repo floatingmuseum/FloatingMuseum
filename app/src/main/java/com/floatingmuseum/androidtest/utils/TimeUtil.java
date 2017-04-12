@@ -96,4 +96,16 @@ public class TimeUtil {
 
         return usingTime;
     }
+
+    /**
+     * 一天的毫秒数
+     * 从00：00：00 000到23：59：59 999
+     */
+    public static long getWholeDayMillis() {
+        return 86399386;
+    }
+
+//    public static boolean isSameDay(){
+//        DateUtils.isToday(1);
+//    }
 }
