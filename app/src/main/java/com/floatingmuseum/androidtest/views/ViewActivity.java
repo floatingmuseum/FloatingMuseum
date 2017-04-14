@@ -7,6 +7,7 @@ import android.widget.Button;
 
 import com.floatingmuseum.androidtest.R;
 import com.floatingmuseum.androidtest.base.BaseActivity;
+import com.floatingmuseum.androidtest.views.simple.SimpleViewActivity;
 import com.floatingmuseum.androidtest.views.tags.TagsActivity;
 
 import butterknife.BindView;
@@ -20,6 +21,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
     @BindView(R.id.bt_tags)
     Button btTags;
+    @BindView(R.id.bt_simple_view)
+    Button btSimpleView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -27,6 +30,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
         setContentView(R.layout.activity_views);
         ButterKnife.bind(this);
 
+        btSimpleView.setOnClickListener(this);
         btTags.setOnClickListener(this);
     }
 
@@ -35,6 +39,9 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
+            case R.id.bt_simple_view:
+                startActivity(SimpleViewActivity.class);
+                break;
             case R.id.bt_tags:
                 startActivity(TagsActivity.class);
                 break;

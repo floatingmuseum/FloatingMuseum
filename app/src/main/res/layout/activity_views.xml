@@ -5,6 +5,11 @@
     android:orientation="vertical">
 
     <Button
+        android:id="@+id/bt_simple_view"
+        style="@style/text_title"
+        android:text="简单View测试" />
+
+    <Button
         android:id="@+id/bt_tags"
         style="@style/text_title"
         android:text="标签" />
