@@ -23,12 +23,10 @@ public class AppTimeUsingManager {
 
     private static AppTimeUsingManager appTimeUsingManager;
 
-    private String currentPackageName;
     private AppTimeUsingInfo currentAppTimeUsingInfo;
     private ScreenReceiver screenReceiver;
 
     private AppTimeUsingManager() {
-//        App.context.startService(new Intent(App.context, CatchTimeService.class));
         IntentFilter filter = new IntentFilter();
 //        filter.addAction(Intent.ACTION_SCREEN_ON);//亮屏
         filter.addAction(Intent.ACTION_SCREEN_OFF);//熄屏
@@ -160,7 +158,6 @@ public class AppTimeUsingManager {
     }
 
     public void destroy() {
-//        App.context.stopService(new Intent(App.context, CatchTimeService.class));
         App.context.unregisterReceiver(screenReceiver);
     }
 
