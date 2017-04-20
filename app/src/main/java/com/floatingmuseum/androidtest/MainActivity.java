@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import com.floatingmuseum.androidtest.base.BaseActivity;
 import com.floatingmuseum.androidtest.functions.FunctionsActivity;
 import com.floatingmuseum.androidtest.views.ViewActivity;
+import com.orhanobut.logger.Logger;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,5 +49,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             case R.id.bt_third_parties:
                 break;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }
