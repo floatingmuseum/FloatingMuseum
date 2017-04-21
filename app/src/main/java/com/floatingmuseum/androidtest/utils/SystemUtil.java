@@ -1,7 +1,10 @@
 package com.floatingmuseum.androidtest.utils;
 
+import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -165,5 +168,35 @@ public class SystemUtil {
         } else {
             return true;
         }
+    }
+
+    public static void getCurrentLauncher(PackageManager pm) {
+//        IntentFilter filter = new IntentFilter(Intent.ACTION_MAIN);
+//        filter.addCategory(Intent.CATEGORY_HOME);
+//
+//        List<IntentFilter> filters = new ArrayList();
+//        filters.add(filter);
+//
+//        List<ComponentName> activities = new ArrayList();
+//
+//        pm.getPreferredActivities(filters, activities, null);
+//
+//        for (ComponentName activity : activities) {
+//            Logger.d("启动器:" +"..."+activity.getPackageName());
+//        }
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.addCategory(Intent.CATEGORY_DEFAULT);
+
+        List<ResolveInfo> infoList1 = pm.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        Logger.d("**************************************************启动器**************************************************");
+        for (ResolveInfo info : infoList1) {
+            Logger.d("启动器:" + info.loadLabel(pm).toString() + "..." + info.activityInfo.packageName);
+        }
+        Logger.d("**************************************************启动器**************************************************");
+        //可以获取到当前的Launcher,如果主屏幕设置没有选中任何一个,则会返回Android
+        ResolveInfo resolveInfo = pm.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        Logger.d("启动器:" + resolveInfo.loadLabel(pm).toString() + "..." + resolveInfo.activityInfo.packageName);
+        Logger.d("**************************************************启动器**************************************************");
     }
 }

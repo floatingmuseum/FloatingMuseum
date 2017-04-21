@@ -76,7 +76,8 @@
         <activity android:name=".functions.hotspot.ClientActivity" />
         <activity android:name=".functions.socket.SocketActivity" />
         <activity android:name=".functions.messages.MessagesActivity" />
-        <activity android:name=".views.simple.SimpleViewActivity"/>
+        <activity android:name=".views.simple.SimpleViewActivity" />
+        <activity android:name=".functions.launcher.LauncherCheckActivity"/>
         <!--<activity android:name=".functions.nsd.NsdChatActivity"/>-->
         <!--<activity android:name=".functions.nsd.NsdActivity"/>-->
         <!--<activity android:name=".functions.nsd.NsdServerActivity"/>-->
@@ -119,6 +120,7 @@
         其他都是固定的。
 -->
         </service>
+        <service android:name=".functions.launcher.LauncherCheckService" />
 
         <receiver android:name=".functions.catchtime.SystemShutAndBootReceiver">
             <intent-filter>

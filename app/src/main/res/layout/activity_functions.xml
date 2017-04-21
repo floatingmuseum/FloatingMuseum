@@ -83,6 +83,11 @@
             style="@style/text_title"
             android:text="Nearby messages" />
 
+        <Button
+            android:id="@+id/bt_launcher_check"
+            style="@style/text_title"
+            android:text="Launcher check" />
+
         <!--<Button-->
         <!--android:id="@+id/bt_nsd"-->
         <!--style="@style/text_title"-->

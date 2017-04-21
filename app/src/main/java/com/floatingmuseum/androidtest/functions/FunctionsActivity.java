@@ -18,6 +18,7 @@ import com.floatingmuseum.androidtest.functions.exception.ExceptionActivity;
 import com.floatingmuseum.androidtest.functions.hotspot.ClientActivity;
 import com.floatingmuseum.androidtest.functions.hotspot.HotSpotActivity;
 import com.floatingmuseum.androidtest.functions.hotspot.ServerActivity;
+import com.floatingmuseum.androidtest.functions.launcher.LauncherCheckActivity;
 import com.floatingmuseum.androidtest.functions.messages.MessagesActivity;
 import com.floatingmuseum.androidtest.functions.shell.ShellActivity;
 import com.floatingmuseum.androidtest.functions.socket.SocketActivity;
@@ -61,6 +62,8 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
     Button btSocket;
     @BindView(R.id.bt_messages)
     Button btMessages;
+    @BindView(R.id.bt_launcher_check)
+    Button btLauncherCheck;
 //    @BindView(R.id.bt_nsd)
 //    Button btNsd;
 //    @BindView(R.id.bt_nsd_server)
@@ -88,6 +91,7 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
         btMessages.setOnClickListener(this);
         btServer.setOnClickListener(this);
         btClient.setOnClickListener(this);
+        btLauncherCheck.setOnClickListener(this);
 
 //        btNsd.setOnClickListener(this);
 //        btNsdServer.setOnClickListener(this);
@@ -142,6 +146,9 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
                 break;
             case R.id.bt_messages:
                 startActivity(MessagesActivity.class);
+                break;
+            case R.id.bt_launcher_check:
+                startActivity(LauncherCheckActivity.class);
                 break;
 //            case R.id.bt_nsd:
 //                startActivity(NsdActivity.class);
