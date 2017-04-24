@@ -1,12 +1,15 @@
 package com.floatingmuseum.androidtest.views.simple;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -87,7 +90,13 @@ public class SimpleViewActivity extends BaseActivity {
         btOpenDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                MessageProgressDialog dialog = (MessageProgressDialog) new MessageProgressDialog.Builder(SimpleViewActivity.this)
+                showMessageDialog();
+            }
+        });
+    }
+
+    private void showMessageDialog() {
+        //                MessageProgressDialog dialog = (MessageProgressDialog) new MessageProgressDialog.Builder(SimpleViewActivity.this)
 //                        .setMessage("数据加载中...")
 //                        .setCancelable(true)
 //                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -97,19 +106,22 @@ public class SimpleViewActivity extends BaseActivity {
 //                            }
 //                        }).create();
 //                dialog.show();
-                AlertDialog dialog = new AlertDialog.Builder(SimpleViewActivity.this)
-                        .setMessage("数据加载中")
-                        .setView(R.layout.dialog_message_progress)
-                        .setCancelable(true)
-                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        })
-                        .create();
-                dialog.show();
-            }
-        });
+
+//        LinearLayout llMessageProgressDialog  = (LinearLayout) getLayoutInflater().inflate(R.layout.dialog_message_progress,null);
+//                AlertDialog.Builder builder = new AlertDialog.Builder(SimpleViewActivity.this);
+//                Logger.d("自定义Dialog布局:"+llMessageProgressDialog);
+//                builder.setView(llMessageProgressDialog)
+//                        .setCancelable(true);
+//                AlertDialog dialog = builder.create();
+//                dialog.show();
+
+//        Dialog dialog = new Dialog(this);
+//        dialog.setCancelable(true);
+//        dialog.setContentView(R.layout.dialog_message_progress);
+//        dialog.show();
+
+        MessageProgressDialog dialog = new MessageProgressDialog(this);
+        dialog.setCancelable(true);
+        dialog.show();
     }
 }
