@@ -1,10 +1,11 @@
 package com.floatingmuseum.androidtest.views.simple;
 
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.StateListDrawable;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -21,7 +22,6 @@ import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
-import io.reactivex.internal.schedulers.IoScheduler;
 
 /**
  * Created by Floatingmuseum on 2017/4/14.
@@ -33,6 +33,8 @@ public class SimpleViewActivity extends BaseActivity {
     TextView tvSwitchState;
     @BindView(R.id.switch_view)
     Switch switchView;
+    @BindView(R.id.bt_open_dialog)
+    Button btOpenDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,6 +43,7 @@ public class SimpleViewActivity extends BaseActivity {
         ButterKnife.bind(this);
 
         initSwitchView();
+        initMessageProgressDialog();
     }
 
     private void initSwitchView() {
@@ -78,5 +81,35 @@ public class SimpleViewActivity extends BaseActivity {
                         switchView.setEnabled(true);
                     }
                 });
+    }
+
+    private void initMessageProgressDialog() {
+        btOpenDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                MessageProgressDialog dialog = (MessageProgressDialog) new MessageProgressDialog.Builder(SimpleViewActivity.this)
+//                        .setMessage("数据加载中...")
+//                        .setCancelable(true)
+//                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                dialog.dismiss();
+//                            }
+//                        }).create();
+//                dialog.show();
+                AlertDialog dialog = new AlertDialog.Builder(SimpleViewActivity.this)
+                        .setMessage("数据加载中")
+                        .setView(R.layout.dialog_message_progress)
+                        .setCancelable(true)
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .create();
+                dialog.show();
+            }
+        });
     }
 }
