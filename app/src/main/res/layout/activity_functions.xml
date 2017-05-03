@@ -88,6 +88,11 @@
             style="@style/text_title"
             android:text="Launcher check" />
 
+        <Button
+            android:id="@+id/bt_threads"
+            style="@style/text_title"
+            android:text="Thread test" />
+
         <!--<Button-->
         <!--android:id="@+id/bt_nsd"-->
         <!--style="@style/text_title"-->

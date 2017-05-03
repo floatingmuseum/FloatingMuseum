@@ -22,6 +22,7 @@ import com.floatingmuseum.androidtest.functions.launcher.LauncherCheckActivity;
 import com.floatingmuseum.androidtest.functions.messages.MessagesActivity;
 import com.floatingmuseum.androidtest.functions.shell.ShellActivity;
 import com.floatingmuseum.androidtest.functions.socket.SocketActivity;
+import com.floatingmuseum.androidtest.functions.threads.ThreadActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -64,6 +65,8 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
     Button btMessages;
     @BindView(R.id.bt_launcher_check)
     Button btLauncherCheck;
+    @BindView(R.id.bt_threads)
+    Button btThreads;
 //    @BindView(R.id.bt_nsd)
 //    Button btNsd;
 //    @BindView(R.id.bt_nsd_server)
@@ -92,6 +95,7 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
         btServer.setOnClickListener(this);
         btClient.setOnClickListener(this);
         btLauncherCheck.setOnClickListener(this);
+        btThreads.setOnClickListener(this);
 
 //        btNsd.setOnClickListener(this);
 //        btNsdServer.setOnClickListener(this);
@@ -149,6 +153,9 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
                 break;
             case R.id.bt_launcher_check:
                 startActivity(LauncherCheckActivity.class);
+                break;
+            case R.id.bt_threads:
+                startActivity(ThreadActivity.class);
                 break;
 //            case R.id.bt_nsd:
 //                startActivity(NsdActivity.class);
