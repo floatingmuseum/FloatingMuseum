@@ -20,6 +20,7 @@ import com.floatingmuseum.androidtest.functions.hotspot.HotSpotActivity;
 import com.floatingmuseum.androidtest.functions.hotspot.ServerActivity;
 import com.floatingmuseum.androidtest.functions.launcher.LauncherCheckActivity;
 import com.floatingmuseum.androidtest.functions.messages.MessagesActivity;
+import com.floatingmuseum.androidtest.functions.phoenixservice.PhoenixActivity;
 import com.floatingmuseum.androidtest.functions.shell.ShellActivity;
 import com.floatingmuseum.androidtest.functions.socket.SocketActivity;
 import com.floatingmuseum.androidtest.functions.threads.ThreadActivity;
@@ -67,6 +68,8 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
     Button btLauncherCheck;
     @BindView(R.id.bt_threads)
     Button btThreads;
+    @BindView(R.id.bt_phoenix_service)
+    Button btPhoenixService;
 //    @BindView(R.id.bt_nsd)
 //    Button btNsd;
 //    @BindView(R.id.bt_nsd_server)
@@ -96,6 +99,7 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
         btClient.setOnClickListener(this);
         btLauncherCheck.setOnClickListener(this);
         btThreads.setOnClickListener(this);
+        btPhoenixService.setOnClickListener(this);
 
 //        btNsd.setOnClickListener(this);
 //        btNsdServer.setOnClickListener(this);
@@ -156,6 +160,9 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
                 break;
             case R.id.bt_threads:
                 startActivity(ThreadActivity.class);
+                break;
+            case R.id.bt_phoenix_service:
+                startActivity(PhoenixActivity.class);
                 break;
 //            case R.id.bt_nsd:
 //                startActivity(NsdActivity.class);
