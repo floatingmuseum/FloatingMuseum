@@ -9,6 +9,11 @@
         android:orientation="vertical">
 
         <Button
+            android:id="@+id/bt_phoenix_service"
+            style="@style/text_title"
+            android:text="Phoenix service" />
+
+        <Button
             android:id="@+id/bt_auto_install"
             style="@style/text_title"
             android:text="Auto install" />

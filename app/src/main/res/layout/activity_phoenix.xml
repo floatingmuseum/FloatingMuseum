@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/bt_phoenix_start"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="start phoenix"/>
+
+    <Button
+        android:id="@+id/bt_destroy_app"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="System.exit()"/>
+</LinearLayout>

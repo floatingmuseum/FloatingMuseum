@@ -1,6 +1,8 @@
 package com.floatingmuseum.androidtest.utils;
 
 import android.app.ActivityManager;
+import android.app.usage.UsageEvents;
+import android.app.usage.UsageStatsManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -198,5 +200,36 @@ public class SystemUtil {
         ResolveInfo resolveInfo = pm.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
         Logger.d("启动器:" + resolveInfo.loadLabel(pm).toString() + "..." + resolveInfo.activityInfo.packageName);
         Logger.d("**************************************************启动器**************************************************");
+    }
+
+    public static String getTopPackageName(Context context, ActivityManager activityManager) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            List<ActivityManager.RunningTaskInfo> appTasks = activityManager.getRunningTasks(1);
+            if (null != appTasks && !appTasks.isEmpty()) {
+                return appTasks.get(0).topActivity.getPackageName();
+            }
+        } else {
+            //5.0以后需要用这方法
+            UsageStatsManager sUsageStatsManager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
+            long endTime = System.currentTimeMillis();
+            //查询最近10秒内的使用信息
+            long beginTime = endTime - 10000;
+            String result = "";
+            UsageEvents.Event event = new UsageEvents.Event();
+            UsageEvents usageEvents = sUsageStatsManager.queryEvents(beginTime, endTime);
+            while (usageEvents.hasNextEvent()) {
+                usageEvents.getNextEvent(event);
+                if (event.getEventType() == UsageEvents.Event.MOVE_TO_FOREGROUND) {
+                    //包名...事件类型...类名...时间
+                    Logger.d("UsageStats:"+event.getPackageName()+"..."+event.getEventType()+"..."+event.getClassName()+"..."+event.getTimeStamp());
+                    result = event.getPackageName();
+                }
+            }
+            Logger.d("UsageStats:**************************************************************************************************************");
+            if (!android.text.TextUtils.isEmpty(result)) {
+                return result;
+            }
+        }
+        return "";
     }
 }

@@ -79,6 +79,7 @@
         <activity android:name=".views.simple.SimpleViewActivity" />
         <activity android:name=".functions.launcher.LauncherCheckActivity"/>
         <activity android:name=".functions.threads.ThreadActivity"/>
+        <activity android:name=".functions.phoenixservice.PhoenixActivity"/>
         <!--<activity android:name=".functions.nsd.NsdChatActivity"/>-->
         <!--<activity android:name=".functions.nsd.NsdActivity"/>-->
         <!--<activity android:name=".functions.nsd.NsdServerActivity"/>-->
@@ -122,6 +123,7 @@
 -->
         </service>
         <service android:name=".functions.launcher.LauncherCheckService" />
+        <service android:name=".functions.phoenixservice.PhoenixService"/>
 
         <receiver android:name=".functions.catchtime.SystemShutAndBootReceiver">
             <intent-filter>
