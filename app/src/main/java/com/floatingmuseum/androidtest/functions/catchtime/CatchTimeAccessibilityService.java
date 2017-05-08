@@ -22,6 +22,8 @@ import com.orhanobut.logger.Logger;
 
 public class CatchTimeAccessibilityService extends AccessibilityService {
 
+    public static final String SERVICE_ID = "com.floatingmuseum.androidtest/.functions.catchtime.CatchTimeAccessibilityService";
+
     @Override
     public void onCreate() {
         Logger.d("CatchTimeAccessibilityService...onCreate");

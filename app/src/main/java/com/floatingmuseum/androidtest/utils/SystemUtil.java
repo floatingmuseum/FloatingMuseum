@@ -1,5 +1,6 @@
 package com.floatingmuseum.androidtest.utils;
 
+import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.ActivityManager;
 import android.app.usage.UsageEvents;
 import android.app.usage.UsageStatsManager;
@@ -13,10 +14,14 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.text.TextUtils;
+import android.view.accessibility.AccessibilityManager;
 
 import com.floatingmuseum.androidtest.App;
+import com.floatingmuseum.androidtest.functions.catchtime.CatchTimeAccessibilityService;
 import com.orhanobut.logger.Logger;
 
+import java.lang.reflect.Method;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
@@ -217,19 +222,99 @@ public class SystemUtil {
             String result = "";
             UsageEvents.Event event = new UsageEvents.Event();
             UsageEvents usageEvents = sUsageStatsManager.queryEvents(beginTime, endTime);
+            long timeStamp = 0;
+            String newestPackageName = "";
+            String newestClassName = "";
             while (usageEvents.hasNextEvent()) {
                 usageEvents.getNextEvent(event);
                 if (event.getEventType() == UsageEvents.Event.MOVE_TO_FOREGROUND) {
                     //包名...事件类型...类名...时间
-                    Logger.d("UsageStats:"+event.getPackageName()+"..."+event.getEventType()+"..."+event.getClassName()+"..."+event.getTimeStamp());
+                    Logger.d("UsageStats:" + event.getPackageName() + "..." + event.getEventType() + "..." + event.getClassName() + "..." + event.getTimeStamp());
                     result = event.getPackageName();
+
+                    if (timeStamp == 0) {
+                        newestPackageName = event.getPackageName();
+                        newestClassName = event.getClassName();
+                        timeStamp = event.getTimeStamp();
+                    } else {
+                        if (event.getTimeStamp() > timeStamp) {
+                            newestPackageName = event.getPackageName();
+                            newestClassName = event.getClassName();
+                            timeStamp = event.getTimeStamp();
+                        }
+                    }
                 }
             }
+            Logger.d("UsageStats:newestPackageName:" + newestPackageName + "...newestClassName:" + newestClassName);
             Logger.d("UsageStats:**************************************************************************************************************");
-            if (!android.text.TextUtils.isEmpty(result)) {
+            if (!TextUtils.isEmpty(result)) {
                 return result;
             }
         }
         return "";
+    }
+
+    /**
+     * 服务是否运行
+     */
+    public static boolean isServiceRunning(Context context, String serviceClassName) {
+        boolean isRunning = false;
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningServiceInfo> serviceList = activityManager.getRunningServices(Integer.MAX_VALUE);
+        if (serviceList == null || serviceList.size() == 0) return false;
+        for (int i = 0; i < serviceList.size(); i++) {
+            if (serviceList.get(i).service.getClassName().equals(serviceClassName)) {
+                isRunning = true;
+                break;
+            }
+        }
+        return isRunning;
+    }
+
+    /**
+     * 辅助服务是否开启
+     */
+    public static boolean isAccessibilityServiceEnabled(Context context, String id) {
+        AccessibilityManager manager = (AccessibilityManager) context.getSystemService(Context.ACCESSIBILITY_SERVICE);
+        List<AccessibilityServiceInfo> results = manager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_GENERIC);
+        for (AccessibilityServiceInfo info : results) {
+            if (id.equals(info.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 禁用状态栏下拉
+     * 并不完美(只是在下拉状态时执行收合命令)
+     */
+    private void disableStatusBar(Context context) {
+        Object service = context.getSystemService("statusbar");
+        Class<?> statusbarManager;
+        try {
+            statusbarManager = Class.forName("android.app.StatusBarManager");
+            if (Build.VERSION.SDK_INT <= 16) {
+                try {
+
+                    // Method[] methods=statusbarManager.getMethods();
+                    Method test = statusbarManager.getMethod("collapse");
+                    test.invoke(service);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            } else {
+                try {
+
+                    // Method[] methods=statusbarManager.getMethods();
+                    Method test = statusbarManager.getMethod("collapsePanels");
+                    test.invoke(service);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.floatingmuseum.androidtest.functions.phoenixservice;
 
 import android.app.ActivityManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -11,6 +12,7 @@ import com.floatingmuseum.androidtest.utils.RxUtil;
 import com.floatingmuseum.androidtest.utils.SystemUtil;
 import com.orhanobut.logger.Logger;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
@@ -59,6 +61,20 @@ public class PhoenixService extends Service {
         if (disposable!=null && !disposable.isDisposed()) {
             disposable.dispose();
         }
+    }
+
+    public static boolean isServiceRunning(Context context) {
+        boolean isRunning = false;
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningServiceInfo> serviceList = activityManager.getRunningServices(Integer.MAX_VALUE);
+        if (serviceList == null || serviceList.size() == 0) return false;
+        for (int i = 0; i < serviceList.size(); i++) {
+            if (serviceList.get(i).service.getClassName().equals(PhoenixService.class.getName())) {
+                isRunning = true;
+                break;
+            }
+        }
+        return isRunning;
     }
 
     @Override

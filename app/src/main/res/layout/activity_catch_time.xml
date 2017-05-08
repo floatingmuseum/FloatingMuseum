@@ -4,6 +4,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <Button
+        android:id="@+id/bt_is_accessibility_service_enabled"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Is accessibility service enabled" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_app_using_time"
         android:layout_width="match_parent"

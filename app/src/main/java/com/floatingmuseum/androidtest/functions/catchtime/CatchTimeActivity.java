@@ -9,11 +9,15 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.Button;
 
+import com.floatingmuseum.androidtest.App;
 import com.floatingmuseum.androidtest.R;
 import com.floatingmuseum.androidtest.base.BaseActivity;
 import com.floatingmuseum.androidtest.utils.ListUtil;
 import com.floatingmuseum.androidtest.utils.RealmManager;
+import com.floatingmuseum.androidtest.utils.SystemUtil;
 import com.floatingmuseum.androidtest.utils.TimeUtil;
 import com.orhanobut.logger.Logger;
 
@@ -39,6 +43,8 @@ public class CatchTimeActivity extends BaseActivity {
 
     @BindView(R.id.rv_app_using_time)
     RecyclerView rvAppUsingTime;
+    @BindView(R.id.bt_is_accessibility_service_enabled)
+    Button btIsAccessibilityServiceEnabled;
 
     private Map<String, Long> appTotalTime = new HashMap<>();
     private List<AppTimeInfo> showingList = new ArrayList();
@@ -54,6 +60,13 @@ public class CatchTimeActivity extends BaseActivity {
         queryAppUsingInfo();
         initView();
 //        getHistoryApps();
+        btIsAccessibilityServiceEnabled.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean enabled = SystemUtil.isAccessibilityServiceEnabled(App.context, CatchTimeAccessibilityService.SERVICE_ID);
+                Logger.d("AccessibilityInfo:...enabled:" + enabled);
+            }
+        });
     }
 
     private void queryAppUsingInfo() {
