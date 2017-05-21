@@ -13,7 +13,7 @@ import com.floatingmuseum.androidtest.functions.bluetooth.BluetoothActivity;
 import com.floatingmuseum.androidtest.functions.camera.CameraActivity;
 import com.floatingmuseum.androidtest.functions.catchtime.CatchTimeActivity;
 import com.floatingmuseum.androidtest.functions.communicate.CommunicateActivity;
-import com.floatingmuseum.androidtest.functions.download.DownloadActivity;
+import com.floatingmuseum.androidtest.functions.download.DownloadListActivity;
 import com.floatingmuseum.androidtest.functions.exception.ExceptionActivity;
 import com.floatingmuseum.androidtest.functions.hotspot.ClientActivity;
 import com.floatingmuseum.androidtest.functions.hotspot.HotSpotActivity;
@@ -27,6 +27,7 @@ import com.floatingmuseum.androidtest.functions.threads.ThreadActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import floatingmuseum.sonic.listener.DownloadListener;
 
 /**
  * Created by Floatingmuseum on 2017/2/15.
@@ -123,7 +124,7 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
                 startActivity(ExceptionActivity.class);
                 break;
             case R.id.bt_download:
-                startActivity(DownloadActivity.class);
+                startActivity(DownloadListActivity.class);
                 break;
             case R.id.bt_catch_time:
                 startActivity(CatchTimeActivity.class);

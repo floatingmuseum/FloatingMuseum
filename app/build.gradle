@@ -27,11 +27,11 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.3.0'
-    compile 'com.android.support:support-v4:25.3.0'
-    compile 'com.android.support:support-vector-drawable:25.3.0'
-    compile 'com.android.support:design:25.3.0'
-    compile 'com.android.support:cardview-v7:25.3.0'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:support-v4:25.3.1'
+    compile 'com.android.support:support-vector-drawable:25.3.1'
+    compile 'com.android.support:design:25.3.1'
+    compile 'com.android.support:cardview-v7:25.3.1'
     testCompile 'junit:junit:4.12'
     //控件注解绑定
     compile 'com.jakewharton:butterknife:8.5.1'
@@ -50,12 +50,12 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
     //增强Adapter
-    compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.8.4'
+    compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.16'
     //下载相关
-    compile 'com.lzy.net:okgo:2.1.4'
-    compile 'com.lzy.net:okserver:1.1.3'
-    compile 'zlc.season:rxdownload2:2.0.0-beta3'
-    compile 'com.liulishuo.filedownloader:library:1.4.1'
+//    compile 'com.lzy.net:okgo:2.1.4'
+//    compile 'com.lzy.net:okserver:1.1.3'
+//    compile 'zlc.season:rxdownload2:2.0.0-beta3'
+//    compile 'com.liulishuo.filedownloader:library:1.4.1'
     //Shell工具
     compile 'com.jrummyapps:android-shell:1.0.1'
     //play service
@@ -64,4 +64,5 @@ dependencies {
     compile 'com.github.rafakob:NsdHelper:0.1.4'
     compile 'com.google.android.gms:play-services:10.2.1'
     compile 'com.android.support:multidex:1.0.0'
+    compile 'com.floatingmuseum:sonic:1.0.2'
 }

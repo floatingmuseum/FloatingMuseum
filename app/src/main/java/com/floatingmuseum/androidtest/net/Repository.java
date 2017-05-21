@@ -1,7 +1,6 @@
 package com.floatingmuseum.androidtest.net;
 
 import com.floatingmuseum.androidtest.utils.RxUtil;
-import com.liulishuo.filedownloader.i.IFileDownloadIPCCallback;
 import com.orhanobut.logger.Logger;
 
 import io.reactivex.Observer;
