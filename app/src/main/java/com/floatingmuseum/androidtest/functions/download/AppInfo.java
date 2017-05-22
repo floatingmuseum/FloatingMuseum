@@ -79,4 +79,16 @@ public class AppInfo implements Serializable{
                 ", state=" + state +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AppInfo appInfo = (AppInfo) o;
+
+        if (url != null ? !url.equals(appInfo.url) : appInfo.url != null) return false;
+        return name != null ? name.equals(appInfo.name) : appInfo.name == null;
+
+    }
 }

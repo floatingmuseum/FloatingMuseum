@@ -16,9 +16,12 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.floatingmuseum.androidtest.R;
 import com.floatingmuseum.androidtest.base.BaseActivity;
 import com.floatingmuseum.androidtest.utils.ToastUtil;
+import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -84,33 +87,56 @@ public class DownloadListActivity extends BaseActivity implements View.OnClickLi
 
     private List<AppInfo> getAppList(int type) {
         List<AppInfo> tempList = new ArrayList<>();
-        AppInfo appInfo1 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_24/12/com.tencent.qqpim_121006.apk", "QQ同步助手");
-        tempList.add(appInfo1);
-        AppInfo appInfo2 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_23/10/com.tencent.mtt_105815.apk", "QQ浏览器");
-        tempList.add(appInfo2);
-        AppInfo appInfo3 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2016/12_2/15/com.lbe.security_035225.apk", "LBE安全大师");
-        tempList.add(appInfo3);
-        AppInfo appInfo4 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_29/12/com.qiyi.video_124106.apk", "爱奇艺");
-        tempList.add(appInfo4);
-        AppInfo appInfo5 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_8/20/com.kugou.android_080305.apk", "酷狗");
-        tempList.add(appInfo5);
-        AppInfo appInfo6 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_17/17/com.xiachufang_054408.apk", "下厨房");
-        tempList.add(appInfo6);
-        AppInfo appInfo7 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_30/17/com.netease.mail_051233.apk.apk", "网易邮箱大师");
-        tempList.add(appInfo7);
-        AppInfo appInfo8 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_24/14/com.ss.android.article.news_024007.apk", "今日头条");
-        tempList.add(appInfo8);
-        AppInfo appInfo9 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_16/20/com.sina.weibog3_080004.apk", "微博");
-        tempList.add(appInfo9);
-        if (type == 1) {
+        if (type == 0) {
+            tempList = new ArrayList<>();
+            AppInfo appInfo1 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_24/12/com.tencent.qqpim_121006.apk", "QQ同步助手");
+            tempList.add(appInfo1);
+            AppInfo appInfo2 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_23/10/com.tencent.mtt_105815.apk", "QQ浏览器");
+            tempList.add(appInfo2);
+            AppInfo appInfo3 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2016/12_2/15/com.lbe.security_035225.apk", "LBE安全大师");
+            tempList.add(appInfo3);
+            AppInfo appInfo4 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_29/12/com.qiyi.video_124106.apk", "爱奇艺");
+            tempList.add(appInfo4);
+            AppInfo appInfo5 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_8/20/com.kugou.android_080305.apk", "酷狗");
+            tempList.add(appInfo5);
+            AppInfo appInfo6 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_17/17/com.xiachufang_054408.apk", "下厨房");
+            tempList.add(appInfo6);
+            AppInfo appInfo7 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_30/17/com.netease.mail_051233.apk.apk", "网易邮箱大师");
+            tempList.add(appInfo7);
+        } else if (type == 1) {
+            AppInfo appInfo1 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_24/12/com.tencent.qqpim_121006.apk", "QQ同步助手");
+            tempList.add(appInfo1);
+            AppInfo appInfo2 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_23/10/com.tencent.mtt_105815.apk", "QQ浏览器");
+            tempList.add(appInfo2);
+            AppInfo appInfo3 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2016/12_2/15/com.lbe.security_035225.apk", "LBE安全大师");
+            tempList.add(appInfo3);
+            AppInfo appInfo4 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_29/12/com.qiyi.video_124106.apk", "爱奇艺");
+            tempList.add(appInfo4);
+            AppInfo appInfo5 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_8/20/com.kugou.android_080305.apk", "酷狗");
+            tempList.add(appInfo5);
+            AppInfo appInfo6 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_17/17/com.xiachufang_054408.apk", "下厨房");
+            tempList.add(appInfo6);
+            AppInfo appInfo7 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_30/17/com.netease.mail_051233.apk.apk", "网易邮箱大师");
+            tempList.add(appInfo7);
+            AppInfo appInfo8 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_24/14/com.ss.android.article.news_024007.apk", "今日头条");
+            tempList.add(appInfo8);
+            AppInfo appInfo9 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_16/20/com.sina.weibog3_080004.apk", "微博");
+            tempList.add(appInfo9);
             AppInfo appInfo10 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_31/17/com.duokan.reader_050812.apk", "多看阅读");
             tempList.add(appInfo10);
         } else if (type == 2) {
-            for (AppInfo appInfo : tempList) {
-                if (appInfo.getUrl().equals("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_16/20/com.sina.weibog3_080004.apk")) {
-                    tempList.remove(appInfo);
-                }
-            }
+            AppInfo appInfo5 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_8/20/com.kugou.android_080305.apk", "酷狗");
+            tempList.add(appInfo5);
+            AppInfo appInfo6 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_17/17/com.xiachufang_054408.apk", "下厨房");
+            tempList.add(appInfo6);
+            AppInfo appInfo7 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_30/17/com.netease.mail_051233.apk.apk", "网易邮箱大师");
+            tempList.add(appInfo7);
+            AppInfo appInfo8 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_24/14/com.ss.android.article.news_024007.apk", "今日头条");
+            tempList.add(appInfo8);
+            AppInfo appInfo9 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_16/20/com.sina.weibog3_080004.apk", "微博");
+            tempList.add(appInfo9);
+            AppInfo appInfo10 = new AppInfo("http://apk.r1.market.hiapk.com/data/upload/apkres/2017/3_31/17/com.duokan.reader_050812.apk", "多看阅读");
+            tempList.add(appInfo10);
         }
         return tempList;
     }
@@ -265,21 +291,50 @@ public class DownloadListActivity extends BaseActivity implements View.OnClickLi
     }
 
     private void refreshList(List<AppInfo> newList) {
-        for (AppInfo info : downloadList) {
+        for (AppInfo appInfo : newList) {
+            boolean shouldAdd = true;
+            for (AppInfo info : downloadList) {
+                if (appInfo.equals(info)) {
+                    shouldAdd = false;
+                }
+            }
+            if (shouldAdd) {
+                Logger.d("刷新列表...增加:" + appInfo.getName() + "...Position:" + downloadList.size());
+                downloadList.add(appInfo);
+                adapter.notifyItemInserted(downloadList.size());
+            }
+        }
+        for (AppInfo appInfo : downloadList) {
+            Logger.d("刷新列表...增加数据后:" + appInfo.getName());
+        }
+
+        Logger.d("刷新列表**********************************************************");
+        ListIterator<AppInfo> iterator = downloadList.listIterator();
+        while (iterator.hasNext()) {
+//            Logger.d("刷新列表...移除比较:" + iterator.nextIndex() + "..." + iterator.next().getName());
+            int index = iterator.nextIndex();
+            AppInfo info = iterator.next();
             boolean shouldRemove = true;
             for (AppInfo appInfo : newList) {
-                if (info.getUrl().equals(appInfo.getUrl())) {
+                if (info.equals(appInfo)) {
                     shouldRemove = false;
                 }
             }
             if (shouldRemove) {
+                Logger.d("刷新列表...移除:" + info.getName() + "...Position:" + index);
                 sonic.cancelTask(info.getUrl());
+                iterator.remove();
+//                downloadList.remove(index);
+                adapter.notifyItemRemoved(index);
+                adapter.notifyItemRangeChanged(index, downloadList.size() - index);
             }
         }
-        downloadList.clear();
-        downloadList.addAll(newList);
-        adapter.notifyDataSetChanged();
+
+        for (AppInfo appInfo : downloadList) {
+            Logger.d("刷新列表...移除数据后:" + appInfo.getName());
+        }
     }
+
 
     private void updateAppInfo(TaskInfo taskInfo) {
         Log.i(TAG, "刷新AppInfo...updateAppInfo():" + taskInfo.getName() + "..." + taskInfo.getCurrentSize() + "..." + taskInfo.getTotalSize() + "..." + taskInfo.getProgress() + "..." + taskInfo.getState());
