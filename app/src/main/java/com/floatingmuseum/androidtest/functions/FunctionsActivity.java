@@ -18,6 +18,7 @@ import com.floatingmuseum.androidtest.functions.exception.ExceptionActivity;
 import com.floatingmuseum.androidtest.functions.hotspot.ClientActivity;
 import com.floatingmuseum.androidtest.functions.hotspot.HotSpotActivity;
 import com.floatingmuseum.androidtest.functions.hotspot.ServerActivity;
+import com.floatingmuseum.androidtest.functions.jobschedulertest.JobSchedulerActivity;
 import com.floatingmuseum.androidtest.functions.launcher.LauncherCheckActivity;
 import com.floatingmuseum.androidtest.functions.messages.MessagesActivity;
 import com.floatingmuseum.androidtest.functions.phoenixservice.PhoenixActivity;
@@ -70,6 +71,8 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
     Button btThreads;
     @BindView(R.id.bt_phoenix_service)
     Button btPhoenixService;
+    @BindView(R.id.bt_job_scheduler)
+    Button btJobScheduler;
 //    @BindView(R.id.bt_nsd)
 //    Button btNsd;
 //    @BindView(R.id.bt_nsd_server)
@@ -100,6 +103,7 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
         btLauncherCheck.setOnClickListener(this);
         btThreads.setOnClickListener(this);
         btPhoenixService.setOnClickListener(this);
+        btJobScheduler.setOnClickListener(this);
 
 //        btNsd.setOnClickListener(this);
 //        btNsdServer.setOnClickListener(this);
@@ -163,6 +167,9 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
                 break;
             case R.id.bt_phoenix_service:
                 startActivity(PhoenixActivity.class);
+                break;
+            case R.id.bt_job_scheduler:
+                startActivity(JobSchedulerActivity.class);
                 break;
 //            case R.id.bt_nsd:
 //                startActivity(NsdActivity.class);
