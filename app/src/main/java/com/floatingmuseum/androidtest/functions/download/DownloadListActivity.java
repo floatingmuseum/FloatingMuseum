@@ -1,9 +1,14 @@
 package com.floatingmuseum.androidtest.functions.download;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -71,7 +76,20 @@ public class DownloadListActivity extends BaseActivity implements View.OnClickLi
         initData();
         initView();
         initPermission();
+        MyDownloadReceiver myDownloadReceiver = new MyDownloadReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("DownloadTaskInfo");
+        LocalBroadcastManager.getInstance(this).registerReceiver(myDownloadReceiver, filter);
+    }
 
+    private class MyDownloadReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if ("DownloadTaskInfo".equals(intent.getAction())) {
+//             intent.getp
+            }
+        }
     }
 
     private void initSonic() {
@@ -413,6 +431,10 @@ public class DownloadListActivity extends BaseActivity implements View.OnClickLi
         public void onStart(TaskInfo taskInfo) {
             Log.i(TAG, "任务开始...onStart:当前大小:" + taskInfo.getCurrentSize() + "...总大小:" + taskInfo.getTotalSize() + "..." + taskInfo.getName() + "..." + taskInfo.getState());
             updateAppInfo(taskInfo);
+            Intent intent = new Intent(DownloadListActivity.this,MyDownloadReceiver.class);
+            intent.setAction("DownloadTaskInfo");
+//            intent.putExtra()
+//            LocalBroadcastManager.getInstance(DownloadListActivity.this).sendBroadcast()
         }
 
         @Override
