@@ -8,15 +8,12 @@ import android.support.multidex.MultiDexApplication;
 import android.widget.Toast;
 
 import com.floatingmuseum.androidtest.utils.ToastUtil;
-import com.liulishuo.filedownloader.FileDownloader;
-import com.liulishuo.filedownloader.connection.FileDownloadUrlConnection;
-import com.liulishuo.filedownloader.services.DownloadMgrInitialParams;
-import com.lzy.okgo.OkGo;
 import com.orhanobut.logger.Logger;
 import com.wanjian.cockroach.Cockroach;
 
 import java.net.Proxy;
 
+import floatingmuseum.sonic.Sonic;
 import io.realm.Realm;
 
 /**
@@ -32,20 +29,21 @@ public class App extends MultiDexApplication {
         super.onCreate();
         context = this;
 
-        OkGo.init(this);
+//        OkGo.init(this);
         Realm.init(this);
+        Sonic.getInstance().init(this);
         initFileDownloader();
         initCockroach();
     }
 
     private void initFileDownloader() {
-        FileDownloader.init(getApplicationContext(), new DownloadMgrInitialParams.InitCustomMaker()
-                .connectionCreator(new FileDownloadUrlConnection
-                        .Creator(new FileDownloadUrlConnection.Configuration()
-                        .connectTimeout(15_000) // set connection timeout.
-                        .readTimeout(15_000) // set read timeout.
-                        .proxy(Proxy.NO_PROXY) // set proxy
-                )));
+//        FileDownloader.init(getApplicationContext(), new DownloadMgrInitialParams.InitCustomMaker()
+//                .connectionCreator(new FileDownloadUrlConnection
+//                        .Creator(new FileDownloadUrlConnection.Configuration()
+//                        .connectTimeout(15_000) // set connection timeout.
+//                        .readTimeout(15_000) // set read timeout.
+//                        .proxy(Proxy.NO_PROXY) // set proxy
+//                )));
 //        int i = 15_000;
     }
 

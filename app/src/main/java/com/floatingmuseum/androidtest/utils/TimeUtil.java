@@ -5,7 +5,6 @@ import android.icu.text.UFormat;
 import android.text.format.DateUtils;
 
 import com.floatingmuseum.androidtest.App;
-import com.liulishuo.filedownloader.i.IFileDownloadIPCCallback;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
