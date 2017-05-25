@@ -9,6 +9,11 @@
         android:orientation="vertical">
 
         <Button
+            android:id="@+id/bt_wifi_list"
+            style="@style/text_title"
+            android:text="WiFi List" />
+
+        <Button
             android:id="@+id/bt_job_scheduler"
             style="@style/text_title"
             android:text="Job scheduler" />

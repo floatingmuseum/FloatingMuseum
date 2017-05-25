@@ -25,6 +25,7 @@ import com.floatingmuseum.androidtest.functions.phoenixservice.PhoenixActivity;
 import com.floatingmuseum.androidtest.functions.shell.ShellActivity;
 import com.floatingmuseum.androidtest.functions.socket.SocketActivity;
 import com.floatingmuseum.androidtest.functions.threads.ThreadActivity;
+import com.floatingmuseum.androidtest.functions.wifilist.WiFiListActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -74,6 +75,8 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
     Button btPhoenixService;
     @BindView(R.id.bt_job_scheduler)
     Button btJobScheduler;
+    @BindView(R.id.bt_wifi_list)
+    Button btWifiList;
 //    @BindView(R.id.bt_nsd)
 //    Button btNsd;
 //    @BindView(R.id.bt_nsd_server)
@@ -105,6 +108,7 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
         btThreads.setOnClickListener(this);
         btPhoenixService.setOnClickListener(this);
         btJobScheduler.setOnClickListener(this);
+        btWifiList.setOnClickListener(this);
 
 //        btNsd.setOnClickListener(this);
 //        btNsdServer.setOnClickListener(this);
@@ -171,6 +175,9 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
                 break;
             case R.id.bt_job_scheduler:
                 startActivity(JobSchedulerActivity.class);
+                break;
+            case R.id.bt_wifi_list:
+                startActivity(WiFiListActivity.class);
                 break;
 //            case R.id.bt_nsd:
 //                startActivity(NsdActivity.class);
