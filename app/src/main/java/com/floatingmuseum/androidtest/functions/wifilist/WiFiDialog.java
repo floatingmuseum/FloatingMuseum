@@ -22,7 +22,7 @@ public class WiFiDialog extends Dialog {
     private EditText inputEditText;
     private Button connect, cancel;
     private TextView title;
-    private Button disconnect;
+//    private Button disconnect;
     private Button cancelSave;
     private LinearLayout wifi_info;
     private TextView wifi_state;
@@ -45,7 +45,7 @@ public class WiFiDialog extends Dialog {
         inputEditText = (EditText) mView.findViewById(R.id.password);
         connect = (Button) mView.findViewById(R.id.connect);
         cancel = (Button) mView.findViewById(R.id.cancel);
-        disconnect = (Button) mView.findViewById(R.id.disconnect);
+//        disconnect = (Button) mView.findViewById(R.id.disconnect);
         cancelSave = (Button) mView.findViewById(R.id.cancel_save);
         cancelSave.setVisibility(alreadySaved ? View.VISIBLE : View.GONE);
 
@@ -78,9 +78,9 @@ public class WiFiDialog extends Dialog {
         title.setVisibility(View.GONE);
     }
 
-    public void hideDisconnect() {
-        disconnect.setVisibility(View.GONE);
-    }
+//    public void hideDisconnect() {
+//        disconnect.setVisibility(View.GONE);
+//    }
 
     public void hideConnectButton() {
         connect.setVisibility(View.GONE);
@@ -100,9 +100,9 @@ public class WiFiDialog extends Dialog {
         cancel.setOnClickListener(listener);
     }
 
-    public void setOnDisconnectClickListener(View.OnClickListener listener) {
-        disconnect.setOnClickListener(listener);
-    }
+//    public void setOnDisconnectClickListener(View.OnClickListener listener) {
+//        disconnect.setOnClickListener(listener);
+//    }
 
     public void setOnCancelSaveClickListener(View.OnClickListener listener) {
         cancelSave.setOnClickListener(listener);

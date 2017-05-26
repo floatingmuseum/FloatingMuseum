@@ -21,20 +21,27 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.floatingmuseum.androidtest.R;
 import com.floatingmuseum.androidtest.base.BaseActivity;
+import com.floatingmuseum.androidtest.utils.ToastUtil;
 import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Flowable;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by Floatingmuseum on 2017/5/25.
@@ -46,6 +53,8 @@ public class WiFiListActivity extends BaseActivity {
     Switch switchWifiState;
     @BindView(R.id.rv_wifi_list)
     RecyclerView rvWifiList;
+    @BindView(R.id.tv_wifi_state)
+    TextView tvWifiState;
 
     private WiFiRelatedReceiver wifiRelatedReceiver;
     private WifiAdmin wifiAdmin;
@@ -56,6 +65,10 @@ public class WiFiListActivity extends BaseActivity {
     private String[] capabilities = {"[WEP", "[WPA2", "[WPA"};
     private String[] capabilitiesInfo = {"通过WEP进行保护", "通过WPA2进行保护", "通过WPA进行保护", "未加密"};
     private LinearLayoutManager linearLayoutManager;
+    private Disposable disposable;
+    private NetworkInfo.DetailedState lastDetailedState;
+    private boolean isWiFiOpened = false;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,12 +79,22 @@ public class WiFiListActivity extends BaseActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             switchWifiState.setShowText(false);
         }
-        initSwitch();
-        initRv();
+
+        initView();
         initWiFiStateReceiver();
     }
 
-    private void initSwitch() {
+    private void startIntervalCheck() {
+        disposable = Flowable.interval(1000, 5000, TimeUnit.MILLISECONDS)
+                .subscribe(new Consumer<Long>() {
+                    @Override
+                    public void accept(@NonNull Long aLong) throws Exception {
+                        wifiAdmin.WifiStartScan();
+                    }
+                });
+    }
+
+    private void initView() {
         switchWifiState.setChecked(wifiAdmin.isOpened());
         switchWifiState.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,25 +103,19 @@ public class WiFiListActivity extends BaseActivity {
                     switchWifiState.setEnabled(false);
                     if (switchWifiState.isChecked()) {
                         wifiAdmin.openNetCard();
-//                        wifiClosed.setVisibility(View.GONE);
-//                        wifiSearching.setVisibility(View.VISIBLE);
-//                        wifi_fragment.refreshWifi();
                     } else {
                         wifiAdmin.closeNetCard();
                     }
                 }
             }
         });
-
         switchWifiState.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Logger.d("WiFiSwitch按钮:" + isChecked);
             }
         });
-    }
 
-    private void initRv() {
         linearLayoutManager = new LinearLayoutManager(this);
         rvWifiList.setLayoutManager(linearLayoutManager);
         adapter = new WiFiListAdapter(wifiList, wifiAdmin);
@@ -113,8 +130,8 @@ public class WiFiListActivity extends BaseActivity {
                 //查看是否保存有当前item的Configuration
                 for (WifiConfiguration configuration : configurations) {
                     String ssid = configuration.SSID.substring(1, configuration.SSID.length() - 1);
-                    Logger.d("WifiDialog检查:" + ssid + "..." + info.getName() + "...BSSID:" + configuration.BSSID + "..." + info.getBssid());
-                    if (info.getBssid().equals(configuration.BSSID)) {
+                    Logger.d("WifiDialog检查:" + info.getName() + "..." + ssid + "..." + configuration.SSID + "...Configuration:" + configuration + "...配置信息:" + configuration.toString());
+                    if (info.getName().equals(ssid)) {
                         alreadySaved = true;
                         wcg = configuration;
                     }
@@ -123,7 +140,9 @@ public class WiFiListActivity extends BaseActivity {
             }
         });
         if (wifiAdmin.isOpened()) {
-            sortAndRefreshResults();
+            isWiFiOpened = true;
+            List<ScanResult> results = wifiAdmin.getScanResult();
+            sortAndRefreshResults(results);
         }
     }
 
@@ -138,9 +157,8 @@ public class WiFiListActivity extends BaseActivity {
 
         if (wifiAdmin.isConnectedTo(wiFiItemInfo.getBssid())) {
             mDialog.hideConnectButton();
-
         } else {
-            mDialog.hideDisconnect();
+//            mDialog.hideDisconnect();
         }
 
         // 方法在CustomDialog中实现
@@ -158,14 +176,6 @@ public class WiFiListActivity extends BaseActivity {
         mDialog.setOnCancelClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-        mDialog.setOnDisconnectClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                wifiAdmin.disconnectWifi();
                 mDialog.dismiss();
             }
         });
@@ -210,6 +220,12 @@ public class WiFiListActivity extends BaseActivity {
 //        });
     }
 
+    private void disWiFiScan() {
+        if (disposable != null && !disposable.isDisposed()) {
+            disposable.dispose();
+        }
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -238,71 +254,75 @@ public class WiFiListActivity extends BaseActivity {
 
     private void handleWiFiStateChanged(Intent intent) {
         int state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1);
-        int previousState = intent.getIntExtra(WifiManager.EXTRA_PREVIOUS_WIFI_STATE, -1);
+//        int previousState = intent.getIntExtra(WifiManager.EXTRA_PREVIOUS_WIFI_STATE, -1);
         switch (state) {
-            case WifiManager.WIFI_STATE_DISABLED:
-                Logger.d("WiFi状态:已关闭..." + wifiAdmin.isOpened());
-                switchWifiState.setEnabled(true);
-//                        wifiList.setVisibility(View.GONE);
-//                        switchWifiState.setEnabled(true);
-                break;
             case WifiManager.WIFI_STATE_ENABLING:
                 Logger.d("WiFi状态:开启中..." + wifiAdmin.isOpened());
-//                        wifiClosed.setVisibility(View.GONE);
-//                        wifiList.setVisibility(View.GONE);
+                rvWifiList.setVisibility(View.GONE);
+                tvWifiState.setVisibility(View.VISIBLE);
+                tvWifiState.setText("WiFi模块开启中...");
+                switchWifiState.setEnabled(false);
                 break;
             case WifiManager.WIFI_STATE_ENABLED:
                 Logger.d("WiFi状态:已开启..." + wifiAdmin.isOpened());
+                isWiFiOpened = true;
+                rvWifiList.setVisibility(View.GONE);
+                tvWifiState.setVisibility(View.VISIBLE);
+                tvWifiState.setText("WiFi热点搜寻中....");
                 switchWifiState.setEnabled(true);
-//                        wifiClosed.setVisibility(View.GONE);
-//                        switchWifiState.setEnabled(true);
+                startIntervalCheck();
                 break;
             case WifiManager.WIFI_STATE_DISABLING:
                 Logger.d("WiFi状态:关闭中..." + wifiAdmin.isOpened());
-//                        wifiSearching.setVisibility(View.GONE);
+                isWiFiOpened = false;
+                rvWifiList.setVisibility(View.GONE);
+                tvWifiState.setVisibility(View.VISIBLE);
+                tvWifiState.setText("WiFi模块关闭中....");
+                switchWifiState.setEnabled(false);
+                disWiFiScan();
+                break;
+            case WifiManager.WIFI_STATE_DISABLED:
+                Logger.d("WiFi状态:已关闭..." + wifiAdmin.isOpened());
+                rvWifiList.setVisibility(View.GONE);
+                tvWifiState.setVisibility(View.VISIBLE);
+                tvWifiState.setText("WiFi模块已关闭.");
+                switchWifiState.setEnabled(true);
                 break;
             case WifiManager.WIFI_STATE_UNKNOWN:
                 Logger.d("WiFi状态:未知..." + wifiAdmin.isOpened());
 //                        wifiSearching.setVisibility(View.GONE);
                 break;
         }
-
-        switch (previousState) {
-            case WifiManager.WIFI_STATE_DISABLED:
-                Logger.d("WiFiPrevious状态:已关闭..." + wifiAdmin.isOpened());
-//                        wifiList.setVisibility(View.GONE);
-//                        switchWifiState.setEnabled(true);
-                break;
-            case WifiManager.WIFI_STATE_ENABLING:
-                Logger.d("WiFiPrevious状态:开启中..." + wifiAdmin.isOpened());
-//                        wifiClosed.setVisibility(View.GONE);
-//                        wifiList.setVisibility(View.GONE);
-                break;
-            case WifiManager.WIFI_STATE_ENABLED:
-                Logger.d("WiFiPrevious状态:已开启..." + wifiAdmin.isOpened());
-//                        wifiClosed.setVisibility(View.GONE);
-//                        switchWifiState.setEnabled(true);
-                break;
-            case WifiManager.WIFI_STATE_DISABLING:
-                Logger.d("WiFiPrevious状态:关闭中..." + wifiAdmin.isOpened());
-//                        wifiSearching.setVisibility(View.GONE);
-                break;
-            case WifiManager.WIFI_STATE_UNKNOWN:
-                Logger.d("WiFiPrevious状态:未知..." + wifiAdmin.isOpened());
-//                        wifiSearching.setVisibility(View.GONE);
-                break;
-        }
     }
 
     private void handleScanResultsAvailable(Intent intent) {
+        if (!isWiFiOpened) {
+            return;
+        }
         boolean resultsUpdated = intent.getBooleanExtra(WifiManager.EXTRA_RESULTS_UPDATED, false);
-        sortAndRefreshResults();
+        List<ScanResult> results = wifiAdmin.getScanResult();
+
+        if (results.size() == 0) {
+            tvWifiState.setText("未发现WiFi热点,继续搜寻中...");
+            rvWifiList.setVisibility(View.GONE);
+            tvWifiState.setVisibility(View.VISIBLE);
+            return;
+        } else {
+            rvWifiList.setVisibility(View.VISIBLE);
+            tvWifiState.setVisibility(View.GONE);
+        }
+
+        sortAndRefreshResults(results);
         Logger.d("WiFi扫描结果...resultsUpdated:" + resultsUpdated);
     }
 
-    private void sortAndRefreshResults() {
-        List<ScanResult> results = wifiAdmin.getScanResult();
-        Collections.sort(results, new Comparator<ScanResult>() {
+    private void sortAndRefreshResults(List<ScanResult> newScanResults) {
+        // TODO: 2017/5/26 1.已连接上的热点忽略强度大小直接排在第一 2.同名WiFi只保留一个,如果已连接则保留当前连接的热点,否则保留信号强度最高
+
+        //先排重
+
+        //再排序
+        Collections.sort(newScanResults, new Comparator<ScanResult>() {
             @Override
             public int compare(ScanResult result0, ScanResult result1) {
                 if (result0.level < result1.level) {
@@ -314,7 +334,7 @@ public class WiFiListActivity extends BaseActivity {
             }
         });
 
-        List<WiFiItemInfo> wifiItemInfoList = transferWiFiItemInfoList(results);
+        List<WiFiItemInfo> wifiItemInfoList = transferWiFiItemInfoList(newScanResults);
         wifiList.clear();
         wifiList.addAll(wifiItemInfoList);
         adapter.notifyDataSetChanged();
@@ -331,9 +351,6 @@ public class WiFiListActivity extends BaseActivity {
             info.setCapabilities(result.capabilities);
             info.setLock(isWiFiLocked(encryptionType));
             String desc = getWiFiDesc(result);
-            if (!TextUtils.isEmpty(desc)) {
-                Logger.d("WiFi结果刷新后Name:" + info.getName() + "...Desc:" + desc+"..."+wifiAdmin.getWifiInfo().getSupplicantState());
-            }
             info.setDesc(desc);
             infoList.add(info);
         }
@@ -343,12 +360,12 @@ public class WiFiListActivity extends BaseActivity {
     private String getWiFiDesc(ScanResult result) {
         WifiInfo wifiInfo = wifiAdmin.getWifiInfo();
         Logger.d("WiFi已连接节点信息:" + (wifiInfo == null ? wifiInfo : wifiInfo.toString()));
-        if (wifiInfo != null) {
-            if (wifiInfo.getBSSID().equals(result.BSSID)) {
-                return getWiFiStateDesc(WifiInfo.getDetailedStateOf(wifiInfo.getSupplicantState()));
-            }
+        if (wifiInfo != null && result.BSSID.equals(wifiInfo.getBSSID())) {
+            return "已连接";
+//            return getWiFiStateDesc(WifiInfo.getDetailedStateOf(wifiInfo.getSupplicantState()));
+        } else {
+            return "";
         }
-        return "";
     }
 
     private boolean isWiFiLocked(int encryptionType) {
@@ -366,9 +383,9 @@ public class WiFiListActivity extends BaseActivity {
 
     private void handleSupplicantStateChanged(Intent intent) {
         SupplicantState supplicantState = intent.getParcelableExtra(WifiManager.EXTRA_NEW_STATE);
-        int supplicantError = intent.getIntExtra(WifiManager.EXTRA_SUPPLICANT_ERROR, -1);
+        int supplicantError = intent.getIntExtra(WifiManager.EXTRA_SUPPLICANT_ERROR, -999);
 
-        Logger.d("WiFi节点状态...supplicantState:" + supplicantState + "...supplicantError:" + supplicantError);
+        Logger.d("WiFi节点状态...supplicantState:" + supplicantState + "...supplicantError:" + supplicantError + "..." + intent.hasExtra(WifiManager.EXTRA_SUPPLICANT_ERROR));
     }
 
     private void handleNetworkStateChanged(Intent intent) {
@@ -389,11 +406,22 @@ public class WiFiListActivity extends BaseActivity {
 //            Logger.d("WiFi网络状态...BSSID:" + bssid);
         }
         Logger.d("WiFi网络状态...BSSID:" + bssid + "...NetworkInfo:" + networkInfoString + "...WiFiInfo:" + wifiInfoString);
+
         if (!TextUtils.isEmpty(bssid) && networkInfo != null) {
             if (networkInfo.isConnected()) {
                 wifiAdmin.saveConfiguration();
             }
             refreshSingleWiFiItem(bssid, networkInfo);
+        }
+
+        if (bssid == null && networkInfo != null && networkInfo.getExtraInfo() != null) {
+            if (NetworkInfo.DetailedState.AUTHENTICATING.equals(networkInfo.getDetailedState())) {
+                lastDetailedState = NetworkInfo.DetailedState.AUTHENTICATING;
+            } else if (NetworkInfo.DetailedState.DISCONNECTED.equals(networkInfo.getDetailedState()) && NetworkInfo.DetailedState.AUTHENTICATING.equals(lastDetailedState)) {
+                ToastUtil.show("连接失败.");
+            }
+        } else {
+            lastDetailedState = null;
         }
     }
 
