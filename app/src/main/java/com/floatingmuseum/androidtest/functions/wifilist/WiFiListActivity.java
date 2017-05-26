@@ -261,6 +261,7 @@ public class WiFiListActivity extends BaseActivity {
                 rvWifiList.setVisibility(View.GONE);
                 tvWifiState.setVisibility(View.VISIBLE);
                 tvWifiState.setText("WiFi模块开启中...");
+                switchWifiState.setChecked(true);
                 switchWifiState.setEnabled(false);
                 break;
             case WifiManager.WIFI_STATE_ENABLED:
@@ -278,6 +279,7 @@ public class WiFiListActivity extends BaseActivity {
                 rvWifiList.setVisibility(View.GONE);
                 tvWifiState.setVisibility(View.VISIBLE);
                 tvWifiState.setText("WiFi模块关闭中....");
+                switchWifiState.setChecked(false);
                 switchWifiState.setEnabled(false);
                 disWiFiScan();
                 break;
