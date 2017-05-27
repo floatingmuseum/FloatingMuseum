@@ -1,43 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_width="360dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/tv_wifi_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        tools:text="CHAT" />
+
+    <TextView
+        android:id="@+id/tv_title"
         android:layout_width="fill_parent"
         android:layout_height="40.0dip"
-        android:layout_marginTop="15dp"
-        android:gravity="center"
-        android:text="输入密码"
+        android:layout_marginTop="10dp"
+        android:gravity="start|center_vertical"
+        android:text="密码"
         android:textSize="16sp"
         android:visibility="visible" />
 
-    <LinearLayout
-        android:id="@+id/contentView"
+    <EditText
+        android:id="@+id/et_password"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-
-        <EditText
-            android:id="@+id/password"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="5dp"
-            android:gravity="left|center"
-            android:hint="如果此WIFI无密码,请直接点击连接"
-            android:textSize="14sp" />
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:gravity="start|center"
+        android:hint="如果此WIFI无密码,请直接点击连接"
+        android:inputType="textPassword"
+        android:textSize="14sp" />
 
     <LinearLayout
-        android:id="@+id/wifi_info"
+        android:id="@+id/ll_wifi_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:orientation="vertical"
-        android:padding="10dp"
         android:visibility="gone">
 
         <TextView
@@ -47,10 +50,11 @@
             android:textSize="14sp" />
 
         <TextView
-            android:id="@+id/wifi_state"
+            android:id="@+id/tv_wifi_state"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
+            android:textStyle="bold"
             tools:text="已连接" />
 
         <TextView
@@ -61,10 +65,11 @@
             android:textSize="14sp" />
 
         <TextView
-            android:id="@+id/wifi_strength"
+            android:id="@+id/tv_wifi_strength"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
+            android:textStyle="bold"
             tools:text="强" />
 
         <TextView
@@ -75,56 +80,51 @@
             android:textSize="14sp" />
 
         <TextView
-            android:id="@+id/wifi_speed"
+            android:id="@+id/tv_wifi_speed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
+            android:textStyle="bold"
             tools:text="54Mbps" />
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="fill_parent"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="60.0dip"
         android:layout_gravity="bottom"
         android:layout_marginTop="5dp"
-        android:gravity="center"
         android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/cancel"
+        <TextView
+            android:id="@+id/tv_cancel_save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="取消"
-            android:textSize="14sp" />
-
-        <Button
-            android:id="@+id/connect"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20.0dip"
-            android:gravity="center"
-            android:text="连接"
-            android:textSize="14sp" />
-
-        <!--<Button-->
-            <!--android:id="@+id/disconnect"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginLeft="20.0dip"-->
-            <!--android:gravity="center"-->
-            <!--android:text="断开"-->
-            <!--android:textSize="14sp" />-->
-
-        <Button
-            android:id="@+id/cancel_save"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginLeft="20dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
             android:text="取消保存"
-            android:textSize="14sp"
-            android:visibility="gone" />
-    </LinearLayout>
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true">
+
+            <TextView
+                android:id="@+id/tv_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:text="取消"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_connect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="连接"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </RelativeLayout>
 
 </LinearLayout>

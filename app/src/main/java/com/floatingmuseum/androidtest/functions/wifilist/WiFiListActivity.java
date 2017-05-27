@@ -31,17 +31,25 @@ import com.floatingmuseum.androidtest.utils.ToastUtil;
 import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Predicate;
 
 /**
  * Created by Floatingmuseum on 2017/5/25.
@@ -60,8 +68,6 @@ public class WiFiListActivity extends BaseActivity {
     private WifiAdmin wifiAdmin;
     private WiFiListAdapter adapter;
     private List<WiFiItemInfo> wifiList = new ArrayList<>();
-    private ConnectReceiver connectReceiver;
-    private ConnectivityManager connectivityManager;
     private String[] capabilities = {"[WEP", "[WPA2", "[WPA"};
     private String[] capabilitiesInfo = {"通过WEP进行保护", "通过WPA2进行保护", "通过WPA进行保护", "未加密"};
     private LinearLayoutManager linearLayoutManager;
@@ -142,7 +148,7 @@ public class WiFiListActivity extends BaseActivity {
         if (wifiAdmin.isOpened()) {
             isWiFiOpened = true;
             List<ScanResult> results = wifiAdmin.getScanResult();
-            sortAndRefreshResults(results);
+            refreshResults(results);
         }
     }
 
@@ -157,8 +163,6 @@ public class WiFiListActivity extends BaseActivity {
 
         if (wifiAdmin.isConnectedTo(wiFiItemInfo.getBssid())) {
             mDialog.hideConnectButton();
-        } else {
-//            mDialog.hideDisconnect();
         }
 
         // 方法在CustomDialog中实现
@@ -203,21 +207,7 @@ public class WiFiListActivity extends BaseActivity {
         wifiRelatedFilter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
         wifiRelatedFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
         wifiRelatedFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
-        wifiRelatedFilter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
         registerReceiver(wifiRelatedReceiver, wifiRelatedFilter);
-
-        connectReceiver = new ConnectReceiver();
-        IntentFilter connectFilter = new IntentFilter();
-        connectFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(connectReceiver, connectFilter);
-
-        connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-//        connectivityManager.addDefaultNetworkActiveListener(new ConnectivityManager.OnNetworkActiveListener() {
-//            @Override
-//            public void onNetworkActive() {
-//
-//            }
-//        });
     }
 
     private void disWiFiScan() {
@@ -230,7 +220,6 @@ public class WiFiListActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(wifiRelatedReceiver);
-        unregisterReceiver(connectReceiver);
     }
 
     private class WiFiRelatedReceiver extends BroadcastReceiver {
@@ -246,8 +235,6 @@ public class WiFiListActivity extends BaseActivity {
                 handleSupplicantStateChanged(intent);
             } else if (WifiManager.NETWORK_STATE_CHANGED_ACTION.equals(action)) {
                 handleNetworkStateChanged(intent);
-            } else if (WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION.equals(action)) {
-                handleSupplicantConnectionChanged(intent);
             }
         }
     }
@@ -292,7 +279,6 @@ public class WiFiListActivity extends BaseActivity {
                 break;
             case WifiManager.WIFI_STATE_UNKNOWN:
                 Logger.d("WiFi状态:未知..." + wifiAdmin.isOpened());
-//                        wifiSearching.setVisibility(View.GONE);
                 break;
         }
     }
@@ -314,19 +300,64 @@ public class WiFiListActivity extends BaseActivity {
             tvWifiState.setVisibility(View.GONE);
         }
 
-        sortAndRefreshResults(results);
+        refreshResults(results);
         Logger.d("WiFi扫描结果...resultsUpdated:" + resultsUpdated);
     }
 
-    private void sortAndRefreshResults(List<ScanResult> newScanResults) {
-        // TODO: 2017/5/26 1.已连接上的热点忽略强度大小直接排在第一 2.同名WiFi只保留一个,如果已连接则保留当前连接的热点,否则保留信号强度最高
-
+    private void refreshResults(List<ScanResult> newScanResults) {
         //先排重
-
+        List<ScanResult> filteredList = filterList(newScanResults);
         //再排序
-        Collections.sort(newScanResults, new Comparator<ScanResult>() {
+        sortList(filteredList);
+
+        List<WiFiItemInfo> wifiItemInfoList = transferWiFiItemInfoList(filteredList);
+        wifiList.clear();
+        wifiList.addAll(wifiItemInfoList);
+        adapter.notifyDataSetChanged();
+    }
+
+    /**
+     * 过滤同名WiFi
+     * 过滤WiFi结果 已连接>信号强>信号低
+     */
+    private List<ScanResult> filterList(final List<ScanResult> results) {
+        final Map<String, ScanResult> filterMap = new HashMap<>();
+        List<ScanResult> filteredList = new ArrayList<>();
+
+        for (ScanResult result : results) {
+            //判断过滤Map中是否存在同名热点
+            if (filterMap.containsKey(result.SSID)) {
+                ScanResult existResult = filterMap.get(result.SSID);
+                //判断Map中热点是否是已连接热点,如果不是,继续判断Map中热点信号强度是否低于同名热点,条件都满足则同名热点覆盖Map中热点
+                if (!wifiAdmin.isConnectedTo(existResult.BSSID) && existResult.level < result.level) {
+                    filterMap.put(result.SSID, result);
+                }
+            } else {
+                filterMap.put(result.SSID, result);
+            }
+        }
+
+        for (String ssid : filterMap.keySet()) {
+            filteredList.add(filterMap.get(ssid));
+        }
+        return filteredList;
+    }
+
+    /**
+     * 排序WiFi结果 已连接>信号强>信号低
+     */
+    private void sortList(List<ScanResult> results) {
+        Collections.sort(results, new Comparator<ScanResult>() {
             @Override
             public int compare(ScanResult result0, ScanResult result1) {
+                //将已连接的热点前移
+                if (wifiAdmin.isConnectedTo(result0.BSSID)) {
+                    return -1;
+                } else if (wifiAdmin.isConnectedTo(result1.BSSID)) {
+                    return 1;
+                }
+
+                //将信号强度大的热点前移
                 if (result0.level < result1.level) {
                     return 1;
                 } else if (result0.level > result1.level) {
@@ -335,11 +366,6 @@ public class WiFiListActivity extends BaseActivity {
                 return 0;
             }
         });
-
-        List<WiFiItemInfo> wifiItemInfoList = transferWiFiItemInfoList(newScanResults);
-        wifiList.clear();
-        wifiList.addAll(wifiItemInfoList);
-        adapter.notifyDataSetChanged();
     }
 
     private List<WiFiItemInfo> transferWiFiItemInfoList(List<ScanResult> results) {
@@ -354,6 +380,9 @@ public class WiFiListActivity extends BaseActivity {
             info.setLock(isWiFiLocked(encryptionType));
             String desc = getWiFiDesc(result);
             info.setDesc(desc);
+            if (info.getName().equals("CHAT")) {
+                Logger.d("刷新WiFiItemInfo...新集合:" + info.getDesc());
+            }
             infoList.add(info);
         }
         return infoList;
@@ -362,9 +391,14 @@ public class WiFiListActivity extends BaseActivity {
     private String getWiFiDesc(ScanResult result) {
         WifiInfo wifiInfo = wifiAdmin.getWifiInfo();
         Logger.d("WiFi已连接节点信息:" + (wifiInfo == null ? wifiInfo : wifiInfo.toString()));
-        if (wifiInfo != null && result.BSSID.equals(wifiInfo.getBSSID())) {
+        if (result.SSID.equals("CHAT")) {
+            Logger.d("刷新WiFiItemInfo...新集合:" + result.SSID + "..." + result.BSSID + "..." + wifiInfo);
+        }
+        if (wifiInfo != null && result.BSSID.equals(wifiInfo.getBSSID()) && wifiInfo.getSupplicantState().equals(SupplicantState.COMPLETED)) {
+            if (result.SSID.equals("CHAT")) {
+                Logger.d("刷新WiFiItemInfo...新集合:" + result.BSSID + "..." + wifiInfo.getBSSID());
+            }
             return "已连接";
-//            return getWiFiStateDesc(WifiInfo.getDetailedStateOf(wifiInfo.getSupplicantState()));
         } else {
             return "";
         }
@@ -386,7 +420,6 @@ public class WiFiListActivity extends BaseActivity {
     private void handleSupplicantStateChanged(Intent intent) {
         SupplicantState supplicantState = intent.getParcelableExtra(WifiManager.EXTRA_NEW_STATE);
         int supplicantError = intent.getIntExtra(WifiManager.EXTRA_SUPPLICANT_ERROR, -999);
-
         Logger.d("WiFi节点状态...supplicantState:" + supplicantState + "...supplicantError:" + supplicantError + "..." + intent.hasExtra(WifiManager.EXTRA_SUPPLICANT_ERROR));
     }
 
@@ -396,16 +429,13 @@ public class WiFiListActivity extends BaseActivity {
         WifiInfo wifiInfo = intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
         String networkInfoString = null;
         String wifiInfoString = null;
+
         if (networkInfo != null) {
             networkInfoString = networkInfo.toString();
-//            Logger.d("WiFi网络状态...NetworkInfo:" + networkInfo.toString());
         }
+
         if (wifiInfo != null) {
             wifiInfoString = wifiInfo.toString();
-//            Logger.d("WiFi网络状态...WiFiInfo:" + wifiInfo.toString());
-        }
-        if (!TextUtils.isEmpty(bssid)) {
-//            Logger.d("WiFi网络状态...BSSID:" + bssid);
         }
         Logger.d("WiFi网络状态...BSSID:" + bssid + "...NetworkInfo:" + networkInfoString + "...WiFiInfo:" + wifiInfoString);
 
@@ -419,8 +449,10 @@ public class WiFiListActivity extends BaseActivity {
         if (bssid == null && networkInfo != null && networkInfo.getExtraInfo() != null) {
             if (NetworkInfo.DetailedState.AUTHENTICATING.equals(networkInfo.getDetailedState())) {
                 lastDetailedState = NetworkInfo.DetailedState.AUTHENTICATING;
-            } else if (NetworkInfo.DetailedState.DISCONNECTED.equals(networkInfo.getDetailedState()) && NetworkInfo.DetailedState.AUTHENTICATING.equals(lastDetailedState)) {
-                ToastUtil.show("连接失败.");
+            } else if (lastDetailedState != null && NetworkInfo.DetailedState.DISCONNECTED.equals(networkInfo.getDetailedState()) && NetworkInfo.DetailedState.AUTHENTICATING.equals(lastDetailedState)) {
+                Logger.d("刷新WiFiItemInfo...连接失败:" + lastDetailedState);
+                ToastUtil.show("连接失败." + lastDetailedState);
+                lastDetailedState = null;
             }
         } else {
             lastDetailedState = null;
@@ -436,13 +468,14 @@ public class WiFiListActivity extends BaseActivity {
             WiFiItemInfo wifiItemInfo = wifiList.get(i);
             if (bssid.equals(wifiItemInfo.getBssid())) {
                 wifiItemInfo.setDesc(getWiFiStateDesc(networkInfo.getDetailedState()));
-                updateUI(i, bssid, wifiItemInfo);
+                Logger.d("刷新WiFiItemInfo...刷新单个Item:" + wifiItemInfo.getDesc());
+                updateUI(i, wifiItemInfo);
                 return;
             }
         }
     }
 
-    private void updateUI(int position, String bssid, WiFiItemInfo wifiItemInfo) {
+    private void updateUI(int position, WiFiItemInfo wifiItemInfo) {
         int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
         int lastVisibleItemPosition = linearLayoutManager.findLastVisibleItemPosition();
         if (position >= firstVisibleItemPosition && position <= lastVisibleItemPosition) {
@@ -472,22 +505,5 @@ public class WiFiListActivity extends BaseActivity {
                 break;
         }
         return desc;
-    }
-
-    private void handleSupplicantConnectionChanged(Intent intent) {
-        boolean supplicantConnectionChanged = intent.getBooleanExtra(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION, false);
-        Logger.d("WiFi节点连接...supplicantConnectionChanged:" + supplicantConnectionChanged);
-    }
-
-    private class ConnectReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Logger.d("WiFi网络ConnectReceiver...intent:" + intent);
-            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-            if (networkInfo != null) {
-                Logger.d("WiFi网络ConnectReceiver...NetworkInfo:" + networkInfo.toString());
-            }
-        }
     }
 }

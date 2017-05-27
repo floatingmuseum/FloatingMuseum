@@ -255,9 +255,8 @@ public class WifiAdmin {
     public void removeConfiguration(WifiConfiguration wcg) {
         boolean isRemoveNetwork = mWifiManager.removeNetwork(wcg.networkId);
         boolean isSaveConfiguration = mWifiManager.saveConfiguration();
-//        Logger.d("WifiDialog:取消保存:" + wcg.SSID + "..." + wcg.BSSID + "...netId:" + wcg.networkId + "...");
-//        Logger.d("WifiDialog:取消保存:" + isRemoveNetwork + "...isSaveConfiguration:" + isSaveConfiguration + "...netId:" + wcg.networkId);
-//        FileUtil.saveWifiLog(MyApplication.mContext, "WifiDialog:取消保存:" + isRemoveNetwork + "...isSaveConfiguration:" + isSaveConfiguration);
+        WifiInfo info = mWifiManager.getConnectionInfo();
+        Logger.d("取消保存:WCG...SSID:" + wcg.SSID + "..." + wcg.BSSID + "..." + wcg.networkId + "...CurrentWiFi:" + info.getSSID() + "..." + info.getBSSID() + "..." + info.getNetworkId());
     }
 
 //	public List<> getConfiguration(){
