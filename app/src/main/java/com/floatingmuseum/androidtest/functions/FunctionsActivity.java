@@ -20,6 +20,7 @@ import com.floatingmuseum.androidtest.functions.hotspot.HotSpotActivity;
 import com.floatingmuseum.androidtest.functions.hotspot.ServerActivity;
 import com.floatingmuseum.androidtest.functions.jobschedulertest.JobSchedulerActivity;
 import com.floatingmuseum.androidtest.functions.launcher.LauncherCheckActivity;
+import com.floatingmuseum.androidtest.functions.media.MediaActivity;
 import com.floatingmuseum.androidtest.functions.messages.MessagesActivity;
 import com.floatingmuseum.androidtest.functions.phoenixservice.PhoenixActivity;
 import com.floatingmuseum.androidtest.functions.shell.ShellActivity;
@@ -77,6 +78,8 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
     Button btJobScheduler;
     @BindView(R.id.bt_wifi_list)
     Button btWifiList;
+    @BindView(R.id.bt_media)
+    Button btMedia;
 //    @BindView(R.id.bt_nsd)
 //    Button btNsd;
 //    @BindView(R.id.bt_nsd_server)
@@ -109,7 +112,7 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
         btPhoenixService.setOnClickListener(this);
         btJobScheduler.setOnClickListener(this);
         btWifiList.setOnClickListener(this);
-
+        btMedia.setOnClickListener(this);
 //        btNsd.setOnClickListener(this);
 //        btNsdServer.setOnClickListener(this);
 //        btNsdClient.setOnClickListener(this);
@@ -178,6 +181,9 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
                 break;
             case R.id.bt_wifi_list:
                 startActivity(WiFiListActivity.class);
+                break;
+            case R.id.bt_media:
+                startActivity(MediaActivity.class);
                 break;
 //            case R.id.bt_nsd:
 //                startActivity(NsdActivity.class);

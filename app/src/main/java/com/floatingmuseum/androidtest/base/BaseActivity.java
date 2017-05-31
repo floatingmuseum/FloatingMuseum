@@ -18,7 +18,8 @@ import com.orhanobut.logger.Logger;
  * Created by Floatingmuseum on 2017/2/15.
  */
 
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class
+BaseActivity extends AppCompatActivity {
 
     public static final String ACTION_SHUT_APP = "actionShutApp";
     private DestroyAllActivitiesReceiver destroyAllActivitiesReceiver;

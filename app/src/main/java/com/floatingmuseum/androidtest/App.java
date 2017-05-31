@@ -8,6 +8,7 @@ import android.support.multidex.MultiDexApplication;
 import android.widget.Toast;
 
 import com.floatingmuseum.androidtest.utils.ToastUtil;
+import com.github.moduth.blockcanary.BlockCanary;
 import com.orhanobut.logger.Logger;
 import com.wanjian.cockroach.Cockroach;
 
@@ -32,8 +33,9 @@ public class App extends MultiDexApplication {
 //        OkGo.init(this);
         Realm.init(this);
         Sonic.getInstance().init(this);
+        BlockCanary.install(this, new AppBlockCanaryContext()).start();
         initFileDownloader();
-        initCockroach();
+//        initCockroach();
     }
 
     private void initFileDownloader() {

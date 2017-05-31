@@ -3,33 +3,33 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.floatingmuseum.androidtest">
 
-    <!--<uses-sdk-->
-        <!--android:minSdkVersion="19"-->
-        <!--android:targetSdkVersion="25"-->
-        <!--tools:overrideLibrary="floatingmuseum.sonic" />-->
-    <!--相机-->
+    <!-- <uses-sdk -->
+    <!-- android:minSdkVersion="19" -->
+    <!-- android:targetSdkVersion="25" -->
+    <!-- tools:overrideLibrary="floatingmuseum.sonic" /> -->
+    <!-- 相机 -->
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <!--记录声音-->
+    <!-- 记录声音 -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <!--写权限-->
+    <!-- 写权限 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <!--读权限-->
+    <!-- 读权限 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <!--开机广播-->
+    <!-- 开机广播 -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <!--蓝牙-->
+    <!-- 蓝牙 -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <!--WIFI-->
+    <!-- WIFI -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!--应用使用情况-->
+    <!-- 应用使用情况 -->
     <uses-permission
         android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions" />
@@ -46,7 +46,7 @@
         <meta-data
             android:name="com.google.android.gms.nearby.connection.SERVICE_ID"
             android:value="@string/floating_museum_service_id" />
-        <!--Required for Nearby Messages API-->
+        <!-- Required for Nearby Messages API -->
         <meta-data
             android:name="com.google.android.nearby.messages.API_KEY"
             android:value="AIzaSyA0KKhQGbPFHTsqz4FtYyJ12lCFRR-qk00" />
@@ -80,15 +80,16 @@
         <activity android:name=".functions.socket.SocketActivity" />
         <activity android:name=".functions.messages.MessagesActivity" />
         <activity android:name=".views.simple.SimpleViewActivity" />
-        <activity android:name=".functions.launcher.LauncherCheckActivity"/>
-        <activity android:name=".functions.threads.ThreadActivity"/>
-        <activity android:name=".functions.phoenixservice.PhoenixActivity"/>
-        <activity android:name=".functions.jobschedulertest.JobSchedulerActivity"/>
-        <activity android:name=".functions.wifilist.WiFiListActivity"/>
-        <!--<activity android:name=".functions.nsd.NsdChatActivity"/>-->
-        <!--<activity android:name=".functions.nsd.NsdActivity"/>-->
-        <!--<activity android:name=".functions.nsd.NsdServerActivity"/>-->
-        <!--<activity android:name=".functions.nsd.NsdClientActivity"/>-->
+        <activity android:name=".functions.launcher.LauncherCheckActivity" />
+        <activity android:name=".functions.threads.ThreadActivity" />
+        <activity android:name=".functions.phoenixservice.PhoenixActivity" />
+        <activity android:name=".functions.jobschedulertest.JobSchedulerActivity" />
+        <activity android:name=".functions.wifilist.WiFiListActivity" />
+        <activity android:name=".functions.media.MediaActivity"/>
+        <!-- <activity android:name=".functions.nsd.NsdChatActivity"/> -->
+        <!-- <activity android:name=".functions.nsd.NsdActivity"/> -->
+        <!-- <activity android:name=".functions.nsd.NsdServerActivity"/> -->
+        <!-- <activity android:name=".functions.nsd.NsdClientActivity"/> -->
 
         <service android:name=".functions.catchtime.CatchTimeService" />
         <service
@@ -98,6 +99,7 @@
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
+
             <meta-data
                 android:name="android.accessibilityservice"
                 android:resource="@xml/auto_install_service" />
@@ -106,9 +108,8 @@
         label:是你在系统设置辅助功能中显示的名称。
         resource：指向你配置的xml文件。
         其他都是固定的。
--->
+            -->
         </service>
-
         <service
             android:name=".functions.catchtime.CatchTimeAccessibilityService"
             android:label="Floatingmuseum的应用时间统计"
@@ -116,6 +117,7 @@
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
+
             <meta-data
                 android:name="android.accessibilityservice"
                 android:resource="@xml/catch_time_service" />
@@ -124,13 +126,14 @@
         label:是你在系统设置辅助功能中显示的名称。
         resource：指向你配置的xml文件。
         其他都是固定的。
--->
+            -->
         </service>
         <service android:name=".functions.launcher.LauncherCheckService" />
-        <service android:name=".functions.phoenixservice.PhoenixService"/>
-        <service android:name=".functions.jobschedulertest.NetService"
-            android:permission="android.permission.BIND_JOB_SERVICE"
-            android:exported="true"/>
+        <service android:name=".functions.phoenixservice.PhoenixService" />
+        <service
+            android:name=".functions.jobschedulertest.NetService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <receiver android:name=".functions.catchtime.SystemShutAndBootReceiver">
             <intent-filter>
@@ -139,6 +142,7 @@
             </intent-filter>
         </receiver>
 
+        <activity android:name=".functions.media.MediaActivity"></activity>
     </application>
 
 </manifest>

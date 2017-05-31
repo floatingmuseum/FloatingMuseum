@@ -9,6 +9,10 @@
         android:orientation="vertical">
 
         <Button
+            android:id="@+id/bt_media"
+            style="@style/text_title"
+            android:text="Media" />
+        <Button
             android:id="@+id/bt_wifi_list"
             style="@style/text_title"
             android:text="WiFi List" />
