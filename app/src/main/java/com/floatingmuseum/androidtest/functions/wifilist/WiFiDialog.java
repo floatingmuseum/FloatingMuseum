@@ -13,6 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.floatingmuseum.androidtest.R;
+import com.floatingmuseum.androidtest.utils.SystemUtil;
+import com.orhanobut.logger.Logger;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -55,7 +57,6 @@ public class WiFiDialog extends Dialog {
         this.name = name;
 
 
-
         setCustomDialog();
     }
 
@@ -65,12 +66,14 @@ public class WiFiDialog extends Dialog {
         setContentView(view);
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
         lp.copyFrom(getWindow().getAttributes());
-        lp.width = 720;
+        //对话框高度占屏幕宽度四分之三
+        lp.width = SystemUtil.getScreenWidth() / 4 * 3;
+        Logger.d("屏幕宽高:...数值:" + lp.width + "...dp2px:" + SystemUtil.dp2px(lp.width) + "...px2dp:" + SystemUtil.px2dp(lp.width));
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
         lp.gravity = Gravity.CENTER;
         getWindow().setAttributes(lp);
 
-        ButterKnife.bind(this,view);
+        ButterKnife.bind(this, view);
         tvWifiName.setText(name);
         tvCancelSave.setVisibility(alreadySaved ? View.VISIBLE : View.GONE);
     }

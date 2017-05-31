@@ -27,6 +27,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.floatingmuseum.androidtest.R;
 import com.floatingmuseum.androidtest.base.BaseActivity;
+import com.floatingmuseum.androidtest.utils.SystemUtil;
 import com.floatingmuseum.androidtest.utils.ToastUtil;
 import com.orhanobut.logger.Logger;
 
@@ -133,6 +134,7 @@ public class WiFiListActivity extends BaseActivity {
                 WifiConfiguration wcg = null;
                 WiFiItemInfo info = wifiList.get(position);
                 List<WifiConfiguration> configurations = wifiAdmin.getConfiguration();
+                Logger.d("屏幕宽高:...宽:" + SystemUtil.getScreenWidth() + "...高度:" + SystemUtil.getScreenHeight());
                 //查看是否保存有当前item的Configuration
                 for (WifiConfiguration configuration : configurations) {
                     String ssid = configuration.SSID.substring(1, configuration.SSID.length() - 1);
