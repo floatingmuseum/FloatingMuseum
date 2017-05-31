@@ -20,7 +20,6 @@ import com.floatingmuseum.androidtest.functions.hotspot.HotSpotActivity;
 import com.floatingmuseum.androidtest.functions.hotspot.ServerActivity;
 import com.floatingmuseum.androidtest.functions.jobschedulertest.JobSchedulerActivity;
 import com.floatingmuseum.androidtest.functions.launcher.LauncherCheckActivity;
-import com.floatingmuseum.androidtest.functions.media.MediaActivity;
 import com.floatingmuseum.androidtest.functions.messages.MessagesActivity;
 import com.floatingmuseum.androidtest.functions.phoenixservice.PhoenixActivity;
 import com.floatingmuseum.androidtest.functions.shell.ShellActivity;
@@ -183,7 +182,7 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
                 startActivity(WiFiListActivity.class);
                 break;
             case R.id.bt_media:
-                startActivity(MediaActivity.class);
+//                startActivity(MediaActivity.class);
                 break;
 //            case R.id.bt_nsd:
 //                startActivity(NsdActivity.class);

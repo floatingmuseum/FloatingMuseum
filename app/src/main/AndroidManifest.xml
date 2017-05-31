@@ -85,7 +85,7 @@
         <activity android:name=".functions.phoenixservice.PhoenixActivity" />
         <activity android:name=".functions.jobschedulertest.JobSchedulerActivity" />
         <activity android:name=".functions.wifilist.WiFiListActivity" />
-        <activity android:name=".functions.media.MediaActivity"/>
+        <!--<activity android:name=".functions.media.MediaActivity"/>-->
         <!-- <activity android:name=".functions.nsd.NsdChatActivity"/> -->
         <!-- <activity android:name=".functions.nsd.NsdActivity"/> -->
         <!-- <activity android:name=".functions.nsd.NsdServerActivity"/> -->
