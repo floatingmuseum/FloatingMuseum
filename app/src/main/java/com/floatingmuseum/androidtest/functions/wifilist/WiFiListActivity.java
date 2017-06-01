@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.SupplicantState;
@@ -32,11 +31,9 @@ import com.floatingmuseum.androidtest.utils.ToastUtil;
 import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -44,13 +41,9 @@ import java.util.concurrent.TimeUnit;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Predicate;
 
 /**
  * Created by Floatingmuseum on 2017/5/25.
@@ -75,6 +68,7 @@ public class WiFiListActivity extends BaseActivity {
     private Disposable disposable;
     private NetworkInfo.DetailedState lastDetailedState;
     private boolean isWiFiOpened = false;
+    private WiFiDialog dialog;
 
 
     @Override
@@ -155,20 +149,20 @@ public class WiFiListActivity extends BaseActivity {
     }
 
     private void showWiFiDialog(final WiFiItemInfo wiFiItemInfo, boolean alreadySaved, final WifiConfiguration wcg) {
-        final WiFiDialog mDialog = new WiFiDialog(this, alreadySaved, wiFiItemInfo.getName());
-        final EditText editText = (EditText) mDialog.getEditText();
+        dialog = new WiFiDialog(this, alreadySaved, wiFiItemInfo.getName());
+        final EditText editText = (EditText) dialog.getEditText();
 
         if (alreadySaved) {
-            mDialog.hideInputEditText();
-            mDialog.showWiFiInfo(wiFiItemInfo, wifiAdmin);
+            dialog.hideInputEditText();
+            dialog.showWiFiInfo(wiFiItemInfo, wifiAdmin);
         }
 
         if (wifiAdmin.isConnectedTo(wiFiItemInfo.getBssid())) {
-            mDialog.hideConnectButton();
+            dialog.hideConnectButton();
         }
 
         // 方法在CustomDialog中实现
-        mDialog.setOnConnectClickListener(new View.OnClickListener() {
+        dialog.setOnConnectClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (wcg == null) {
@@ -176,23 +170,29 @@ public class WiFiListActivity extends BaseActivity {
                 } else {
                     wifiAdmin.addNetwork(wcg);
                 }
-                mDialog.dismiss();
+                dialog.dismiss();
             }
         });
-        mDialog.setOnCancelClickListener(new View.OnClickListener() {
+        dialog.setOnCancelClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDialog.dismiss();
+                dialog.dismiss();
             }
         });
-        mDialog.setOnCancelSaveClickListener(new View.OnClickListener() {
+        dialog.setOnCancelSaveClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 wifiAdmin.removeConfiguration(wcg);
-                mDialog.dismiss();
+                dialog.dismiss();
             }
         });
-        mDialog.show();
+        dialog.show();
+    }
+
+    private void dismissDialog() {
+        if (dialog != null && dialog.isShowing()) {
+            dialog.dismiss();
+        }
     }
 
     private void connectWifi(WiFiItemInfo wiFiItemInfo, String password) {
@@ -221,6 +221,7 @@ public class WiFiListActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        dismissDialog();
         unregisterReceiver(wifiRelatedReceiver);
     }
 
@@ -265,6 +266,7 @@ public class WiFiListActivity extends BaseActivity {
             case WifiManager.WIFI_STATE_DISABLING:
                 Logger.d("WiFi状态:关闭中..." + wifiAdmin.isOpened());
                 isWiFiOpened = false;
+                dismissDialog();
                 rvWifiList.setVisibility(View.GONE);
                 tvWifiState.setVisibility(View.VISIBLE);
                 tvWifiState.setText("WiFi模块关闭中....");
