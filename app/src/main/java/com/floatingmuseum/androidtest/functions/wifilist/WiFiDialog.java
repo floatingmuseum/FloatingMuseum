@@ -5,7 +5,6 @@ import android.content.Context;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -62,7 +61,7 @@ public class WiFiDialog extends Dialog {
 
     private void setCustomDialog() {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        View view = LayoutInflater.from(context).inflate(R.layout.wifi_dialog, null);
+        View view = LayoutInflater.from(context).inflate(R.layout.dialog_wifi, null);
         setContentView(view);
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
         lp.copyFrom(getWindow().getAttributes());

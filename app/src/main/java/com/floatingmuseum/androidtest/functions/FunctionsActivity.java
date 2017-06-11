@@ -15,6 +15,7 @@ import com.floatingmuseum.androidtest.functions.catchtime.CatchTimeActivity;
 import com.floatingmuseum.androidtest.functions.communicate.CommunicateActivity;
 import com.floatingmuseum.androidtest.functions.download.DownloadListActivity;
 import com.floatingmuseum.androidtest.functions.exception.ExceptionActivity;
+import com.floatingmuseum.androidtest.functions.getcolor.GetSystemColorActivity;
 import com.floatingmuseum.androidtest.functions.hotspot.ClientActivity;
 import com.floatingmuseum.androidtest.functions.hotspot.HotSpotActivity;
 import com.floatingmuseum.androidtest.functions.hotspot.ServerActivity;
@@ -77,8 +78,8 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
     Button btJobScheduler;
     @BindView(R.id.bt_wifi_list)
     Button btWifiList;
-    @BindView(R.id.bt_media)
-    Button btMedia;
+    @BindView(R.id.bt_get_color)
+    Button btGetColor;
 //    @BindView(R.id.bt_nsd)
 //    Button btNsd;
 //    @BindView(R.id.bt_nsd_server)
@@ -111,7 +112,7 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
         btPhoenixService.setOnClickListener(this);
         btJobScheduler.setOnClickListener(this);
         btWifiList.setOnClickListener(this);
-        btMedia.setOnClickListener(this);
+        btGetColor.setOnClickListener(this);
 //        btNsd.setOnClickListener(this);
 //        btNsdServer.setOnClickListener(this);
 //        btNsdClient.setOnClickListener(this);
@@ -181,8 +182,8 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
             case R.id.bt_wifi_list:
                 startActivity(WiFiListActivity.class);
                 break;
-            case R.id.bt_media:
-//                startActivity(MediaActivity.class);
+            case R.id.bt_get_color:
+                startActivity(GetSystemColorActivity.class);
                 break;
 //            case R.id.bt_nsd:
 //                startActivity(NsdActivity.class);

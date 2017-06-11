@@ -9,9 +9,9 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/bt_media"
+            android:id="@+id/bt_get_color"
             style="@style/text_title"
-            android:text="Media" />
+            android:text="Get system color" />
         <Button
             android:id="@+id/bt_wifi_list"
             style="@style/text_title"
