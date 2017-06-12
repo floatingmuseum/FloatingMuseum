@@ -48,6 +48,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 startActivity(FunctionsActivity.class);
                 break;
             case R.id.bt_third_parties:
+                int x = 1/0;
                 break;
         }
     }

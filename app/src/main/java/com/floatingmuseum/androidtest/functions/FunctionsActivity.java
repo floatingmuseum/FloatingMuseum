@@ -7,6 +7,7 @@ import android.widget.Button;
 
 import com.floatingmuseum.androidtest.R;
 import com.floatingmuseum.androidtest.base.BaseActivity;
+import com.floatingmuseum.androidtest.functions.aidl.AidlActivity;
 import com.floatingmuseum.androidtest.functions.analysesystem.AnalyseSystemActivity;
 import com.floatingmuseum.androidtest.functions.autoinstall.AutoInstallActivity;
 import com.floatingmuseum.androidtest.functions.bluetooth.BluetoothActivity;
@@ -30,7 +31,6 @@ import com.floatingmuseum.androidtest.functions.wifilist.WiFiListActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import floatingmuseum.sonic.listener.DownloadListener;
 
 /**
  * Created by Floatingmuseum on 2017/2/15.
@@ -80,6 +80,8 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
     Button btWifiList;
     @BindView(R.id.bt_get_color)
     Button btGetColor;
+    @BindView(R.id.bt_aidl_test)
+    Button btAidlTest;
 //    @BindView(R.id.bt_nsd)
 //    Button btNsd;
 //    @BindView(R.id.bt_nsd_server)
@@ -113,6 +115,7 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
         btJobScheduler.setOnClickListener(this);
         btWifiList.setOnClickListener(this);
         btGetColor.setOnClickListener(this);
+        btAidlTest.setOnClickListener(this);
 //        btNsd.setOnClickListener(this);
 //        btNsdServer.setOnClickListener(this);
 //        btNsdClient.setOnClickListener(this);
@@ -184,6 +187,9 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
                 break;
             case R.id.bt_get_color:
                 startActivity(GetSystemColorActivity.class);
+                break;
+            case R.id.bt_aidl_test:
+                startActivity(AidlActivity.class);
                 break;
 //            case R.id.bt_nsd:
 //                startActivity(NsdActivity.class);

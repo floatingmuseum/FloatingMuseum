@@ -5,6 +5,18 @@
     android:orientation="vertical">
 
     <Button
+        android:id="@+id/bt_start_remote_hunter_activity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Start RemoteHunter" />
+
+    <Button
+        android:id="@+id/bt_bind_remote_hunter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bind to RemoteHunter" />
+
+    <Button
         android:id="@+id/bt_send_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,9 +29,15 @@
         android:text="Log"
         android:textSize="18sp" />
 
-    <LinearLayout
-        android:id="@+id/ll_log_container"
+    <ScrollView
+        android:id="@+id/scrollview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical" />
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/ll_log_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" />
+    </ScrollView>
 </LinearLayout>

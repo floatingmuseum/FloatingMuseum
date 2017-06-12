@@ -1,18 +1,14 @@
 package com.floatingmuseum.androidtest;
 
-import android.app.Application;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.multidex.MultiDexApplication;
-import android.widget.Toast;
 
 import com.floatingmuseum.androidtest.utils.ToastUtil;
 import com.github.moduth.blockcanary.BlockCanary;
 import com.orhanobut.logger.Logger;
 import com.wanjian.cockroach.Cockroach;
-
-import java.net.Proxy;
 
 import floatingmuseum.sonic.Sonic;
 import io.realm.Realm;
@@ -62,10 +58,10 @@ public class App extends MultiDexApplication {
                         try {
                             throwable.printStackTrace();
                             Logger.e("AndroidRuntime--->CockroachException:" + thread + "<---" + throwable);
-                            ToastUtil.show("Exception Happend\n" + thread + "\n" + throwable.toString());
+                            ToastUtil.show("Exception Happened\n" + thread + "\n" + throwable.toString());
 //                        throw new RuntimeException("..."+(i++));
                         } catch (Throwable e) {
-
+                            e.printStackTrace();
                         }
                     }
                 });
