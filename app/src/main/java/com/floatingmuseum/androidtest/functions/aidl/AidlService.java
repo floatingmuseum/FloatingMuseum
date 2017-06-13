@@ -30,8 +30,11 @@ public class AidlService extends Service {
     public static final String ACTION_STOP_SERVICE = "stopService";
 
     private RemoteHunter remoteHunter;
-    private boolean isDisconnected = false;
+    private boolean isConnected = false;
     private int lostTask = -1;
+
+    private int lostX = 0;
+    private int lostY = 0;
 
     public static void sendCommand(String command) {
         Logger.d("远程猎手...命令:" + command);
@@ -92,10 +95,10 @@ public class AidlService extends Service {
         if (remoteHunter == null) {
             return;
         }
-        Logger.d("远程猎手...sendMessage:isDisconnected..." + isDisconnected);
+        Logger.d("远程猎手...sendMessage:...是否已连接:" + isConnected);
         int x = new Random().nextInt(20);
         int y = new Random().nextInt(20);
-        if (isDisconnected) {
+        if (!isConnected) {
             //连接已断开,保存发送的信息,重新绑定service,绑定成功后取出遗留信息发送
             lostTask = 1;
             lostX = x;
@@ -106,9 +109,6 @@ public class AidlService extends Service {
         }
         addTest(x, y);
     }
-
-    private int lostX = 0;
-    private int lostY = 0;
 
     private void addTest(int x, int y) {
         try {
@@ -156,7 +156,7 @@ public class AidlService extends Service {
         public void onServiceConnected(ComponentName name, IBinder service) {
             Logger.d("远程猎手...onServiceConnected:" + name + "...Pid:" + Process.myPid());
             remoteHunter = RemoteHunter.Stub.asInterface(service);
-            isDisconnected = false;
+            isConnected = true;
             Logger.d("远程猎手...onServiceConnected...是否存在遗留任务:" + lostTask);
             if (lostTask != -1) {
                 //发送遗留信息
@@ -174,7 +174,7 @@ public class AidlService extends Service {
             //远程连接断开时重启remoteActivity,因为如果是被用户手动在设置里强行停止,不重启remoteActivity无法重新绑定远程service
             //不在这里进行重新绑定,而是在下次发送信息时进行重新绑定,在此绑定无效.
             startRemoteActivity();
-            isDisconnected = true;
+            isConnected = false;
         }
     };
 }
