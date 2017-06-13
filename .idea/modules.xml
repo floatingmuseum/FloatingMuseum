@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/FloatingMuseum.iml" filepath="$PROJECT_DIR$/FloatingMuseum.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/userhunter/userhunter.iml" filepath="$PROJECT_DIR$/userhunter/userhunter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/userhunter/userhunter.iml" filepath="$PROJECT_DIR$/userhunter/userhunter.iml" />
     </modules>
   </component>
 </project>

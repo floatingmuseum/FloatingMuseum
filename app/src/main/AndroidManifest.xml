@@ -87,6 +87,7 @@
         <activity android:name=".functions.wifilist.WiFiListActivity" />
         <activity android:name=".functions.getcolor.GetSystemColorActivity"/>
         <activity android:name=".functions.aidl.AidlActivity"/>
+        <activity android:name=".functions.otherprocess.OtherProcessActivity"/>
         <!--<activity android:name=".functions.media.MediaActivity"/>-->
         <!-- <activity android:name=".functions.nsd.NsdChatActivity"/> -->
         <!-- <activity android:name=".functions.nsd.NsdActivity"/> -->
@@ -137,6 +138,7 @@
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <service android:name=".functions.aidl.AidlService"/>
+        <service android:name=".functions.otherprocess.OtherProcessService"/>
 
 
         <receiver android:name=".functions.catchtime.SystemShutAndBootReceiver">
