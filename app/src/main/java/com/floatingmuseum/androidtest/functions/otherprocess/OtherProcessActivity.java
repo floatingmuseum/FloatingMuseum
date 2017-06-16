@@ -34,6 +34,8 @@ public class OtherProcessActivity extends BaseActivity implements View.OnClickLi
     Button btSend;
     @BindView(R.id.bt_make_error)
     Button btMakeError;
+    @BindView(R.id.bt_make_remote_error)
+    Button btMakeRemoteError;
 
     private RemoteMuseum museum;
     private boolean isConnected = false;
@@ -48,6 +50,7 @@ public class OtherProcessActivity extends BaseActivity implements View.OnClickLi
         btUnbind.setOnClickListener(this);
         btSend.setOnClickListener(this);
         btMakeError.setOnClickListener(this);
+        btMakeRemoteError.setOnClickListener(this);
     }
 
     @Override
@@ -60,20 +63,13 @@ public class OtherProcessActivity extends BaseActivity implements View.OnClickLi
                 disconnectToService();
                 break;
             case R.id.bt_send:
-                if (museum != null && isConnected) {
-                    try {
-                        museum.sendMessage("发送消息:...时间" + DateUtils.formatDateTime(App.context, System.currentTimeMillis(), DateUtils.FORMAT_SHOW_TIME));
-                    } catch (RemoteException e) {
-                        Logger.d("RemoteMuseum:发送信息异常");
-                        e.printStackTrace();
-                    }
-                }else{
-                    Logger.d("RemoteMuseum:重新尝试建立连接");
-                    connectToService();
-                }
+                sendMessage("发送消息:...时间" + DateUtils.formatDateTime(App.context, System.currentTimeMillis(), DateUtils.FORMAT_SHOW_TIME));
                 break;
             case R.id.bt_make_error:
                 int x = 1 / 0;
+                break;
+            case R.id.bt_make_remote_error:
+                sendMessage("suicide");
                 break;
         }
     }
@@ -89,6 +85,20 @@ public class OtherProcessActivity extends BaseActivity implements View.OnClickLi
         unbindService(connection);
     }
 
+    private void sendMessage(String message) {
+        if (museum != null && isConnected) {
+            try {
+                museum.sendMessage(message);
+            } catch (RemoteException e) {
+                Logger.d("RemoteMuseum:发送信息异常");
+                e.printStackTrace();
+            }
+        } else {
+            Logger.d("RemoteMuseum:重新尝试建立连接");
+            connectToService();
+        }
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -101,12 +111,31 @@ public class OtherProcessActivity extends BaseActivity implements View.OnClickLi
             isConnected = true;
             Logger.d("RemoteMuseum:连接成功..." + name);
             museum = RemoteMuseum.Stub.asInterface(service);
+            try {
+                museum.asBinder().linkToDeath(deathRecipient, 0);
+            } catch (RemoteException e) {
+                Logger.d("RemoteMuseum:连接成功...设置destroy监听" + name);
+                e.printStackTrace();
+            }
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
             isConnected = false;
             Logger.d("RemoteMuseum:连接断开..." + name);
+        }
+    };
+
+    IBinder.DeathRecipient deathRecipient = new IBinder.DeathRecipient() {
+        @Override
+        public void binderDied() {
+            Logger.d("RemoteMuseum:...binder Gone away");
+            if (museum != null) {
+                museum.asBinder().unlinkToDeath(deathRecipient, 0);
+                museum = null;
+            }
+            //重连
+            connectToService();
         }
     };
 }

@@ -38,6 +38,10 @@ public class OtherProcessService extends Service {
                     .subscribe(new Consumer<Long>() {
                         @Override
                         public void accept(@NonNull Long aLong) throws Exception {
+                            if (suicide) {
+                                String nullString = null;
+                                nullString.length();
+                            }
                             Logger.d("RemoteMuseum:Service...服务还活着" + aLong);
                         }
                     });
@@ -63,6 +67,8 @@ public class OtherProcessService extends Service {
         Logger.d("RemoteMuseum:Service...onDestroy()");
     }
 
+    private boolean suicide = false;
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -73,6 +79,9 @@ public class OtherProcessService extends Service {
         @Override
         public void sendMessage(String message) throws RemoteException {
             Logger.d("RemoteMuseum:sendMessage" + message);
+            if ("suicide".equals(message)) {
+                suicide = true;
+            }
         }
     };
 }
