@@ -23,6 +23,7 @@ import com.floatingmuseum.androidtest.functions.hotspot.ServerActivity;
 import com.floatingmuseum.androidtest.functions.jobschedulertest.JobSchedulerActivity;
 import com.floatingmuseum.androidtest.functions.launcher.LauncherCheckActivity;
 import com.floatingmuseum.androidtest.functions.messages.MessagesActivity;
+import com.floatingmuseum.androidtest.functions.otherprocess.OtherProcessActivity;
 import com.floatingmuseum.androidtest.functions.phoenixservice.PhoenixActivity;
 import com.floatingmuseum.androidtest.functions.shell.ShellActivity;
 import com.floatingmuseum.androidtest.functions.socket.SocketActivity;
@@ -82,6 +83,8 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
     Button btGetColor;
     @BindView(R.id.bt_aidl_test)
     Button btAidlTest;
+    @BindView(R.id.bt_other_process)
+    Button btOtherProcess;
 //    @BindView(R.id.bt_nsd)
 //    Button btNsd;
 //    @BindView(R.id.bt_nsd_server)
@@ -116,6 +119,7 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
         btWifiList.setOnClickListener(this);
         btGetColor.setOnClickListener(this);
         btAidlTest.setOnClickListener(this);
+        btOtherProcess.setOnClickListener(this);
 //        btNsd.setOnClickListener(this);
 //        btNsdServer.setOnClickListener(this);
 //        btNsdClient.setOnClickListener(this);
@@ -190,6 +194,9 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
                 break;
             case R.id.bt_aidl_test:
                 startActivity(AidlActivity.class);
+                break;
+            case R.id.bt_other_process:
+                startActivity(OtherProcessActivity.class);
                 break;
 //            case R.id.bt_nsd:
 //                startActivity(NsdActivity.class);

@@ -9,6 +9,11 @@
         android:orientation="vertical">
 
         <Button
+            android:id="@+id/bt_other_process"
+            style="@style/text_title"
+            android:text="Other process" />
+
+        <Button
             android:id="@+id/bt_aidl_test"
             style="@style/text_title"
             android:text="Aidl test" />
@@ -17,6 +22,7 @@
             android:id="@+id/bt_get_color"
             style="@style/text_title"
             android:text="Get system color" />
+
         <Button
             android:id="@+id/bt_wifi_list"
             style="@style/text_title"
