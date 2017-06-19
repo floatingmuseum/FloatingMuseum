@@ -178,7 +178,6 @@ public class CommunicateActivity extends BaseActivity implements GoogleApiClient
 
     @Override
     public void onConnected(@Nullable Bundle connectionHint) {
-        // TODO: 2017/3/17 在某些设备(比如1+1)即使回调此方法，之后使用其他功能，仍然告知 java.lang.IllegalStateException: GoogleApiClient is not connected yet.
         Logger.d("CommunicateActivity...onConnected:" + connectionHint + "...isConnected:" + googleApiClient.isConnected());
     }
 
@@ -234,7 +233,7 @@ public class CommunicateActivity extends BaseActivity implements GoogleApiClient
                             Logger.d("CommunicateActivity...搜寻...onResult():开始搜寻");
                         } else {
                             // We were unable to start discovering.
-                            Logger.d("CommunicateActivity...搜寻...onResult():无法开始搜寻");
+                            Logger.d("CommunicateActivity...搜寻...onResult():无法开始搜寻..."+status.toString());
                         }
                     }
                 });
