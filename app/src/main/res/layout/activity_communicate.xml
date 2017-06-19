@@ -4,41 +4,73 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <Button
-        android:id="@+id/bt_advertising"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Start advertising" />
-
-    <Button
-        android:id="@+id/bt_discovering"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Start discovering" />
-
     <EditText
-        android:id="@+id/et_connect_to_id"
+        android:id="@+id/et_nickname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Input other device endpoint id" />
+        android:hint="Enter your nickname" />
 
-    <Button
-        android:id="@+id/bt_connect_to"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Request connect to" />
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/bt_disconnect_from"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Disconnect" />
+        <Button
+            android:id="@+id/bt_start_advertising"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Start advertising" />
 
-    <Button
-        android:id="@+id/bt_disconnect_all"
+        <Button
+            android:id="@+id/bt_start_discovering"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Start discovering" />
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Disconnect all" />
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/bt_stop_advertising"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Stop advertising" />
+
+        <Button
+            android:id="@+id/bt_stop_discovering"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Stop discovering" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Found list"
+        android:textSize="18sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@android:color/black" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_found_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@android:color/black" />
 
     <EditText
         android:id="@+id/et_send_message"

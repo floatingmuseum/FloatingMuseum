@@ -1,28 +1,47 @@
 package com.floatingmuseum.androidtest.functions.communicate;
 
+import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.listener.OnItemClickListener;
 import com.floatingmuseum.androidtest.R;
 import com.floatingmuseum.androidtest.base.BaseActivity;
+import com.floatingmuseum.androidtest.utils.ToastUtil;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.nearby.Nearby;
-import com.google.android.gms.nearby.connection.AppIdentifier;
-import com.google.android.gms.nearby.connection.AppMetadata;
+import com.google.android.gms.nearby.connection.AdvertisingOptions;
+import com.google.android.gms.nearby.connection.ConnectionInfo;
+import com.google.android.gms.nearby.connection.ConnectionLifecycleCallback;
+import com.google.android.gms.nearby.connection.ConnectionResolution;
 import com.google.android.gms.nearby.connection.Connections;
-import com.google.android.gms.nearby.connection.Connections.EndpointDiscoveryListener;
+import com.google.android.gms.nearby.connection.ConnectionsStatusCodes;
+import com.google.android.gms.nearby.connection.DiscoveredEndpointInfo;
+import com.google.android.gms.nearby.connection.DiscoveryOptions;
+import com.google.android.gms.nearby.connection.EndpointDiscoveryCallback;
+import com.google.android.gms.nearby.connection.Payload;
+import com.google.android.gms.nearby.connection.PayloadCallback;
+import com.google.android.gms.nearby.connection.PayloadTransferUpdate;
+import com.google.android.gms.nearby.connection.Strategy;
 import com.orhanobut.logger.Logger;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,28 +57,32 @@ import butterknife.ButterKnife;
  * failed on most devices
  */
 
-public class CommunicateActivity extends BaseActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, Connections.MessageListener, View.OnClickListener {
+public class CommunicateActivity extends BaseActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
-    @BindView(R.id.bt_advertising)
-    Button btAdvertising;
-    @BindView(R.id.bt_discovering)
-    Button btDiscovering;
-    @BindView(R.id.et_connect_to_id)
-    EditText etConnectToId;
-    @BindView(R.id.bt_connect_to)
-    Button btConnectTo;
-    @BindView(R.id.bt_disconnect_from)
-    Button btDisconnectFrom;
-    @BindView(R.id.bt_disconnect_all)
-    Button btDisconnectAll;
     @BindView(R.id.et_send_message)
     EditText etSendMessage;
     @BindView(R.id.bt_send_message)
     Button btSendMessage;
+    @BindView(R.id.bt_start_advertising)
+    Button btStartAdvertising;
+    @BindView(R.id.bt_start_discovering)
+    Button btStartDiscovering;
+    @BindView(R.id.bt_stop_advertising)
+    Button btStopAdvertising;
+    @BindView(R.id.bt_stop_discovering)
+    Button btStopDiscovering;
+    @BindView(R.id.rv_found_list)
+    RecyclerView rvFoundList;
+    @BindView(R.id.et_nickname)
+    EditText etNickname;
 
     private GoogleApiClient googleApiClient;
-    private boolean isHost;
     private static int[] NETWORK_TYPES = {ConnectivityManager.TYPE_WIFI, ConnectivityManager.TYPE_ETHERNET};
+    private String serviceId;
+    private List<String> foundList = new ArrayList<>();
+    private FoundListAdapter adapter;
+    private String myName;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,6 +90,7 @@ public class CommunicateActivity extends BaseActivity implements GoogleApiClient
         setContentView(R.layout.activity_communicate);
         ButterKnife.bind(this);
         initView();
+        serviceId = getString(R.string.floating_museum_service_id);
         Logger.d("CommunicateActivity...isGooglePlayServicesAvailable:" + checkPlayServices());
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -92,38 +116,63 @@ public class CommunicateActivity extends BaseActivity implements GoogleApiClient
     }
 
     private void initView() {
-        btAdvertising.setOnClickListener(this);
-        btDiscovering.setOnClickListener(this);
-        btConnectTo.setOnClickListener(this);
-        btDisconnectFrom.setOnClickListener(this);
-        btDisconnectAll.setOnClickListener(this);
+        btStartAdvertising.setOnClickListener(this);
+        btStartDiscovering.setOnClickListener(this);
+        btStopAdvertising.setOnClickListener(this);
+        btStopDiscovering.setOnClickListener(this);
         btSendMessage.setOnClickListener(this);
+        rvFoundList.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new FoundListAdapter(foundList);
+        rvFoundList.setAdapter(adapter);
+        rvFoundList.addOnItemTouchListener(new OnItemClickListener() {
+            @Override
+            public void onSimpleItemClick(BaseQuickAdapter adapter, View view, int position) {
+                String endpointID = foundList.get(position);
+                startConnectTo(endpointID);
+            }
+        });
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.bt_advertising:
+            case R.id.bt_start_advertising:
                 startAdvertising();
                 break;
-            case R.id.bt_discovering:
+            case R.id.bt_start_discovering:
                 startDiscovery();
                 break;
-            case R.id.bt_connect_to:
-                String remoteEndpoint = etConnectToId.getText().toString();
-                Logger.d("CommunicateActivity...bt_connect_to:" + remoteEndpoint);
-                connectTo(remoteEndpoint);
+            case R.id.bt_stop_advertising:
+                Nearby.Connections.stopAdvertising(googleApiClient);
                 break;
-            case R.id.bt_disconnect_from:
-//                Nearby.Connections.disconnectFromEndpoint(googleApiClient, remoteEndpointId);
-                break;
-            case R.id.bt_disconnect_all:
-                Nearby.Connections.stopAllEndpoints(googleApiClient);
+            case R.id.bt_stop_discovering:
+                Nearby.Connections.stopDiscovery(googleApiClient);
                 break;
             case R.id.bt_send_message:
-                String remoteEndpointId = "";
-                Nearby.Connections.sendReliableMessage(googleApiClient, remoteEndpointId, etSendMessage.getText().toString().getBytes());
+                CharSequence cs = etSendMessage.getText();
+                if (TextUtils.isEmpty(cs)) {
+                    ToastUtil.show("先生还是写点什么吧.");
+                    return;
+                } else {
+                    sendMessage(cs.toString());
+                }
                 break;
+        }
+    }
+
+    private void sendMessage(String message) {
+        Logger.d("CommunicateActivity...sendMessage():...Message:" + message);
+        try {
+            Nearby.Connections.sendPayload(googleApiClient, message, Payload.fromBytes(message.getBytes("UTF-8")))
+                    .setResultCallback(new ResultCallback<Status>() {
+                        @Override
+                        public void onResult(@NonNull Status status) {
+                            Logger.d("CommunicateActivity...sendMessage():...result:" + status.toString());
+                        }
+                    });
+        } catch (UnsupportedEncodingException e) {
+            Logger.d("CommunicateActivity...sendMessage():...UnsupportedEncodingException");
+            e.printStackTrace();
         }
     }
 
@@ -146,133 +195,67 @@ public class CommunicateActivity extends BaseActivity implements GoogleApiClient
     private void startAdvertising() {
         if (!isConnectedToNetwork()) {//连接失败
             // Implement logic when device is not connected to a network
-            Logger.d("CommunicateActivity...startAdvertising:...not connect to network");
+            Logger.d("CommunicateActivity...广播...startAdvertising:...not connect to network");
         }
 
+        Editable editable = etNickname.getText();
+        if (TextUtils.isEmpty(editable)) {
+            ToastUtil.show("Where is your nickname.");
+            return;
+        }
+        myName = editable.toString();
         // Identify that this device is the host
-        isHost = true;
-
-        // Advertising with an AppIdentifer lets other devices on the
-        // network discover this application and prompt the user to
-        // install the application.
-
-        List<AppIdentifier> appIdentifierList = new ArrayList<>();
-        appIdentifierList.add(new AppIdentifier(getPackageName()));
-        AppMetadata appMetadata = new AppMetadata(appIdentifierList);
-
-        // The advertising timeout is set to run indefinitely
-        // Positive values represent timeout in milliseconds
-        long NO_TIMEOUT = 0L;
-
-        String name = null;
-        Logger.d("CommunicateActivity...startAdvertising:...Nearby.Connections.startAdvertising");
-        Nearby.Connections.startAdvertising(googleApiClient, name, appMetadata, NO_TIMEOUT, new Connections.ConnectionRequestListener() {
-            @Override
-            public void onConnectionRequest(String remoteEndpointId, final String remoteEndpointName, byte[] handshakeData) {
-                Logger.d("CommunicateActivity...onConnectionRequest...RemoteEndPointId:" + remoteEndpointId + "...RemoteEndPointName" + remoteEndpointName + "...HandShakeData" + handshakeData);
-                if (isHost) {
-                    byte[] myPayload = null;
-                    // Automatically accept all requests
-                    Nearby.Connections.acceptConnectionRequest(googleApiClient, remoteEndpointId,
-                            myPayload, CommunicateActivity.this).setResultCallback(new ResultCallback<Status>() {
-                        @Override
-                        public void onResult(Status status) {
-                            if (status.isSuccess()) {
-                                Logger.d("CommunicateActivity...onConnectionRequest...Connected to " + remoteEndpointName);
-                            } else {
-                                Logger.d("CommunicateActivity...onConnectionRequest...Failed to connect to:" + remoteEndpointName);
-                            }
-                        }
-                    });
-                } else {
-                    // Clients should not be advertising and will reject all connection requests.
-                    Nearby.Connections.rejectConnectionRequest(googleApiClient, remoteEndpointId);
-                }
-            }
-        }).setResultCallback(new ResultCallback<Connections.StartAdvertisingResult>() {
-            @Override
-            public void onResult(Connections.StartAdvertisingResult result) {
-                if (result.getStatus().isSuccess()) {
-                    // Device is advertising
-                    Logger.d("CommunicateActivity...startAdvertising:..Device is advertising:" + result.getLocalEndpointName());
-                } else {
-                    int statusCode = result.getStatus().getStatusCode();
-                    Logger.d("CommunicateActivity...startAdvertising:..Advertising failed:" + statusCode);
-                    // Advertising failed - see statusCode for more details
-                }
-            }
-        });
+        Logger.d("CommunicateActivity...广播...startAdvertising:...Nearby.Connections.startAdvertising");
+        Nearby.Connections
+                .startAdvertising(googleApiClient, myName, serviceId, myConnectionLifecycleCallback, new AdvertisingOptions(Strategy.P2P_CLUSTER))
+                .setResultCallback(new ResultCallback<Connections.StartAdvertisingResult>() {
+                    @Override
+                    public void onResult(@NonNull Connections.StartAdvertisingResult result) {
+                        Logger.d("CommunicateActivity...广播...onResult():" + result.getLocalEndpointName());
+                    }
+                });
     }
 
     private void startDiscovery() {
         if (!isConnectedToNetwork()) {//连接失败
             // Implement logic when device is not connected to a network
-            Logger.d("CommunicateActivity...startDiscovery:...not connect to network");
+            Logger.d("CommunicateActivity...搜寻...startDiscovery:...not connect to network");
         }
-        String serviceId = getString(R.string.floating_museum_service_id);
 
-        // Set an appropriate timeout length in milliseconds
-        long DISCOVER_TIMEOUT = 1000L;
-
-        Logger.d("CommunicateActivity...startDiscovery:...Nearby.Connections.startDiscovery");
+        Logger.d("CommunicateActivity...搜寻...startDiscovery:...Nearby.Connections.startDiscovery");
         // Discover nearby apps that are advertising with the required service ID.
-        Nearby.Connections.startDiscovery(googleApiClient, serviceId, DISCOVER_TIMEOUT, new EndpointDiscoveryListener() {
-            @Override
-            public void onEndpointFound(String endpointId, String serviceId, String name) {
-                // This device is discovering endpoints and has located an advertiser.
-                // Write your logic to initiate a connection with the device at
-                // the endpoint ID
-                Logger.d("CommunicateActivity...onEndpointFound...EndPointId:" + endpointId + "...ServiceId:" + serviceId + "...Name:" + name);
-            }
-
-            @Override
-            public void onEndpointLost(String endpointId) {
-                Logger.d("CommunicateActivity...onEndpointLost...EndPointId:" + endpointId);
-            }
-        }).setResultCallback(new ResultCallback<Status>() {
-            @Override
-            public void onResult(Status status) {
-                if (status.isSuccess()) {
-                    // Device is discovering
-                    Logger.d("CommunicateActivity...startDiscovery:..Device is discovering:");
-                } else {
-                    int statusCode = status.getStatusCode();
-                    Logger.d("CommunicateActivity...startDiscovery:..Discovering failed:" + statusCode);
-                    // Advertising failed - see statusCode for more details
-                }
-            }
-        });
+        Nearby.Connections
+                .startDiscovery(googleApiClient, serviceId, endpointDiscoveryCallback, new DiscoveryOptions(Strategy.P2P_CLUSTER))
+                .setResultCallback(new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(@NonNull Status status) {
+                        if (status.isSuccess()) {
+                            // We're discovering!
+                            Logger.d("CommunicateActivity...搜寻...onResult():开始搜寻");
+                        } else {
+                            // We were unable to start discovering.
+                            Logger.d("CommunicateActivity...搜寻...onResult():无法开始搜寻");
+                        }
+                    }
+                });
     }
 
-    private void connectTo(String remoteEndpoint) {
-        // Send a connection request to a remote endpoint. By passing 'null' for
-        // the name, the Nearby Connections API will construct a default name
-        // based on device model such as 'LGE Nexus 5'.
-        String myName = "Floatingmuseum";
-        byte[] myPayload = myName.getBytes();
-        Nearby.Connections.sendConnectionRequest(googleApiClient, myName, remoteEndpoint, myPayload, new Connections.ConnectionResponseCallback() {
-            @Override
-            public void onConnectionResponse(String remoteEndpointId, Status status,
-                                             byte[] bytes) {
-                if (status.isSuccess()) {
-                    Logger.d("CommunicateActivity...connectTo:..onConnectionResponse Success:" + remoteEndpointId + "..." + status.toString() + "..." + bytes);
-                    // Successful connection
-                } else {
-                    Logger.d("CommunicateActivity...connectTo:..onConnectionResponse Failed:" + remoteEndpointId + "..." + status.toString() + "..." + bytes);
-                    // Failed connection
-                }
-            }
-        }, this);
-    }
-
-    @Override
-    public void onMessageReceived(String remoteEndpointId, byte[] payload, boolean isReliable) {
-        Logger.d("CommunicateActivity...onMessageReceived...RemoteEndpointId:" + remoteEndpointId + "...Payload:" + payload + "...isReliable:" + isReliable);
-    }
-
-    @Override
-    public void onDisconnected(String remoteEndpointId) {
-        Logger.d("CommunicateActivity...onDisconnected...RemoteEndpointId:" + remoteEndpointId);
+    private void startConnectTo(String endpointID) {
+        Nearby.Connections
+                .requestConnection(googleApiClient, myName, endpointID, myConnectionLifecycleCallback)
+                .setResultCallback(new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(@NonNull Status status) {
+                        if (status.isSuccess()) {
+                            Logger.d("CommunicateActivity...连接其他...请求成功...等待认证");
+                            // We successfully requested a connection. Now both sides
+                            // must accept before the connection is established.
+                        } else {
+                            Logger.d("CommunicateActivity...连接其他...请求失败" + status.toString());
+                            // Nearby Connections failed to request the connection.
+                        }
+                    }
+                });
     }
 
     private boolean isConnectedToNetwork() {
@@ -286,6 +269,31 @@ public class CommunicateActivity extends BaseActivity implements GoogleApiClient
         return false;
     }
 
+    private void handleConnectRequest(final String endpointId, final ConnectionInfo connectionInfo) {
+        new AlertDialog.Builder(this)
+                .setTitle("Accept connection to " + connectionInfo.getEndpointName())
+                .setMessage("Confirm if the code " + connectionInfo.getAuthenticationToken() + " is also displayed on the other device")
+                .setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // The user confirmed, so we can accept the connection.
+                        Logger.d("CommunicateActivity...广播...允许连接:...endpointId:" + endpointId + "...endpointName:" + connectionInfo.getEndpointName());
+                        Nearby.Connections.acceptConnection(googleApiClient, endpointId, payloadCallback);
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // The user canceled, so we should reject the connection.
+                        Logger.d("CommunicateActivity...广播...拒绝连接:...endpointId:" + endpointId + "...endpointName:" + connectionInfo.getEndpointName());
+//                        Nearby.Connections.rejectConnection(googleApiClient, payloadCallback);
+                        Nearby.Connections.rejectConnection(googleApiClient, "拒绝访问");
+                        dialog.dismiss();
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -294,4 +302,63 @@ public class CommunicateActivity extends BaseActivity implements GoogleApiClient
             Logger.d("CommunicateActivity...onDestroy:...isConnected:" + googleApiClient.isConnected());
         }
     }
+
+    private ConnectionLifecycleCallback myConnectionLifecycleCallback = new ConnectionLifecycleCallback() {
+        @Override
+        public void onConnectionInitiated(String endpointId, ConnectionInfo connectionInfo) {
+            Logger.d("CommunicateActivity...广播...onConnectionInitiated():...endpointId:" + endpointId + "...name:" + connectionInfo.getEndpointName() + "...token:" + connectionInfo.getAuthenticationToken() + "...isIncoming:" + connectionInfo.isIncomingConnection());
+            handleConnectRequest(endpointId, connectionInfo);
+        }
+
+        @Override
+        public void onConnectionResult(String endpointId, ConnectionResolution connectionResolution) {
+            Logger.d("CommunicateActivity...广播...onConnectionResult():...endpointId:" + endpointId + "...Status:" + connectionResolution.getStatus().toString());
+            switch (connectionResolution.getStatus().getStatusCode()) {
+                case ConnectionsStatusCodes.STATUS_OK:
+                    // We're connected! Can now start sending and receiving data.
+                    Logger.d("CommunicateActivity...广播...onConnectionResult():...endpointId:" + endpointId + "...StatusOK:连接成功");
+                    break;
+                case ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED:
+                    // The connection was rejected by one or both sides.
+                    Logger.d("CommunicateActivity...广播...onConnectionResult():...endpointId:" + endpointId + "...StatusRejected:连接被拒绝");
+                    break;
+            }
+        }
+
+        @Override
+        public void onDisconnected(String endpointId) {
+            Logger.d("CommunicateActivity...广播...onDisconnected():...endpointId:" + endpointId);
+        }
+    };
+
+    private EndpointDiscoveryCallback endpointDiscoveryCallback = new EndpointDiscoveryCallback() {
+        @Override
+        public void onEndpointFound(String endpointID, DiscoveredEndpointInfo discoveredEndpointInfo) {
+            Logger.d("CommunicateActivity...搜寻...onEndpointFound()::" + endpointID + "..." + discoveredEndpointInfo.getEndpointName());
+            foundList.add(endpointID);
+            adapter.notifyDataSetChanged();
+        }
+
+        @Override
+        public void onEndpointLost(String endpointID) {
+            Logger.d("CommunicateActivity...搜寻...onEndpointLost():丢失:" + endpointID);
+            foundList.remove(endpointID);
+            adapter.notifyDataSetChanged();
+        }
+    };
+
+    private PayloadCallback payloadCallback = new PayloadCallback() {
+        @Override
+        public void onPayloadReceived(String endpointID, Payload payload) {
+            Logger.d("CommunicateActivity...信息传送...onPayloadReceived():endpointID:" + endpointID + "...Type:" + payload.getType());
+            if (Payload.Type.BYTES == payload.getType()) {
+                Logger.d("CommunicateActivity...信息传送...onPayloadReceived():endpointID:" + endpointID + "...Message:" + payload.asBytes().toString());
+            }
+        }
+
+        @Override
+        public void onPayloadTransferUpdate(String endpointID, PayloadTransferUpdate payloadTransferUpdate) {
+            Logger.d("CommunicateActivity...信息传送...onPayloadTransferUpdate():endpointID:" + endpointID + "...current:" + payloadTransferUpdate.getBytesTransferred() + "...total:" + payloadTransferUpdate.getTotalBytes());
+        }
+    };
 }

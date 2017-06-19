@@ -18,7 +18,6 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.iid.InstanceID;
 import com.google.android.gms.nearby.Nearby;
 import com.google.android.gms.nearby.messages.Message;
 import com.google.android.gms.nearby.messages.MessageListener;
@@ -94,8 +93,9 @@ public class MessagesActivity extends BaseActivity implements GoogleApiClient.Co
             @Override
             public void onClick(View view) {
                 counter++;
-                myMessage = DeviceMessage.newNearbyMessage(
-                        InstanceID.getInstance(getApplicationContext()).getId(),String.valueOf(counter));
+//                myMessage = DeviceMessage.newNearbyMessage(
+//                        InstanceID.getInstance(getApplicationContext()).getId(),String.valueOf(counter));
+                myMessage = DeviceMessage.newNearbyMessage("");
                 Nearby.Messages.publish(mGoogleApiClient, myMessage)
                         .setResultCallback(new ErrorCheckingCallback("publish()"));
             }
@@ -152,7 +152,7 @@ public class MessagesActivity extends BaseActivity implements GoogleApiClient.Co
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         if (mResolvingError) {
             // Already attempting to resolve an error.
             return;
@@ -191,8 +191,9 @@ public class MessagesActivity extends BaseActivity implements GoogleApiClient.Co
         // an activity's lifetime, we may end up with multiple calls to
         // subscribe(). Repeated subscriptions using the same MessageListener
         // are ignored.
-        mMessage = DeviceMessage.newNearbyMessage(
-                InstanceID.getInstance(getApplicationContext()).getId());
+//        mMessage = DeviceMessage.newNearbyMessage(
+//                InstanceID.getInstance(getApplicationContext()).getId());
+        mMessage = DeviceMessage.newNearbyMessage("");
         Nearby.Messages.publish(mGoogleApiClient, mMessage)
                 .setResultCallback(new ErrorCheckingCallback("publish()"));
         Nearby.Messages.subscribe(mGoogleApiClient, mMessageListener)
