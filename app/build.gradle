@@ -64,8 +64,8 @@ dependencies {
     //Shell工具
     compile 'com.jrummyapps:android-shell:1.0.1'
     //play service
-    compile 'com.google.android.gms:play-services-nearby:11.0.0'
-    compile 'com.google.android.gms:play-services:11.0.0'
+    compile 'com.google.android.gms:play-services-nearby:11.0.1'
+    compile 'com.google.android.gms:play-services:11.0.1'
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.floatingmuseum:sonic:1.0.2'
     //阻塞检查
