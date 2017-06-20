@@ -82,6 +82,7 @@ public class CommunicateActivity extends BaseActivity implements GoogleApiClient
     private List<String> foundList = new ArrayList<>();
     private FoundListAdapter adapter;
     private String myName;
+    private String remoteEndpointID;
 
 
     @Override
@@ -161,9 +162,13 @@ public class CommunicateActivity extends BaseActivity implements GoogleApiClient
     }
 
     private void sendMessage(String message) {
-        Logger.d("CommunicateActivity...sendMessage():...Message:" + message);
+        Logger.d("CommunicateActivity...sendMessage():...Message:" + message + "...RemoteID:" + remoteEndpointID);
+        if (TextUtils.isEmpty(remoteEndpointID)) {
+            ToastUtil.show("You need connect to another one.");
+            return;
+        }
         try {
-            Nearby.Connections.sendPayload(googleApiClient, message, Payload.fromBytes(message.getBytes("UTF-8")))
+            Nearby.Connections.sendPayload(googleApiClient, remoteEndpointID, Payload.fromBytes(message.getBytes("UTF-8")))
                     .setResultCallback(new ResultCallback<Status>() {
                         @Override
                         public void onResult(@NonNull Status status) {
@@ -233,7 +238,7 @@ public class CommunicateActivity extends BaseActivity implements GoogleApiClient
                             Logger.d("CommunicateActivity...搜寻...onResult():开始搜寻");
                         } else {
                             // We were unable to start discovering.
-                            Logger.d("CommunicateActivity...搜寻...onResult():无法开始搜寻..."+status.toString());
+                            Logger.d("CommunicateActivity...搜寻...onResult():无法开始搜寻..." + status.toString());
                         }
                     }
                 });
@@ -316,6 +321,7 @@ public class CommunicateActivity extends BaseActivity implements GoogleApiClient
                 case ConnectionsStatusCodes.STATUS_OK:
                     // We're connected! Can now start sending and receiving data.
                     Logger.d("CommunicateActivity...广播...onConnectionResult():...endpointId:" + endpointId + "...StatusOK:连接成功");
+                    remoteEndpointID = endpointId;
                     break;
                 case ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED:
                     // The connection was rejected by one or both sides.
@@ -327,6 +333,7 @@ public class CommunicateActivity extends BaseActivity implements GoogleApiClient
         @Override
         public void onDisconnected(String endpointId) {
             Logger.d("CommunicateActivity...广播...onDisconnected():...endpointId:" + endpointId);
+            remoteEndpointID = null;
         }
     };
 
@@ -351,7 +358,13 @@ public class CommunicateActivity extends BaseActivity implements GoogleApiClient
         public void onPayloadReceived(String endpointID, Payload payload) {
             Logger.d("CommunicateActivity...信息传送...onPayloadReceived():endpointID:" + endpointID + "...Type:" + payload.getType());
             if (Payload.Type.BYTES == payload.getType()) {
-                Logger.d("CommunicateActivity...信息传送...onPayloadReceived():endpointID:" + endpointID + "...Message:" + payload.asBytes().toString());
+                try {
+                    String content = new String(payload.asBytes(), "UTF-8");
+                    ToastUtil.show("Message:" + content + "...From:" + endpointID);
+                    Logger.d("CommunicateActivity...信息传送...onPayloadReceived():endpointID:" + endpointID + "...Message:" + content);
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
