@@ -1,5 +1,6 @@
 package com.floatingmuseum.androidtest;
 
+import android.app.ActivityManager;
 import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 
@@ -14,6 +15,8 @@ import com.floatingmuseum.androidtest.utils.SystemUtil;
 import com.floatingmuseum.androidtest.views.ViewActivity;
 import com.orhanobut.logger.Logger;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 import butterknife.BindView;

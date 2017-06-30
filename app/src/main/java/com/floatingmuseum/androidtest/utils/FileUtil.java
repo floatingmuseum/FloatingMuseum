@@ -1,5 +1,7 @@
 package com.floatingmuseum.androidtest.utils;
 
+import android.support.annotation.NonNull;
+
 import java.io.File;
 import java.math.BigDecimal;
 
@@ -9,26 +11,51 @@ import java.math.BigDecimal;
 
 public class FileUtil {
 
-    public static long mbToBytes(int mb) {
-        return mb * 1024 * 1024;
+    /**
+     * 获取带扩展名的文件名
+     *
+     * @param path
+     * @return
+     */
+    public static String getFileName(@NonNull String path) {
+        int lastSlashIndex = path.lastIndexOf("/");
+        if (lastSlashIndex == -1) {
+            return path;
+        } else {
+            return path.substring(lastSlashIndex + 1);
+        }
     }
 
-    public static float bytesToKb(long fileLength) {
-        BigDecimal bytes = new BigDecimal(fileLength);
-        BigDecimal kb = new BigDecimal(1024);
-        return bytes.divide(kb).floatValue();
+    /**
+     * 获取不带扩展名的文件名
+     *
+     * @param path
+     * @return
+     */
+    public static String getFileNameWithoutExtension(@NonNull String path) {
+        String fileName = getFileName(path);
+        int lastPointIndex = fileName.lastIndexOf(".");
+        if (lastPointIndex == -1) {
+            return fileName;
+        } else {
+            return fileName.substring(0, lastPointIndex);
+        }
     }
 
-    public static float bytesToMb(long fileLength) {
-        BigDecimal bytes = new BigDecimal(fileLength);
-        BigDecimal mb = new BigDecimal(1024 * 1024);
-        return bytes.divide(mb).floatValue();
-    }
-
-    public static String getUrlFileName(String url) {
-        int lastDivideIndex = url.lastIndexOf("/");
-        String fileName = url.substring(lastDivideIndex + 1);
-        return fileName;
+    /**
+     * 获取扩展名
+     *
+     * @param path
+     * @return
+     */
+    public static String getFileExtension(@NonNull String path) {
+        String fileName = getFileName(path);
+        int lastPointIndex = fileName.lastIndexOf(".");
+        if (lastPointIndex == -1) {
+            return "";
+        } else {
+            return fileName.substring(lastPointIndex + 1);
+        }
     }
 
     public static void initDir(String dirPath) {

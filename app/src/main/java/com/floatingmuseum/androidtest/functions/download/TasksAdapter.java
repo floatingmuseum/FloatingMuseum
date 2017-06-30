@@ -25,7 +25,7 @@ public class TasksAdapter extends BaseQuickAdapter<AppInfo, TasksAdapter.TaskVie
 
     @Override
     protected void convert(TaskViewHolder helper, AppInfo appInfo) {
-        String fileName = FileUtil.getUrlFileName(appInfo.getName());
+        String fileName = FileUtil.getFileName(appInfo.getName());
         helper.setText(R.id.tv_name, fileName)
                 .addOnClickListener(R.id.bt_task_state)
                 .addOnClickListener(R.id.bt_task_cancel);

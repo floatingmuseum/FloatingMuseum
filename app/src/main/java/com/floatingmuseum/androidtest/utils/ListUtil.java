@@ -1,10 +1,8 @@
 package com.floatingmuseum.androidtest.utils;
 
-import com.floatingmuseum.androidtest.App;
 import com.floatingmuseum.androidtest.functions.catchtime.AppTimeUsingInfo;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +18,13 @@ public class ListUtil {
     }
 
     /**
-     * 当新一页没有数据时返回null
+     * 根据page数和limit数查询list中的数据
+     * 类似于某些网络接口的使用
+     *
+     * @param list  被查询集合
+     * @param page  被查询页码
+     * @param limit 被查询页码中所包含的数据量
+     * @return 返回查询结果, 如果查询起始点大于集合长度, 返回null
      */
     public static List subList(List list, int page, int limit) {
         int fromIndex = (page - 1) * limit;
