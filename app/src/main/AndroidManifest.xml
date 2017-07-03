@@ -12,9 +12,9 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <!-- 记录声音 -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <!-- 写权限 -->
+    <!-- 写sd权限 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <!-- 读权限 -->
+    <!-- 读sd权限 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <!-- 开机广播 -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -29,6 +29,7 @@
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    
     <!-- 应用使用情况 -->
     <uses-permission
         android:name="android.permission.PACKAGE_USAGE_STATS"
@@ -88,6 +89,7 @@
         <activity android:name=".functions.getcolor.GetSystemColorActivity"/>
         <activity android:name=".functions.aidl.AidlActivity"/>
         <activity android:name=".functions.otherprocess.OtherProcessActivity"/>
+        <activity android:name=".thirdpartys.virtualapk.VirtualApkActivity"/>
         <!--<activity android:name=".functions.media.MediaActivity"/>-->
         <!-- <activity android:name=".functions.nsd.NsdChatActivity"/> -->
         <!-- <activity android:name=".functions.nsd.NsdActivity"/> -->

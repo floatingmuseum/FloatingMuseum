@@ -1,9 +1,10 @@
 apply plugin: 'com.android.application'
 //apply plugin: 'kotlin-android'
 apply plugin: 'realm-android'
+apply plugin: 'com.didi.virtualapk.host'
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion "25.0.3"
     defaultConfig {
         applicationId "com.floatingmuseum.androidtest"
         minSdkVersion 19
@@ -65,13 +66,19 @@ dependencies {
     compile 'com.jrummyapps:android-shell:1.0.1'
     //play service
     compile 'com.google.android.gms:play-services-nearby:11.0.1'
-    compile 'com.google.android.gms:play-services:11.0.1'
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.floatingmuseum:sonic:1.0.2'
     //阻塞检查
     debugCompile 'com.github.markzhai:blockcanary-android:1.4.0'
     releaseCompile 'com.github.markzhai:blockcanary-no-op:1.4.0'
-}
-repositories {
-    mavenCentral()
+
+    compile 'com.didi.virtualapk:core:0.9.0'
+
+    //Android Architecture Components
+//    compile "android.arch.lifecycle:runtime:1.0.0-alpha3"
+//    compile "android.arch.lifecycle:extensions:1.0.0-alpha3"
+//    annotationProcessor "android.arch.lifecycle:compiler:1.0.0-alpha3"
+//    compile "android.arch.persistence.room:runtime:1.0.0-alpha3"
+//    annotationProcessor "android.arch.persistence.room:compiler:1.0.0-alpha3"
+//    compile "android.arch.persistence.room:rxjava2:1.0.0-alpha3"
 }

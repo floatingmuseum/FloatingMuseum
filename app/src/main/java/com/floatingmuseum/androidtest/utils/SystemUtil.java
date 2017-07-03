@@ -209,6 +209,12 @@ public class SystemUtil {
         Logger.d("**************************************************启动器**************************************************");
     }
 
+    /**
+     * 获取栈顶包名
+     * @param context
+     * @param activityManager
+     * @return
+     */
     public static String getTopPackageName(Context context, ActivityManager activityManager) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             List<ActivityManager.RunningTaskInfo> appTasks = activityManager.getRunningTasks(1);
@@ -224,6 +230,64 @@ public class SystemUtil {
             String result = "";
             UsageEvents.Event event = new UsageEvents.Event();
             UsageEvents usageEvents = sUsageStatsManager.queryEvents(beginTime, endTime);
+            long timeStamp = 0;
+            String newestPackageName = "";
+            String newestClassName = "";
+            while (usageEvents.hasNextEvent()) {
+                usageEvents.getNextEvent(event);
+                if (event.getEventType() == UsageEvents.Event.MOVE_TO_FOREGROUND) {
+                    //包名...事件类型...类名...时间
+                    Logger.d("UsageStats:" + event.getPackageName() + "..." + event.getEventType() + "..." + event.getClassName() + "..." + event.getTimeStamp());
+                    result = event.getPackageName();
+
+                    if (timeStamp == 0) {
+                        newestPackageName = event.getPackageName();
+                        newestClassName = event.getClassName();
+                        timeStamp = event.getTimeStamp();
+                    } else {
+                        if (event.getTimeStamp() > timeStamp) {
+                            newestPackageName = event.getPackageName();
+                            newestClassName = event.getClassName();
+                            timeStamp = event.getTimeStamp();
+                        }
+                    }
+                }
+            }
+            Logger.d("UsageStats:newestPackageName:" + newestPackageName + "...newestClassName:" + newestClassName);
+            Logger.d("UsageStats:**************************************************************************************************************");
+            if (!TextUtils.isEmpty(result)) {
+                return result;
+            }
+        }
+        return "";
+    }
+
+    /**
+     * 获取栈顶类名
+     * @param context
+     * @param activityManager
+     * @return
+     */
+    public static String getTopClassName(Context context, ActivityManager activityManager) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            List<ActivityManager.RunningTaskInfo> appTasks = activityManager.getRunningTasks(1);
+            if (null != appTasks && !appTasks.isEmpty()) {
+                return appTasks.get(0).topActivity.getClassName();
+            }
+        } else {
+            //5.0以后需要用这方法
+            UsageStatsManager usageStatsManager;
+            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
+                usageStatsManager = (UsageStatsManager) context.getSystemService("usagestats");
+            } else {
+                usageStatsManager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
+            }
+            long endTime = System.currentTimeMillis();
+            //查询最近10秒内的使用信息
+            long beginTime = endTime - 10000;
+            String result = "";
+            UsageEvents.Event event = new UsageEvents.Event();
+            UsageEvents usageEvents = usageStatsManager.queryEvents(beginTime, endTime);
             long timeStamp = 0;
             String newestPackageName = "";
             String newestClassName = "";

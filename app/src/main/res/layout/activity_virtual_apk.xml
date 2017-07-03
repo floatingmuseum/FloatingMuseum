@@ -5,8 +5,14 @@
     android:orientation="vertical">
 
     <Button
-        android:id="@+id/bt_virtual_apk"
+        android:id="@+id/bt_load_plugin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Virtual Apk" />
+        android:text="Load Plugin" />
+
+    <Button
+        android:id="@+id/bt_open_plugin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Open Plugin Activity" />
 </LinearLayout>

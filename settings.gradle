@@ -1,1 +1,1 @@
-include ':app', ':userhunter'
+include ':app', ':userhunter', ':plugintest'
