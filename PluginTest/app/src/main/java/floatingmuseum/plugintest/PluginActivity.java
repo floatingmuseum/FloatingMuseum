@@ -12,36 +12,36 @@ public class PluginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_plugin);
-        Log.w(tag, "onCreate");
+        Log.d(tag, "onCreate");
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        Log.w(tag, "onStart");
+        Log.d(tag, "onStart");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.w(tag, "onResume");
+        Log.d(tag, "onResume");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.w(tag, "onPause");
+        Log.d(tag, "onPause");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.w(tag, "onStop");
+        Log.d(tag, "onStop");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.w(tag, "onDestroy");
+        Log.d(tag, "onDestroy");
     }
 }
