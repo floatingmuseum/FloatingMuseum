@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.multidex.MultiDexApplication;
 
+import com.didi.virtualapk.PluginManager;
 import com.floatingmuseum.androidtest.utils.ToastUtil;
 import com.github.moduth.blockcanary.BlockCanary;
 import com.orhanobut.logger.Logger;
@@ -31,7 +32,13 @@ public class App extends MultiDexApplication {
         Sonic.getInstance().init(this);
         BlockCanary.install(this, new AppBlockCanaryContext()).start();
         initFileDownloader();
+        PluginManager.getInstance(this).init();
 //        initCockroach();
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
     }
 
     private void initFileDownloader() {

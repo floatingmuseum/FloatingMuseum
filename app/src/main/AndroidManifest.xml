@@ -89,6 +89,7 @@
         <activity android:name=".functions.getcolor.GetSystemColorActivity"/>
         <activity android:name=".functions.aidl.AidlActivity"/>
         <activity android:name=".functions.otherprocess.OtherProcessActivity"/>
+        <activity android:name=".thirdpartys.virtualapk.VirtualApkActivity"/>
         <!--<activity android:name=".functions.media.MediaActivity"/>-->
         <!-- <activity android:name=".functions.nsd.NsdChatActivity"/> -->
         <!-- <activity android:name=".functions.nsd.NsdActivity"/> -->
