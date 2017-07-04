@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Button;
 
-import com.didi.virtualapk.PluginManager;
 import com.floatingmuseum.androidtest.R;
 import com.floatingmuseum.androidtest.base.BaseActivity;
 import com.orhanobut.logger.Logger;
@@ -55,19 +54,18 @@ public class VirtualApkActivity extends BaseActivity {
         Logger.d("VirtualApkActivity...文件地址:" + pluginPath);
         File plugin = new File(pluginPath);
         try {
-            PluginManager.getInstance(this).loadPlugin(plugin);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void startPluginActivity() {
-        Intent intent = new Intent();
-        intent.setClassName("floatingmuseum.plugintest", "floatingmuseum.plugintest.PluginActivity");
-        try {
-            startActivity(intent);
-        } catch (ActivityNotFoundException e) {
-            e.printStackTrace();
-        }
+//        Intent intent = new Intent();
+//        intent.setClassName("floatingmuseum.plugintest", "floatingmuseum.plugintest.PluginActivity");
+//        try {
+//            startActivity(intent);
+//        } catch (ActivityNotFoundException e) {
+//            e.printStackTrace();
+//        }
     }
 }

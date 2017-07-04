@@ -5,21 +5,14 @@
     android:orientation="vertical">
 
     <Button
-        android:id="@+id/bt_virtual_apk"
+        android:id="@+id/bt_load_plugin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Virtual Apk" />
+        android:text="Load Plugin" />
 
     <Button
-        android:id="@+id/bt_re_plugin"
+        android:id="@+id/bt_open_plugin_app"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="RePlugin" />
-
-    <Button
-        android:id="@+id/bt_exo_player"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="ExoPlayer" />
-
+        android:text="Open plugin" />
 </LinearLayout>

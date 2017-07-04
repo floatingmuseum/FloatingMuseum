@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 //apply plugin: 'kotlin-android'
 apply plugin: 'realm-android'
-apply plugin: 'com.didi.virtualapk.host'
+apply plugin: 'replugin-host-gradle'
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.3"
@@ -71,9 +71,7 @@ dependencies {
     //阻塞检查
     debugCompile 'com.github.markzhai:blockcanary-android:1.4.0'
     releaseCompile 'com.github.markzhai:blockcanary-no-op:1.4.0'
-
-    compile 'com.didi.virtualapk:core:0.9.0'
-
+    compile 'com.qihoo360.replugin:replugin-host-lib:2.1.0'
     //Android Architecture Components
 //    compile "android.arch.lifecycle:runtime:1.0.0-alpha3"
 //    compile "android.arch.lifecycle:extensions:1.0.0-alpha3"
@@ -81,4 +79,7 @@ dependencies {
 //    compile "android.arch.persistence.room:runtime:1.0.0-alpha3"
 //    annotationProcessor "android.arch.persistence.room:compiler:1.0.0-alpha3"
 //    compile "android.arch.persistence.room:rxjava2:1.0.0-alpha3"
+
+    //ExoPlayer
+    compile 'com.google.android.exoplayer:exoplayer:r2.4.3'
 }

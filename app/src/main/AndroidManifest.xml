@@ -29,7 +29,7 @@
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    
+
     <!-- 应用使用情况 -->
     <uses-permission
         android:name="android.permission.PACKAGE_USAGE_STATS"
@@ -86,10 +86,12 @@
         <activity android:name=".functions.phoenixservice.PhoenixActivity" />
         <activity android:name=".functions.jobschedulertest.JobSchedulerActivity" />
         <activity android:name=".functions.wifilist.WiFiListActivity" />
-        <activity android:name=".functions.getcolor.GetSystemColorActivity"/>
-        <activity android:name=".functions.aidl.AidlActivity"/>
-        <activity android:name=".functions.otherprocess.OtherProcessActivity"/>
-        <activity android:name=".thirdpartys.virtualapk.VirtualApkActivity"/>
+        <activity android:name=".functions.getcolor.GetSystemColorActivity" />
+        <activity android:name=".functions.aidl.AidlActivity" />
+        <activity android:name=".functions.otherprocess.OtherProcessActivity" />
+        <activity android:name=".thirdpartys.virtualapk.VirtualApkActivity" />
+        <activity android:name=".thirdpartys.replugin.RePluginActivity" />
+        <activity android:name=".thirdpartys.exo.ExoPlayerActivity" />
         <!--<activity android:name=".functions.media.MediaActivity"/>-->
         <!-- <activity android:name=".functions.nsd.NsdChatActivity"/> -->
         <!-- <activity android:name=".functions.nsd.NsdActivity"/> -->
@@ -139,10 +141,11 @@
             android:name=".functions.jobschedulertest.NetService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-        <service android:name=".functions.aidl.AidlService"/>
-        <service android:name=".functions.otherprocess.OtherProcessService"
-            android:process=":remoteMuseum"
-            android:exported="true"/>
+        <service android:name=".functions.aidl.AidlService" />
+        <service
+            android:name=".functions.otherprocess.OtherProcessService"
+            android:exported="true"
+            android:process=":remoteMuseum" />
 
 
         <receiver android:name=".functions.catchtime.SystemShutAndBootReceiver">
