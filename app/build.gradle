@@ -71,7 +71,7 @@ dependencies {
     //阻塞检查
     debugCompile 'com.github.markzhai:blockcanary-android:1.4.0'
     releaseCompile 'com.github.markzhai:blockcanary-no-op:1.4.0'
-    compile 'com.qihoo360.replugin:replugin-host-lib:2.1.0'
+    compile 'com.qihoo360.replugin:replugin-host-lib:2.1.1'
     //Android Architecture Components
 //    compile "android.arch.lifecycle:runtime:1.0.0-alpha3"
 //    compile "android.arch.lifecycle:extensions:1.0.0-alpha3"

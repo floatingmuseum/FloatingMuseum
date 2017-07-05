@@ -29,10 +29,10 @@ dependencies {
     compile 'com.android.support:appcompat-v7:26.+'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
-    compile 'com.qihoo360.replugin:replugin-plugin-lib:2.1.0'
+    compile 'com.qihoo360.replugin:replugin-plugin-lib:2.1.1'
 }
 
-repluginPluginConfig {
-    includedInjectors = ['LoaderActivityInjector', 'ProviderInjector']
-}
+//repluginPluginConfig {
+//    includedInjectors = ['LoaderActivityInjector', 'ProviderInjector']
+//}
 
