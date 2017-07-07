@@ -14,6 +14,8 @@ import com.orhanobut.logger.Logger;
 import com.qihoo360.replugin.RePlugin;
 import com.qihoo360.replugin.model.PluginInfo;
 
+import java.io.File;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -54,17 +56,21 @@ public class RePluginActivity extends BaseActivity implements View.OnClickListen
 
     private void loadPlugin() {
         String pluginPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath().concat("/PluginDemo.apk");
-        Logger.d("插件...插件Apk路径:" + pluginPath);
-        PluginInfo info = RePlugin.install(pluginPath);
-        if (info != null) {
-            isLoadPluginSuccess = true;
-            Logger.d("插件...插件信息:" + info.toString());
+        File pluginFile = new File(pluginPath);
+        Logger.d("插件...插件Apk路径:" + pluginPath + "...文件是否存在:" + pluginFile.exists());
+        if (pluginFile.exists()) {
+            PluginInfo info = RePlugin.install(pluginPath);
+            if (info != null) {
+                boolean isPreloadSuccess = RePlugin.preload(info);
+                isLoadPluginSuccess = true;
+                Logger.d("插件...插件信息:" + info.toString() + "...isPreloadSuccess:" + isPreloadSuccess);
+            }
         }
     }
 
     private void startPlugin() {
         if (isLoadPluginSuccess) {
-            boolean isSuccess = RePlugin.startActivity(this, RePlugin.createIntent("RePluginDemo", "floatingmuseum.replugindemo.PluginActivity"));
+            boolean isSuccess = RePlugin.startActivity(this, RePlugin.createIntent("PluginDemo", "floatingmuseum.replugindemo.PluginActivity"));
             Logger.d("插件...插件Activity打开:" + isSuccess);
         } else {
             ToastUtil.show("插件加载失败.");

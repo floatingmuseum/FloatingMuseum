@@ -4,13 +4,14 @@ buildscript {
     repositories {
         jcenter()
         mavenCentral()
+        mavenLocal()
         maven {
             url  "https://dl.bintray.com/qihoo360/replugin"
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
-        classpath 'com.qihoo360.replugin:replugin-plugin-gradle:2.1.1'
+        classpath 'com.android.tools.build:gradle:2.1.3'
+        classpath 'com.qihoo360.replugin:replugin-plugin-gradle:2.1.2'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -19,6 +20,7 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        mavenLocal()
         mavenCentral()
         maven {
             url  "https://dl.bintray.com/qihoo360/replugin"

@@ -9,6 +9,7 @@ import com.floatingmuseum.androidtest.utils.ToastUtil;
 import com.github.moduth.blockcanary.BlockCanary;
 import com.orhanobut.logger.Logger;
 import com.qihoo360.replugin.RePlugin;
+import com.qihoo360.replugin.RePluginConfig;
 import com.wanjian.cockroach.Cockroach;
 
 import floatingmuseum.sonic.Sonic;
@@ -41,6 +42,8 @@ public class App extends MultiDexApplication {
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
+        RePluginConfig config = new RePluginConfig();
+        config.setVerifySign(BuildConfig.DEBUG);
         RePlugin.App.attachBaseContext(this);
     }
 

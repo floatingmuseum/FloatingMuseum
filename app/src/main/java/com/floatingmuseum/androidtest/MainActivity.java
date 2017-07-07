@@ -18,6 +18,7 @@ import com.orhanobut.logger.Logger;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -45,16 +46,38 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         btThirdParties.setOnClickListener(this);
 
 
-//        List<ResolveInfo> systemAppList = SystemUtil.queryAllLauncherSystemApplication(getPackageManager());
-//        Logger.d("******************************************* Launcher应用...系统应用 *******************************************");
-//        for (ResolveInfo info : systemAppList) {
-//            Logger.d("Launcher应用...应用名:" + info.activityInfo.loadLabel(getPackageManager()).toString() + "...包名:" + info.activityInfo.packageName);
-//        }
-//        List<ResolveInfo> thirdAppList = SystemUtil.queryAllLauncherThirdApplication(getPackageManager());
-//        Logger.d("手机应用******************************************* Launcher应用...第三方应用 *******************************************");
-//        for (ResolveInfo info : thirdAppList) {
-//            Logger.d("Launcher应用...应用名:" + info.activityInfo.loadLabel(getPackageManager()).toString() + "...包名:" + info.activityInfo.packageName);
-//        }
+        List<String> oldList = new ArrayList<>();
+        oldList.add("1");
+        oldList.add("2");
+        oldList.add("3");
+        oldList.add("4");
+        oldList.add("5");
+        oldList.add("6");
+        oldList.add("7");
+        oldList.add("8");
+        oldList.add("9");
+        Logger.d("差集测试...数据库数据:" + oldList);
+        List<String> newList = new ArrayList<>();
+        newList.add("2");
+        newList.add("3");
+        newList.add("4");
+        newList.add("5");
+        newList.add("6");
+        newList.add("7");
+        newList.add("8");
+        newList.add("9");
+        newList.add("10");
+        Logger.d("差集测试...数据库数据:" + newList);
+        long startTime = System.currentTimeMillis();
+        List<String> tempList = new ArrayList<>();
+        tempList.addAll(oldList);
+        boolean isChanged1 = tempList.removeAll(newList);
+        Logger.d("差集测试...需要从数据库删除:" + tempList + "...数据是否改变:" + isChanged1);
+        tempList.clear();
+        tempList.addAll(newList);
+        boolean isChanged2 = tempList.removeAll(oldList);
+        Logger.d("差集测试...需要添加到数据库:" + tempList + "...数据是否改变:" + isChanged2);
+        Logger.d("差集测试...耗时:" + (System.currentTimeMillis() - startTime));
     }
 
     @Override
