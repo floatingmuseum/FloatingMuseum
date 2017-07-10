@@ -55,11 +55,22 @@ public class RePluginActivity extends BaseActivity implements View.OnClickListen
     }
 
     private void loadPlugin() {
+        boolean isPluginInstalled = RePlugin.isPluginInstalled("PluginDemo");
+        if (isPluginInstalled) {
+            isLoadPluginSuccess = true;
+            ToastUtil.show("插件加载成功.");
+        } else {
+            installPlugin();
+        }
+    }
+
+    private void installPlugin() {
         String pluginPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath().concat("/PluginDemo.apk");
         File pluginFile = new File(pluginPath);
-        Logger.d("插件...插件Apk路径:" + pluginPath + "...文件是否存在:" + pluginFile.exists());
+        Logger.d("插件...插件Apk是否存在:" + pluginFile.exists());
         if (pluginFile.exists()) {
             PluginInfo info = RePlugin.install(pluginPath);
+            Logger.d("插件...插件信息:" + info);
             if (info != null) {
                 boolean isPreloadSuccess = RePlugin.preload(info);
                 isLoadPluginSuccess = true;
