@@ -55,7 +55,6 @@ public class App extends MultiDexApplication {
                     @Override
                     public void onInstallPluginSucceed(PluginInfo info) {
                         Logger.d("插件...onInstallPluginSucceed...info:" + info);
-
                     }
 
                     @Override

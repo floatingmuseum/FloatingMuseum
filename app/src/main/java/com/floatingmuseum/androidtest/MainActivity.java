@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 
+import android.os.Environment;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.widget.Button;
@@ -16,6 +17,7 @@ import com.floatingmuseum.androidtest.utils.SystemUtil;
 import com.floatingmuseum.androidtest.views.ViewActivity;
 import com.orhanobut.logger.Logger;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -40,7 +42,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
+        String pluginPath = Environment.getExternalStorageDirectory().getAbsolutePath().concat("/Plugins/PluginDemo.apk");
+//        String pluginPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath().concat("/PluginDemo.apk");
+        File pluginFile = new File(pluginPath);
+        Logger.d("插件...apk是否存在:"+pluginFile.exists());
         btViews.setOnClickListener(this);
         btFunctions.setOnClickListener(this);
         btThirdParties.setOnClickListener(this);

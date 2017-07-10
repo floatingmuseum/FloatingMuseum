@@ -5,14 +5,26 @@
     android:orientation="vertical">
 
     <Button
-        android:id="@+id/bt_load_plugin"
+        android:id="@+id/bt_install_plugin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Load Plugin" />
+        android:text="Install Plugin" />
+
+    <TextView
+        android:id="@+id/tv_plugin_state"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Plugin state:" />
 
     <Button
-        android:id="@+id/bt_open_plugin_app"
+        android:id="@+id/bt_open_plugin_activity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Open plugin" />
+        android:text="Open plugin activity" />
+
+    <Button
+        android:id="@+id/bt_open_plugin_service"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Open plugin service" />
 </LinearLayout>

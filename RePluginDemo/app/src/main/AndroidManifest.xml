@@ -12,10 +12,10 @@
 
         <meta-data
             android:name="com.qihoo360.plugin.name"
-            android:value="PluginDemo"/>
+            android:value="PluginDemo" />
         <meta-data
             android:name="com.qihoo360.plugin.version.ver"
-            android:value="1"/>
+            android:value="3" />
 
         <activity android:name=".PluginActivity">
             <intent-filter>
@@ -24,6 +24,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".OtherActivity" />
+
+        <service android:name=".PluginService" />
+
+        <receiver android:name=".PluginReceiver">
+            <intent-filter>
+                <action android:name="floatingmuserm.plugin.receiver.action"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
