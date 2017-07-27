@@ -11,7 +11,7 @@ import com.floatingmuseum.androidtest.functions.aidl.AidlActivity;
 import com.floatingmuseum.androidtest.functions.analysesystem.AnalyseSystemActivity;
 import com.floatingmuseum.androidtest.functions.autoinstall.AutoInstallActivity;
 import com.floatingmuseum.androidtest.functions.bluetooth.BluetoothActivity;
-import com.floatingmuseum.androidtest.functions.camera.CameraActivity;
+import com.floatingmuseum.androidtest.functions.camera.Camera2Activity;
 import com.floatingmuseum.androidtest.functions.catchtime.CatchTimeActivity;
 import com.floatingmuseum.androidtest.functions.communicate.CommunicateActivity;
 import com.floatingmuseum.androidtest.functions.download.DownloadListActivity;
@@ -136,7 +136,7 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
                 startActivity(ShellActivity.class);
                 break;
             case R.id.bt_camera:
-                startActivity(CameraActivity.class);
+                startActivity(Camera2Activity.class);
                 break;
             case R.id.bt_exception:
                 startActivity(ExceptionActivity.class);

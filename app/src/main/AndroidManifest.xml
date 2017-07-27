@@ -69,7 +69,7 @@
         <activity android:name=".functions.catchtime.CatchTimeActivity" />
         <activity android:name=".functions.download.DownloadListActivity" />
         <activity
-            android:name=".functions.camera.CameraActivity"
+            android:name=".functions.camera.Camera2Activity"
             android:theme="@style/ThemeFullscreen" />
         <activity android:name=".functions.exception.ExceptionActivity" />
         <activity android:name=".functions.analysesystem.AnalyseSystemActivity" />
