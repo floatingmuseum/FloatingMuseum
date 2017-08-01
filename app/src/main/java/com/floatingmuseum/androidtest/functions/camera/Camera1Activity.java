@@ -28,6 +28,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
+import android.text.TextUtils;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Display;
@@ -35,6 +36,7 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import com.floatingmuseum.androidtest.R;
 import com.floatingmuseum.androidtest.base.BaseActivity;
@@ -66,12 +68,18 @@ import io.reactivex.functions.Function;
  */
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-public class Camera1Activity extends BaseActivity {
+public class Camera1Activity extends BaseActivity implements View.OnClickListener {
 
     @BindView(R.id.camera_view)
     AutoFitTextureView cameraView;
     @BindView(R.id.bt_take_picture)
     Button btTakePicture;
+    @BindView(R.id.iv_camera_facing)
+    ImageView ivCameraFacing;
+    @BindView(R.id.iv_flash_mode)
+    ImageView ivFlashMode;
+    @BindView(R.id.iv_settings)
+    ImageView ivSettings;
 
     /**
      * Conversion from screen rotation to JPEG orientation.
@@ -130,6 +138,9 @@ public class Camera1Activity extends BaseActivity {
 
     private CameraManager cameraManager;
     private String cameraID;
+    private String frontCameraID;
+    private String backCameraID;
+    private String externalCameraID;
     private CameraCaptureSession captureSession;
     private CameraDevice device;
     private Size previewSize;
@@ -150,14 +161,31 @@ public class Camera1Activity extends BaseActivity {
         setContentView(R.layout.activity_camera1);
         ButterKnife.bind(this);
 
-        btTakePicture.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                takePicture();
-            }
-        });
+        btTakePicture.setOnClickListener(this);
+        ivCameraFacing.setOnClickListener(this);
+        ivFlashMode.setOnClickListener(this);
+        ivSettings.setOnClickListener(this);
+
+        cameraManager = (CameraManager) getSystemService(CAMERA_SERVICE);
+        defaultDisplay = getWindowManager().getDefaultDisplay();
 
         cameraView.setSurfaceTextureListener(surfaceTextureListener);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.bt_take_picture:
+                takePicture();
+                break;
+            case R.id.iv_camera_facing:
+                switchCamera();
+                break;
+            case R.id.iv_flash_mode:
+                break;
+            case R.id.iv_settings:
+                break;
+        }
     }
 
     @Override
@@ -168,7 +196,7 @@ public class Camera1Activity extends BaseActivity {
         // a camera and start preview from here (otherwise, we wait until the surface is ready in
         // the SurfaceTextureListener).
         if (cameraView.isAvailable()) {
-            openCamera(cameraView.getWidth(), cameraView.getHeight());
+            openCamera(defaultFacing, cameraView.getWidth(), cameraView.getHeight());
         } else {
             cameraView.setSurfaceTextureListener(surfaceTextureListener);
         }
@@ -200,15 +228,13 @@ public class Camera1Activity extends BaseActivity {
         }
     }
 
-    private void openCamera(int width, int height) {
+    private void openCamera(Integer cameraFacing, int width, int height) {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestPermission(Manifest.permission.CAMERA);
             return;
         }
-        cameraManager = (CameraManager) getSystemService(CAMERA_SERVICE);
-        defaultDisplay = getWindowManager().getDefaultDisplay();
         try {
-            setUpCameraOutputs(width, height);
+            setUpCameraOutputs(cameraFacing, width, height);
             configureTransform(width, height);
             if (!mCameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
                 throw new RuntimeException("Time out waiting to lock camera opening.");
@@ -221,21 +247,66 @@ public class Camera1Activity extends BaseActivity {
         }
     }
 
-    private void setUpCameraOutputs(int width, int height) throws CameraAccessException {
+    /**
+     * Switch camera between back and front.
+     */
+    private void switchCamera() {
+        if (TextUtils.isEmpty(cameraID)) {
+            ToastUtil.show("No camera can be used.");
+            return;
+        }
+        if (cameraID.equals(backCameraID)) {
+            if (TextUtils.isEmpty(frontCameraID)) {
+                ToastUtil.show("This device has no front camera.");
+                return;
+            }
+            ivCameraFacing.setImageDrawable(getResources().getDrawable(R.drawable.ic_camera_back_white_36dp, null));
+            closeCamera();
+            defaultFacing = CameraCharacteristics.LENS_FACING_FRONT;
+            openCamera(defaultFacing, cameraView.getWidth(), cameraView.getHeight());
+        } else if (cameraID.equals(frontCameraID)) {
+            if (TextUtils.isEmpty(backCameraID)) {
+                ToastUtil.show("This device has no back camera.");
+                return;
+            }
+            ivCameraFacing.setImageDrawable(getResources().getDrawable(R.drawable.ic_camera_front_white_36dp, null));
+            closeCamera();
+            defaultFacing = CameraCharacteristics.LENS_FACING_BACK;
+            openCamera(defaultFacing, cameraView.getWidth(), cameraView.getHeight());
+        }
+    }
+
+    private void setUpCameraOutputs(Integer cameraFacing, int width, int height) throws CameraAccessException {
         String[] ids = cameraManager.getCameraIdList();
         for (String id : ids) {
             CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(id);
             Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
+            if (facing != null) {
+                if (facing.equals(CameraCharacteristics.LENS_FACING_BACK)) {
+                    backCameraID = id;
+                } else if (facing.equals(CameraCharacteristics.LENS_FACING_FRONT)) {
+                    frontCameraID = id;
+                } else if (facing.equals(CameraCharacteristics.LENS_FACING_EXTERNAL)) {
+                    externalCameraID = id;
+                }
+            }
             //获取默认镜头
-            if (facing != null && facing.equals(defaultFacing)) {
+            if (facing != null && facing.equals(cameraFacing)) {
                 StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
                 if (map != null) {
+                    Size[] outputSize = map.getOutputSizes(ImageFormat.JPEG);
+                    for (Size size : outputSize) {
+                        Logger.d(tag + "...可选择输出分辨率Size:" + size.toString());
+                    }
+                    //默认选择了最大的图片比例
                     Size largest = Collections.max(Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)), new CompareSizesByArea());
+                    Logger.d(tag + "...默认选择最大输出分辨率Size:" + largest.toString());
                     imageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(), ImageFormat.JPEG, /*maxImages*/2);
                     imageReader.setOnImageAvailableListener(imageAvailableListener, null);
 
                     int displayRotation = defaultDisplay.getRotation();
                     sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+                    Logger.d(tag + "...displayRotation:" + displayRotation + "...sensorOrientation:" + sensorOrientation);
                     boolean swappedDimensions = false;
                     switch (displayRotation) {
                         case Surface.ROTATION_0:
@@ -280,7 +351,7 @@ public class Camera1Activity extends BaseActivity {
                     // bus' bandwidth limitation, resulting in gorgeous previews but the storage of
                     // garbage capture data.
                     previewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth, maxPreviewHeight, largest);
-
+                    Logger.d(tag + "...PreviewSize:" + previewSize.toString());
                     // We fit the aspect ratio of TextureView to the size of preview we picked.
                     int orientation = getResources().getConfiguration().orientation;
                     if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -436,6 +507,7 @@ public class Camera1Activity extends BaseActivity {
 
     private void setAutoFlash(CaptureRequest.Builder previewRequestBuilder) {
         if (flashSupported) {
+            //设置闪光灯为自动模式
             previewRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
         }
     }
@@ -477,7 +549,7 @@ public class Camera1Activity extends BaseActivity {
     TextureView.SurfaceTextureListener surfaceTextureListener = new TextureView.SurfaceTextureListener() {
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-            openCamera(width, height);
+            openCamera(defaultFacing, width, height);
         }
 
         @Override
@@ -573,7 +645,7 @@ public class Camera1Activity extends BaseActivity {
                         if (file.exists()) {
                             ToastUtil.show("图片保存在:" + file.getAbsolutePath());
                             Logger.d(tag + "...图片保存成功:" + file.exists() + "..." + file.getAbsolutePath());
-                        }else{
+                        } else {
                             Logger.d(tag + "...图片保存失败:" + file.exists() + "..." + file.getAbsolutePath());
                         }
                     }
@@ -673,15 +745,12 @@ public class Camera1Activity extends BaseActivity {
     private void captureStillPicture() {
         if (device != null) {
             try {
-
-
                 // This is the CaptureRequest.Builder that we use to take a picture.
                 final CaptureRequest.Builder captureBuilder = device.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
                 captureBuilder.addTarget(imageReader.getSurface());
 
                 // Use the same AE and AF modes as the preview.
-                captureBuilder.set(CaptureRequest.CONTROL_AF_MODE,
-                        CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+                captureBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
                 setAutoFlash(captureBuilder);
 
                 // Orientation

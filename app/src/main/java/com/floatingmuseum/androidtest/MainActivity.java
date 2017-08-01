@@ -36,6 +36,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @BindView(R.id.activity_main)
     LinearLayout activityMain;
 
+    private String[] needPermissions = {Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.CAMERA};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +48,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         String pluginPath = Environment.getExternalStorageDirectory().getAbsolutePath().concat("/Plugins/PluginDemo.apk");
 //        String pluginPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath().concat("/PluginDemo.apk");
         File pluginFile = new File(pluginPath);
-        Logger.d("插件...apk是否存在:"+pluginFile.exists());
+        Logger.d("插件...apk是否存在:" + pluginFile.exists());
         btViews.setOnClickListener(this);
         btFunctions.setOnClickListener(this);
         btThirdParties.setOnClickListener(this);
@@ -83,7 +87,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         Logger.d("差集测试...需要添加到数据库:" + tempList + "...数据是否改变:" + isChanged2);
         Logger.d("差集测试...耗时:" + (System.currentTimeMillis() - startTime));
 
-        requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA);
+        requestPermission(needPermissions);
     }
 
     private void requestPermission(String... permissions) {
