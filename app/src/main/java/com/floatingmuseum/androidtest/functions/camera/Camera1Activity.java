@@ -1,10 +1,12 @@
 package com.floatingmuseum.androidtest.functions.camera;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
+import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
@@ -28,15 +30,20 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import com.floatingmuseum.androidtest.R;
 import com.floatingmuseum.androidtest.base.BaseActivity;
@@ -156,6 +163,7 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
     private CaptureRequest previewRequest;
     private Display defaultDisplay;
     private int sensorOrientation;
+    private PopupWindow settingsPopWindow;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -187,8 +195,73 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
                 switchFlashMode();
                 break;
             case R.id.iv_settings:
+                showSettings();
                 break;
         }
+    }
+
+    private void showSettings() {
+        final View settingsPopView = LayoutInflater.from(this).inflate(R.layout.camera_settings_popup, null, false);
+        settingsPopWindow = new PopupWindow(settingsPopView, getPopViewWidth(), getPopViewHeight());
+        settingsPopWindow.setOutsideTouchable(true);
+        TextView tvResolutions = (TextView) settingsPopView.findViewById(R.id.tv_resolutions);
+        tvResolutions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showResolutionsDialog();
+                settingsPopWindow.dismiss();
+            }
+        });
+//        settingsPopWindow.showAsDropDown(ivSettings,-50,100);
+        int[] center = getCenterOfAnchorView(ivSettings);
+        settingsPopWindow.showAsDropDown(ivSettings, center[0], center[1]);
+        Logger.d(tag + "...SettingsPopupWindow...isShowing:" + settingsPopWindow.isShowing());
+    }
+
+    private int[] getCenterOfAnchorView(View anchorView) {
+        int x = -getPopViewWidth() + anchorView.getWidth() / 2;
+        int y = -anchorView.getHeight() / 2;
+        return new int[]{x, y};
+    }
+
+    private int getPopViewWidth() {
+        if (SystemUtil.isLandscape()) {
+            return SystemUtil.getScreenWidth() / 3;
+        } else {
+            return SystemUtil.getScreenWidth() / 2;
+        }
+    }
+
+    private int getPopViewHeight() {
+        if (SystemUtil.isLandscape()) {
+            return (int) (SystemUtil.getScreenHeight() * 0.8);
+        } else {
+            return SystemUtil.getScreenHeight() / 2;
+        }
+    }
+
+    private void showResolutionsDialog() {
+        if (imageResolution.size() == 0) {
+            return;
+        }
+
+        CharSequence[] sizes = new CharSequence[imageResolution.size()];
+        for (int i = 0; i < imageResolution.size(); i++) {
+            sizes[i] = imageResolution.get(i).getWidth() + " x " + imageResolution.get(i).getHeight();
+        }
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setCancelable(true)
+                .setTitle("Resolutions")
+                .setItems(sizes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Logger.d("切换分辨率为:" + imageResolution.get(which).toString());
+                        switchImageResolution(imageResolution.get(which));
+                        dialog.dismiss();
+                    }
+                }).create();
+        dialog.show();
     }
 
     @Override
@@ -299,6 +372,15 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
         }
     }
 
+    private void switchImageResolution(Size size) {
+//        if (null != imageReader) {
+//            imageReader.close();
+//            imageReader = null;
+//        }
+//        imageReader = ImageReader.newInstance(size.getWidth(), size.getHeight(), ImageFormat.JPEG, 2);
+//        imageReader.setOnImageAvailableListener(imageAvailableListener, null);
+    }
+
     private void setUpCameraOutputs(Integer cameraFacing, int width, int height) throws CameraAccessException {
         String[] ids = cameraManager.getCameraIdList();
         for (String id : ids) {
@@ -318,12 +400,18 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
                 StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
                 if (map != null) {
                     Size[] outputSize = map.getOutputSizes(ImageFormat.JPEG);
+                    int[] outputFormats = map.getOutputFormats();
+                    for (int format : outputFormats) {
+                        Logger.d(tag + "...可选择输出格式:" + format);
+                    }
+
+                    imageResolution.addAll(Arrays.asList(outputSize));
                     for (Size size : outputSize) {
-                        Logger.d(tag + "...可选择输出分辨率Size:" + size.toString());
+                        Logger.d(tag + "...可选择输出分辨率:" + size.toString());
                     }
                     //默认选择了最大的图片比例
                     Size largest = Collections.max(Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)), new CompareSizesByArea());
-                    Logger.d(tag + "...默认选择最大输出分辨率Size:" + largest.toString());
+                    Logger.d(tag + "...默认选择最大输出分辨率:" + largest.toString());
                     imageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(), ImageFormat.JPEG, /*maxImages*/2);
                     imageReader.setOnImageAvailableListener(imageAvailableListener, null);
 
@@ -492,6 +580,7 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
             previewRequestBuilder = device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             previewRequestBuilder.addTarget(surface);
 
+            Logger.d(tag+"...createCameraPreviewSession:"+surface.toString()+"..."+imageReader.getSurface().toString());
             device.createCaptureSession(Arrays.asList(surface, imageReader.getSurface()),
                     new CameraCaptureSession.StateCallback() {
 
@@ -509,7 +598,6 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
                                 previewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
                                 // Flash is automatically enabled when necessary.
                                 setFlashMode(previewRequestBuilder);
-
                                 // Finally, we start displaying the camera preview.
                                 previewRequest = previewRequestBuilder.build();
                                 captureSession.setRepeatingRequest(previewRequest, captureCallback, null);
@@ -580,6 +668,9 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (settingsPopWindow != null && settingsPopWindow.isShowing()) {
+            settingsPopWindow.dismiss();
+        }
     }
 
     TextureView.SurfaceTextureListener surfaceTextureListener = new TextureView.SurfaceTextureListener() {
