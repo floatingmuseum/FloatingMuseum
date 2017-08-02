@@ -135,6 +135,8 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
      * @see #captureCallback
      */
     private int state = STATE_PREVIEW;
+    private int flashMode = CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH;
+    private List<Size> imageResolution = new ArrayList<>();
 
     private CameraManager cameraManager;
     private String cameraID;
@@ -182,6 +184,7 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
                 switchCamera();
                 break;
             case R.id.iv_flash_mode:
+                switchFlashMode();
                 break;
             case R.id.iv_settings:
                 break;
@@ -273,6 +276,26 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
             closeCamera();
             defaultFacing = CameraCharacteristics.LENS_FACING_BACK;
             openCamera(defaultFacing, cameraView.getWidth(), cameraView.getHeight());
+        }
+    }
+
+    /**
+     * 切换闪关灯模式
+     */
+    private void switchFlashMode() {
+        if (flashSupported) {
+            if (flashMode == CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH) {//自动变始终关闭
+                flashMode = CaptureRequest.FLASH_MODE_OFF;
+                ivFlashMode.setImageDrawable(getResources().getDrawable(R.drawable.ic_flash_off_white_36dp, null));
+            } else if (flashMode == CaptureRequest.FLASH_MODE_OFF) {//始终关闭变始终打开
+                flashMode = CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH;
+                ivFlashMode.setImageDrawable(getResources().getDrawable(R.drawable.ic_flash_on_white_36dp, null));
+            } else if (flashMode == CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH) {//始终打开变自动
+                flashMode = CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH;
+                ivFlashMode.setImageDrawable(getResources().getDrawable(R.drawable.ic_flash_auto_white_36dp, null));
+            }
+        } else {
+            ToastUtil.show("Flash is not supported.");
         }
     }
 
@@ -485,7 +508,7 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
                                 // Auto focus should be continuous for camera preview.
                                 previewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
                                 // Flash is automatically enabled when necessary.
-                                setAutoFlash(previewRequestBuilder);
+                                setFlashMode(previewRequestBuilder);
 
                                 // Finally, we start displaying the camera preview.
                                 previewRequest = previewRequestBuilder.build();
@@ -505,10 +528,23 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
         }
     }
 
-    private void setAutoFlash(CaptureRequest.Builder previewRequestBuilder) {
+    private void setFlashMode(CaptureRequest.Builder previewRequestBuilder) {
         if (flashSupported) {
             //设置闪光灯为自动模式
-            previewRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
+            switch (flashMode) {
+                case CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH:
+                    Logger.d(tag + "...闪光灯模式:始终打开");
+                case CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH:
+                    Logger.d(tag + "...闪光灯模式:自动");
+                    previewRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, flashMode);
+                    break;
+                case CaptureRequest.FLASH_MODE_OFF:
+                    Logger.d(tag + "...闪光灯模式:始终关闭");
+                    previewRequestBuilder.set(CaptureRequest.FLASH_MODE, flashMode);
+                    break;
+            }
+        } else {
+            ToastUtil.show("Flash is not supported.");
         }
     }
 
@@ -751,7 +787,7 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
 
                 // Use the same AE and AF modes as the preview.
                 captureBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
-                setAutoFlash(captureBuilder);
+                setFlashMode(captureBuilder);
 
                 // Orientation
                 int rotation = defaultDisplay.getRotation();
@@ -800,7 +836,7 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
         try {
             // Reset the auto-focus trigger
             previewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
-            setAutoFlash(previewRequestBuilder);
+            setFlashMode(previewRequestBuilder);
             captureSession.capture(previewRequestBuilder.build(), captureCallback, null);
             // After this, the camera will go back to the normal state of preview.
             state = STATE_PREVIEW;
