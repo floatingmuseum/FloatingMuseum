@@ -466,16 +466,17 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
                     // We fit the aspect ratio of TextureView to the size of preview we picked.
                     int orientation = getResources().getConfiguration().orientation;
                     if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                        cameraView.setAspectRatio(SystemUtil.getScreenWidth(), SystemUtil.getScreenHeight());
-//                        cameraView.setAspectRatio(previewSize.getWidth(), previewSize.getHeight());
+//                        cameraView.setAspectRatio(SystemUtil.getScreenWidth(), SystemUtil.getScreenHeight());
+                        cameraView.setAspectRatio(previewSize.getWidth(), previewSize.getHeight());
                     } else {
-                        cameraView.setAspectRatio(SystemUtil.getScreenWidth(), SystemUtil.getScreenHeight());
-//                        cameraView.setAspectRatio(previewSize.getHeight(), previewSize.getWidth());
+//                        cameraView.setAspectRatio(SystemUtil.getScreenWidth(), SystemUtil.getScreenHeight());
+                        cameraView.setAspectRatio(previewSize.getHeight(), previewSize.getWidth());
                     }
 
                     // Check if the flash is supported.
                     Boolean available = characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
                     flashSupported = available == null ? false : available;
+                    Logger.d(tag + "...是否支持闪光灯:" + available + "..." + flashSupported);
                     cameraID = id;
                 }
             }
@@ -580,7 +581,7 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
             previewRequestBuilder = device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             previewRequestBuilder.addTarget(surface);
 
-            Logger.d(tag+"...createCameraPreviewSession:"+surface.toString()+"..."+imageReader.getSurface().toString());
+            Logger.d(tag + "...createCameraPreviewSession:" + surface.toString() + "..." + imageReader.getSurface().toString());
             device.createCaptureSession(Arrays.asList(surface, imageReader.getSurface()),
                     new CameraCaptureSession.StateCallback() {
 
@@ -632,7 +633,9 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
                     break;
             }
         } else {
-            ToastUtil.show("Flash is not supported.");
+            //不支持闪光灯,有时是因为某个镜头不包含闪光灯功能,比如前置摄像头
+            Logger.d(tag + "...Camera:" + cameraID + " not support flash.");
+//            ToastUtil.show("Flash is not supported.");
         }
     }
 
