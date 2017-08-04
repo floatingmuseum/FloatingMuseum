@@ -8,6 +8,7 @@ import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
@@ -32,6 +33,7 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.util.Range;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Display;
@@ -396,8 +398,12 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
     private void setUpCameraOutputs(Integer cameraFacing, int width, int height) throws CameraAccessException {
         String[] ids = cameraManager.getCameraIdList();
         for (String id : ids) {
+            //获取当前摄像头的参数
             CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(id);
             Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
+
+            getCameraConfig(characteristics);
+
             if (facing != null) {
                 if (facing.equals(CameraCharacteristics.LENS_FACING_BACK)) {
                     backCameraID = id;
@@ -494,6 +500,113 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
                 }
             }
         }
+    }
+
+    private void getCameraConfig(CameraCharacteristics characteristics) {
+        int[] colorCorrections = characteristics.get(CameraCharacteristics.COLOR_CORRECTION_AVAILABLE_ABERRATION_MODES);
+        characteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_ANTIBANDING_MODES);
+        characteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_MODES);
+        characteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES);
+        characteristics.get(CameraCharacteristics.CONTROL_AE_COMPENSATION_RANGE);
+        characteristics.get(CameraCharacteristics.CONTROL_AE_COMPENSATION_STEP);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            characteristics.get(CameraCharacteristics.CONTROL_AE_LOCK_AVAILABLE);
+        }
+        characteristics.get(CameraCharacteristics.CONTROL_AF_AVAILABLE_MODES);
+        characteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_EFFECTS);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            characteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_MODES);
+        }
+        characteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_SCENE_MODES);
+        characteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_VIDEO_STABILIZATION_MODES);
+        characteristics.get(CameraCharacteristics.CONTROL_AWB_AVAILABLE_MODES);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            characteristics.get(CameraCharacteristics.CONTROL_AWB_LOCK_AVAILABLE);
+        }
+        characteristics.get(CameraCharacteristics.CONTROL_MAX_REGIONS_AE);
+        characteristics.get(CameraCharacteristics.CONTROL_MAX_REGIONS_AF);
+        characteristics.get(CameraCharacteristics.CONTROL_MAX_REGIONS_AWB);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            characteristics.get(CameraCharacteristics.CONTROL_POST_RAW_SENSITIVITY_BOOST_RANGE);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            characteristics.get(CameraCharacteristics.DEPTH_DEPTH_IS_EXCLUSIVE);
+        }
+        characteristics.get(CameraCharacteristics.EDGE_AVAILABLE_EDGE_MODES);
+        characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
+        characteristics.get(CameraCharacteristics.HOT_PIXEL_AVAILABLE_HOT_PIXEL_MODES);
+        characteristics.get(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL);
+        characteristics.get(CameraCharacteristics.JPEG_AVAILABLE_THUMBNAIL_SIZES);
+        characteristics.get(CameraCharacteristics.LENS_FACING);//摄像头方向
+        characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_APERTURES);
+        characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS);
+        characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_OPTICAL_STABILIZATION);
+        characteristics.get(CameraCharacteristics.LENS_INFO_FOCUS_DISTANCE_CALIBRATION);
+        characteristics.get(CameraCharacteristics.LENS_INFO_HYPERFOCAL_DISTANCE);
+        characteristics.get(CameraCharacteristics.LENS_INFO_MINIMUM_FOCUS_DISTANCE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            characteristics.get(CameraCharacteristics.LENS_INTRINSIC_CALIBRATION);
+            characteristics.get(CameraCharacteristics.LENS_POSE_ROTATION);
+            characteristics.get(CameraCharacteristics.LENS_POSE_TRANSLATION);
+            characteristics.get(CameraCharacteristics.LENS_RADIAL_DISTORTION);
+        }
+        characteristics.get(CameraCharacteristics.NOISE_REDUCTION_AVAILABLE_NOISE_REDUCTION_MODES);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            characteristics.get(CameraCharacteristics.REPROCESS_MAX_CAPTURE_STALL);
+        }
+        characteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            characteristics.get(CameraCharacteristics.REQUEST_MAX_NUM_INPUT_STREAMS);
+        }
+        characteristics.get(CameraCharacteristics.REQUEST_MAX_NUM_OUTPUT_PROC);
+        characteristics.get(CameraCharacteristics.REQUEST_MAX_NUM_OUTPUT_PROC_STALLING);
+        characteristics.get(CameraCharacteristics.REQUEST_MAX_NUM_OUTPUT_RAW);
+        characteristics.get(CameraCharacteristics.REQUEST_PARTIAL_RESULT_COUNT);
+        characteristics.get(CameraCharacteristics.REQUEST_PIPELINE_MAX_DEPTH);
+        characteristics.get(CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM);
+        characteristics.get(CameraCharacteristics.SCALER_CROPPING_TYPE);
+        characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+        characteristics.get(CameraCharacteristics.SENSOR_AVAILABLE_TEST_PATTERN_MODES);
+        characteristics.get(CameraCharacteristics.SENSOR_BLACK_LEVEL_PATTERN);
+        characteristics.get(CameraCharacteristics.SENSOR_CALIBRATION_TRANSFORM1);
+        characteristics.get(CameraCharacteristics.SENSOR_CALIBRATION_TRANSFORM2);
+        characteristics.get(CameraCharacteristics.SENSOR_COLOR_TRANSFORM1);
+        characteristics.get(CameraCharacteristics.SENSOR_COLOR_TRANSFORM2);
+        characteristics.get(CameraCharacteristics.SENSOR_FORWARD_MATRIX1);
+        characteristics.get(CameraCharacteristics.SENSOR_FORWARD_MATRIX2);
+        characteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE);
+        characteristics.get(CameraCharacteristics.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT);
+        characteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            characteristics.get(CameraCharacteristics.SENSOR_INFO_LENS_SHADING_APPLIED);
+        }
+        characteristics.get(CameraCharacteristics.SENSOR_INFO_MAX_FRAME_DURATION);
+        characteristics.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE);
+        characteristics.get(CameraCharacteristics.SENSOR_INFO_PIXEL_ARRAY_SIZE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            characteristics.get(CameraCharacteristics.SENSOR_INFO_PRE_CORRECTION_ACTIVE_ARRAY_SIZE);
+        }
+        characteristics.get(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE);
+        characteristics.get(CameraCharacteristics.SENSOR_INFO_TIMESTAMP_SOURCE);
+        characteristics.get(CameraCharacteristics.SENSOR_INFO_WHITE_LEVEL);
+        characteristics.get(CameraCharacteristics.SENSOR_MAX_ANALOG_SENSITIVITY);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            characteristics.get(CameraCharacteristics.SENSOR_OPTICAL_BLACK_REGIONS);
+        }
+        characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+        characteristics.get(CameraCharacteristics.SENSOR_REFERENCE_ILLUMINANT1);
+        characteristics.get(CameraCharacteristics.SENSOR_REFERENCE_ILLUMINANT2);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            characteristics.get(CameraCharacteristics.SHADING_AVAILABLE_MODES);
+        }
+        characteristics.get(CameraCharacteristics.STATISTICS_INFO_AVAILABLE_FACE_DETECT_MODES);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            characteristics.get(CameraCharacteristics.STATISTICS_INFO_AVAILABLE_LENS_SHADING_MAP_MODES);
+        }
+        characteristics.get(CameraCharacteristics.STATISTICS_INFO_MAX_FACE_COUNT);
+        characteristics.get(CameraCharacteristics.SYNC_MAX_LATENCY);
+        characteristics.get(CameraCharacteristics.TONEMAP_AVAILABLE_TONE_MAP_MODES);
+        characteristics.get(CameraCharacteristics.TONEMAP_MAX_CURVE_POINTS);
     }
 
     /**
@@ -611,6 +724,7 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
                             try {
                                 // Auto focus should be continuous for camera preview.
                                 previewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+//                                previewRequestBuilder.set(CaptureRequest.SCALER_CROP_REGION,new Rect());
                                 // Flash is automatically enabled when necessary.
                                 setFlashMode(previewRequestBuilder);
                                 // Finally, we start displaying the camera preview.
