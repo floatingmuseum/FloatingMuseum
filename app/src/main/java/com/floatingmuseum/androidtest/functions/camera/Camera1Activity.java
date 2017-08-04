@@ -372,13 +372,25 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
         }
     }
 
+    /**
+     * 选择照片分辨率
+     */
     private void switchImageResolution(Size size) {
-//        if (null != imageReader) {
-//            imageReader.close();
-//            imageReader = null;
-//        }
-//        imageReader = ImageReader.newInstance(size.getWidth(), size.getHeight(), ImageFormat.JPEG, 2);
-//        imageReader.setOnImageAvailableListener(imageAvailableListener, null);
+        /*
+          这里改变了ImageReader的分辨率,然后重新创建了预览画面
+          照片分辨率确实改变了,但不确定这个流程是否正确
+         */
+        if (null != imageReader) {
+            imageReader.close();
+            imageReader = null;
+        }
+        imageReader = ImageReader.newInstance(size.getWidth(), size.getHeight(), ImageFormat.JPEG, 2);
+        imageReader.setOnImageAvailableListener(imageAvailableListener, null);
+        try {
+            createCameraPreviewSession();
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setUpCameraOutputs(Integer cameraFacing, int width, int height) throws CameraAccessException {
@@ -412,7 +424,8 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
                     //默认选择了最大的图片比例
                     Size largest = Collections.max(Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)), new CompareSizesByArea());
                     Logger.d(tag + "...默认选择最大输出分辨率:" + largest.toString());
-                    imageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(), ImageFormat.JPEG, /*maxImages*/2);
+//                    imageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(), ImageFormat.JPEG, /*maxImages*/2);
+                    imageReader = ImageReader.newInstance(240, 320, ImageFormat.JPEG, /*maxImages*/2);
                     imageReader.setOnImageAvailableListener(imageAvailableListener, null);
 
                     int displayRotation = defaultDisplay.getRotation();
@@ -582,6 +595,7 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
             previewRequestBuilder.addTarget(surface);
 
             Logger.d(tag + "...createCameraPreviewSession:" + surface.toString() + "..." + imageReader.getSurface().toString());
+
             device.createCaptureSession(Arrays.asList(surface, imageReader.getSurface()),
                     new CameraCaptureSession.StateCallback() {
 
@@ -679,6 +693,7 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
     TextureView.SurfaceTextureListener surfaceTextureListener = new TextureView.SurfaceTextureListener() {
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+            Logger.d(tag + "...onSurfaceTextureAvailable:width:" + width + "...height:" + height);
             openCamera(defaultFacing, width, height);
         }
 
