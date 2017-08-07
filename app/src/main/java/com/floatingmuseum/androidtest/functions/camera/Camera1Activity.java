@@ -21,6 +21,8 @@ import android.hardware.camera2.CaptureFailure;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
+import android.hardware.camera2.params.BlackLevelPattern;
+import android.hardware.camera2.params.ColorSpaceTransform;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
@@ -34,7 +36,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Range;
+import android.util.Rational;
 import android.util.Size;
+import android.util.SizeF;
 import android.util.SparseIntArray;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -502,111 +506,138 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
         }
     }
 
+    /**
+     * 镜头参数
+     */
     private void getCameraConfig(CameraCharacteristics characteristics) {
-        int[] colorCorrections = characteristics.get(CameraCharacteristics.COLOR_CORRECTION_AVAILABLE_ABERRATION_MODES);
-        characteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_ANTIBANDING_MODES);
-        characteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_MODES);
-        characteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES);
-        characteristics.get(CameraCharacteristics.CONTROL_AE_COMPENSATION_RANGE);
-        characteristics.get(CameraCharacteristics.CONTROL_AE_COMPENSATION_STEP);
+        //所有可以设置的CaptureRequest Key
+        List<CaptureRequest.Key<?>> availableCaptureRequestKeys = characteristics.getAvailableCaptureRequestKeys();
+        //所有可以获取的CaptureResult Key
+        List<CaptureResult.Key<?>> availableCaptureResultKeys = characteristics.getAvailableCaptureResultKeys();
+        //
+        List<CameraCharacteristics.Key<?>> keys = characteristics.getKeys();
+        Logger.d(tag + "...availableCaptureRequestKeys:" + availableCaptureRequestKeys.size() + "...availableCaptureResultKeys:" + availableCaptureResultKeys.size() + "...characteristicsKeys:" + keys.size());
+//        for (CaptureRequest.Key<?> requestKey : availableCaptureRequestKeys) {
+//            Logger.d(tag + "...RequestKey:" + requestKey.getName());
+//        }
+//        for (CaptureResult.Key<?> resultKey : availableCaptureResultKeys) {
+//            Logger.d(tag + "...ResultKey:" + resultKey.getName());
+//        }
+//        for (CameraCharacteristics.Key<?> key : keys) {
+//            Logger.d(tag + "...CameraCharacteristicsKey:" + key.getName());
+//        }
+
+
+        //像差校正模式?
+        int[] aberrationCorrectionModes = characteristics.get(CameraCharacteristics.COLOR_CORRECTION_AVAILABLE_ABERRATION_MODES);
+        //自动曝光反冲带模式?
+        int[] autoExposureAntibandingModes = characteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_ANTIBANDING_MODES);
+        //自动曝光模式?
+        int[] autoExposureModes = characteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_MODES);
+        //帧率范围
+        Range<Integer>[] frameRateRanges = characteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES);
+        Range<Integer> exposureCompensationRanges = characteristics.get(CameraCharacteristics.CONTROL_AE_COMPENSATION_RANGE);
+        Rational exposureCompensationSteps = characteristics.get(CameraCharacteristics.CONTROL_AE_COMPENSATION_STEP);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            characteristics.get(CameraCharacteristics.CONTROL_AE_LOCK_AVAILABLE);
+            Boolean isSupportAELock = characteristics.get(CameraCharacteristics.CONTROL_AE_LOCK_AVAILABLE);
         }
-        characteristics.get(CameraCharacteristics.CONTROL_AF_AVAILABLE_MODES);
-        characteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_EFFECTS);
+        int[] autoFocusModes = characteristics.get(CameraCharacteristics.CONTROL_AF_AVAILABLE_MODES);
+        int[] colorEffects = characteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_EFFECTS);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            characteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_MODES);
+            int[] controlModes = characteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_MODES);
         }
-        characteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_SCENE_MODES);
-        characteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_VIDEO_STABILIZATION_MODES);
-        characteristics.get(CameraCharacteristics.CONTROL_AWB_AVAILABLE_MODES);
+        int[] sceneModes = characteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_SCENE_MODES);
+        int[] videoStabilizationModes = characteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_VIDEO_STABILIZATION_MODES);
+        int[] autoWhiteBalanceModes = characteristics.get(CameraCharacteristics.CONTROL_AWB_AVAILABLE_MODES);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            characteristics.get(CameraCharacteristics.CONTROL_AWB_LOCK_AVAILABLE);
+            Boolean isSupportAWBLock = characteristics.get(CameraCharacteristics.CONTROL_AWB_LOCK_AVAILABLE);
         }
-        characteristics.get(CameraCharacteristics.CONTROL_MAX_REGIONS_AE);
-        characteristics.get(CameraCharacteristics.CONTROL_MAX_REGIONS_AF);
-        characteristics.get(CameraCharacteristics.CONTROL_MAX_REGIONS_AWB);
+        Integer controlMaxRegionsAE = characteristics.get(CameraCharacteristics.CONTROL_MAX_REGIONS_AE);
+        Integer controlMaxRegionsAF = characteristics.get(CameraCharacteristics.CONTROL_MAX_REGIONS_AF);
+        Integer controlMaxRegionsAWB = characteristics.get(CameraCharacteristics.CONTROL_MAX_REGIONS_AWB);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            characteristics.get(CameraCharacteristics.CONTROL_POST_RAW_SENSITIVITY_BOOST_RANGE);
+            Range<Integer> boostsRange = characteristics.get(CameraCharacteristics.CONTROL_POST_RAW_SENSITIVITY_BOOST_RANGE);
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            characteristics.get(CameraCharacteristics.DEPTH_DEPTH_IS_EXCLUSIVE);
+            Boolean isExclusive = characteristics.get(CameraCharacteristics.DEPTH_DEPTH_IS_EXCLUSIVE);
         }
-        characteristics.get(CameraCharacteristics.EDGE_AVAILABLE_EDGE_MODES);
-        characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
-        characteristics.get(CameraCharacteristics.HOT_PIXEL_AVAILABLE_HOT_PIXEL_MODES);
-        characteristics.get(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL);
-        characteristics.get(CameraCharacteristics.JPEG_AVAILABLE_THUMBNAIL_SIZES);
-        characteristics.get(CameraCharacteristics.LENS_FACING);//摄像头方向
-        characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_APERTURES);
-        characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS);
-        characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_OPTICAL_STABILIZATION);
-        characteristics.get(CameraCharacteristics.LENS_INFO_FOCUS_DISTANCE_CALIBRATION);
-        characteristics.get(CameraCharacteristics.LENS_INFO_HYPERFOCAL_DISTANCE);
-        characteristics.get(CameraCharacteristics.LENS_INFO_MINIMUM_FOCUS_DISTANCE);
+        int[] edgeEnhancementModes = characteristics.get(CameraCharacteristics.EDGE_AVAILABLE_EDGE_MODES);
+        Boolean hasFlashUnit = characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
+        int[] pixelCorrectionModes = characteristics.get(CameraCharacteristics.HOT_PIXEL_AVAILABLE_HOT_PIXEL_MODES);
+        Integer supportedHardwareLevel = characteristics.get(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL);
+        Size[] JPEGThumbnailSizes = characteristics.get(CameraCharacteristics.JPEG_AVAILABLE_THUMBNAIL_SIZES);
+        Integer cameraFacing = characteristics.get(CameraCharacteristics.LENS_FACING);//摄像头方向
+        float[] apertureSizeValues = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_APERTURES);
+        float[] neutralDensityFilterValues = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FILTER_DENSITIES);
+        float[] focalLengths = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS);
+        int[] opticalImageStabilizationModes = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_OPTICAL_STABILIZATION);
+        Integer lensFocusDistanceCalibrationQuality = characteristics.get(CameraCharacteristics.LENS_INFO_FOCUS_DISTANCE_CALIBRATION);
+        Float hyperfocalDistance = characteristics.get(CameraCharacteristics.LENS_INFO_HYPERFOCAL_DISTANCE);
+        Float shortestDistance = characteristics.get(CameraCharacteristics.LENS_INFO_MINIMUM_FOCUS_DISTANCE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            characteristics.get(CameraCharacteristics.LENS_INTRINSIC_CALIBRATION);
-            characteristics.get(CameraCharacteristics.LENS_POSE_ROTATION);
-            characteristics.get(CameraCharacteristics.LENS_POSE_TRANSLATION);
-            characteristics.get(CameraCharacteristics.LENS_RADIAL_DISTORTION);
+            float[] intrinsicCalibration = characteristics.get(CameraCharacteristics.LENS_INTRINSIC_CALIBRATION);
+            float[] poseRotation = characteristics.get(CameraCharacteristics.LENS_POSE_ROTATION);
+            float[] poseTranslation = characteristics.get(CameraCharacteristics.LENS_POSE_TRANSLATION);
+            float[] radialDistortion = characteristics.get(CameraCharacteristics.LENS_RADIAL_DISTORTION);
         }
-        characteristics.get(CameraCharacteristics.NOISE_REDUCTION_AVAILABLE_NOISE_REDUCTION_MODES);
+        int[] noiseReductionModes = characteristics.get(CameraCharacteristics.NOISE_REDUCTION_AVAILABLE_NOISE_REDUCTION_MODES);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            characteristics.get(CameraCharacteristics.REPROCESS_MAX_CAPTURE_STALL);
+            Integer maxCaptureStall = characteristics.get(CameraCharacteristics.REPROCESS_MAX_CAPTURE_STALL);
         }
-        characteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES);
+        int[] availableCapabilties = characteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            characteristics.get(CameraCharacteristics.REQUEST_MAX_NUM_INPUT_STREAMS);
+            Integer maxInputStreams = characteristics.get(CameraCharacteristics.REQUEST_MAX_NUM_INPUT_STREAMS);
         }
-        characteristics.get(CameraCharacteristics.REQUEST_MAX_NUM_OUTPUT_PROC);
-        characteristics.get(CameraCharacteristics.REQUEST_MAX_NUM_OUTPUT_PROC_STALLING);
-        characteristics.get(CameraCharacteristics.REQUEST_MAX_NUM_OUTPUT_RAW);
-        characteristics.get(CameraCharacteristics.REQUEST_PARTIAL_RESULT_COUNT);
-        characteristics.get(CameraCharacteristics.REQUEST_PIPELINE_MAX_DEPTH);
-        characteristics.get(CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM);
-        characteristics.get(CameraCharacteristics.SCALER_CROPPING_TYPE);
-        characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-        characteristics.get(CameraCharacteristics.SENSOR_AVAILABLE_TEST_PATTERN_MODES);
-        characteristics.get(CameraCharacteristics.SENSOR_BLACK_LEVEL_PATTERN);
-        characteristics.get(CameraCharacteristics.SENSOR_CALIBRATION_TRANSFORM1);
-        characteristics.get(CameraCharacteristics.SENSOR_CALIBRATION_TRANSFORM2);
-        characteristics.get(CameraCharacteristics.SENSOR_COLOR_TRANSFORM1);
-        characteristics.get(CameraCharacteristics.SENSOR_COLOR_TRANSFORM2);
-        characteristics.get(CameraCharacteristics.SENSOR_FORWARD_MATRIX1);
-        characteristics.get(CameraCharacteristics.SENSOR_FORWARD_MATRIX2);
-        characteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE);
-        characteristics.get(CameraCharacteristics.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT);
-        characteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE);
+        Integer maxOutputProc = characteristics.get(CameraCharacteristics.REQUEST_MAX_NUM_OUTPUT_PROC);
+        Integer maxOutputProcStalling = characteristics.get(CameraCharacteristics.REQUEST_MAX_NUM_OUTPUT_PROC_STALLING);
+        Integer maxOutputRaw = characteristics.get(CameraCharacteristics.REQUEST_MAX_NUM_OUTPUT_RAW);
+        Integer partialResultCount = characteristics.get(CameraCharacteristics.REQUEST_PARTIAL_RESULT_COUNT);
+        Byte pipelineMaxDepth = characteristics.get(CameraCharacteristics.REQUEST_PIPELINE_MAX_DEPTH);
+        Float scalerAvailableMaxDigitalZoom = characteristics.get(CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM);
+        Integer cropType = characteristics.get(CameraCharacteristics.SCALER_CROPPING_TYPE);
+        StreamConfigurationMap streamConfigurationMap = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+        int[] sensorTestPatternModes = characteristics.get(CameraCharacteristics.SENSOR_AVAILABLE_TEST_PATTERN_MODES);
+        BlackLevelPattern blackLevelPattern = characteristics.get(CameraCharacteristics.SENSOR_BLACK_LEVEL_PATTERN);
+        ColorSpaceTransform sensorCalibrationTransform1 = characteristics.get(CameraCharacteristics.SENSOR_CALIBRATION_TRANSFORM1);
+        ColorSpaceTransform sensorCalibrationTransform2 = characteristics.get(CameraCharacteristics.SENSOR_CALIBRATION_TRANSFORM2);
+        ColorSpaceTransform sensorColorTransform1 = characteristics.get(CameraCharacteristics.SENSOR_COLOR_TRANSFORM1);
+        ColorSpaceTransform sensorColorTransform2 = characteristics.get(CameraCharacteristics.SENSOR_COLOR_TRANSFORM2);
+        ColorSpaceTransform sensorForwardMatrix1 = characteristics.get(CameraCharacteristics.SENSOR_FORWARD_MATRIX1);
+        ColorSpaceTransform sensorForwardMatrix2 = characteristics.get(CameraCharacteristics.SENSOR_FORWARD_MATRIX2);
+        Rect sensorInfoActiveArraySize = characteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE);
+        Integer arrangementOfColorFilters = characteristics.get(CameraCharacteristics.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT);
+        Range<Long> rangeOfExposureTimes = characteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            characteristics.get(CameraCharacteristics.SENSOR_INFO_LENS_SHADING_APPLIED);
+            Boolean lensShadingApplied = characteristics.get(CameraCharacteristics.SENSOR_INFO_LENS_SHADING_APPLIED);
         }
-        characteristics.get(CameraCharacteristics.SENSOR_INFO_MAX_FRAME_DURATION);
-        characteristics.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE);
-        characteristics.get(CameraCharacteristics.SENSOR_INFO_PIXEL_ARRAY_SIZE);
+        Long maxFrameDuration = characteristics.get(CameraCharacteristics.SENSOR_INFO_MAX_FRAME_DURATION);
+        SizeF physicalDimensionOffullPixelArray = characteristics.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE);
+        Size fullPixelArray = characteristics.get(CameraCharacteristics.SENSOR_INFO_PIXEL_ARRAY_SIZE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            characteristics.get(CameraCharacteristics.SENSOR_INFO_PRE_CORRECTION_ACTIVE_ARRAY_SIZE);
+            Rect preCorrectionActiveArraySize = characteristics.get(CameraCharacteristics.SENSOR_INFO_PRE_CORRECTION_ACTIVE_ARRAY_SIZE);
         }
-        characteristics.get(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE);
-        characteristics.get(CameraCharacteristics.SENSOR_INFO_TIMESTAMP_SOURCE);
-        characteristics.get(CameraCharacteristics.SENSOR_INFO_WHITE_LEVEL);
-        characteristics.get(CameraCharacteristics.SENSOR_MAX_ANALOG_SENSITIVITY);
+        Range<Integer> sensitivitiesRange = characteristics.get(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE);
+        Integer timestampSource = characteristics.get(CameraCharacteristics.SENSOR_INFO_TIMESTAMP_SOURCE);
+        Integer maxRawValue = characteristics.get(CameraCharacteristics.SENSOR_INFO_WHITE_LEVEL);
+        Integer maxAnalogSensitivity = characteristics.get(CameraCharacteristics.SENSOR_MAX_ANALOG_SENSITIVITY);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            characteristics.get(CameraCharacteristics.SENSOR_OPTICAL_BLACK_REGIONS);
+            Rect[] blackRegions = characteristics.get(CameraCharacteristics.SENSOR_OPTICAL_BLACK_REGIONS);
         }
-        characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
-        characteristics.get(CameraCharacteristics.SENSOR_REFERENCE_ILLUMINANT1);
-        characteristics.get(CameraCharacteristics.SENSOR_REFERENCE_ILLUMINANT2);
+        Integer sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+        Integer sensorReferenceIlluminant1 = characteristics.get(CameraCharacteristics.SENSOR_REFERENCE_ILLUMINANT1);
+        Byte sensorReferenceIlluminant2 = characteristics.get(CameraCharacteristics.SENSOR_REFERENCE_ILLUMINANT2);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            characteristics.get(CameraCharacteristics.SHADING_AVAILABLE_MODES);
+            int[] shadingModes = characteristics.get(CameraCharacteristics.SHADING_AVAILABLE_MODES);
         }
-        characteristics.get(CameraCharacteristics.STATISTICS_INFO_AVAILABLE_FACE_DETECT_MODES);
+        int[] faceDetectionModes = characteristics.get(CameraCharacteristics.STATISTICS_INFO_AVAILABLE_FACE_DETECT_MODES);
+        boolean[] hotPixelMapOutputModes = characteristics.get(CameraCharacteristics.STATISTICS_INFO_AVAILABLE_HOT_PIXEL_MAP_MODES);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            characteristics.get(CameraCharacteristics.STATISTICS_INFO_AVAILABLE_LENS_SHADING_MAP_MODES);
+            int[] lensShadingMapOutputModes = characteristics.get(CameraCharacteristics.STATISTICS_INFO_AVAILABLE_LENS_SHADING_MAP_MODES);
         }
-        characteristics.get(CameraCharacteristics.STATISTICS_INFO_MAX_FACE_COUNT);
-        characteristics.get(CameraCharacteristics.SYNC_MAX_LATENCY);
-        characteristics.get(CameraCharacteristics.TONEMAP_AVAILABLE_TONE_MAP_MODES);
-        characteristics.get(CameraCharacteristics.TONEMAP_MAX_CURVE_POINTS);
+        Integer maxFaceCount = characteristics.get(CameraCharacteristics.STATISTICS_INFO_MAX_FACE_COUNT);
+        Integer maxLatency = characteristics.get(CameraCharacteristics.SYNC_MAX_LATENCY);
+        int[] tonemappingModes = characteristics.get(CameraCharacteristics.TONEMAP_AVAILABLE_TONE_MAP_MODES);
+        Integer maxCurvePoints = characteristics.get(CameraCharacteristics.TONEMAP_MAX_CURVE_POINTS);
     }
 
     /**
