@@ -149,7 +149,6 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
      */
     private int state = STATE_PREVIEW;
     private int flashMode = CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH;
-    private List<Size> imageResolution = new ArrayList<>();
 
     private CameraManager cameraManager;
     private String cameraID;
@@ -247,13 +246,14 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
     }
 
     private void showResolutionsDialog() {
-        if (imageResolution.size() == 0) {
+        final List<Size> resolutions = Camera2ConfigManager.getInstance().getOutputSizes();
+        if (resolutions.size() == 0) {
             return;
         }
 
-        CharSequence[] sizes = new CharSequence[imageResolution.size()];
-        for (int i = 0; i < imageResolution.size(); i++) {
-            sizes[i] = imageResolution.get(i).getWidth() + " x " + imageResolution.get(i).getHeight();
+        CharSequence[] sizes = new CharSequence[resolutions.size()];
+        for (int i = 0; i < resolutions.size(); i++) {
+            sizes[i] = resolutions.get(i).getWidth() + " x " + resolutions.get(i).getHeight();
         }
 
         AlertDialog dialog = new AlertDialog.Builder(this)
@@ -262,8 +262,8 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
                 .setItems(sizes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Logger.d("切换分辨率为:" + imageResolution.get(which).toString());
-                        switchImageResolution(imageResolution.get(which));
+                        Logger.d("切换分辨率为:" + resolutions.get(which).toString());
+                        switchImageResolution(resolutions.get(which));
                         dialog.dismiss();
                     }
                 }).create();
@@ -390,6 +390,7 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
             imageReader.close();
             imageReader = null;
         }
+        // TODO: 2017/8/8 在Camera2ConfigManager中保存这个分辨率为默认
         imageReader = ImageReader.newInstance(size.getWidth(), size.getHeight(), ImageFormat.JPEG, 2);
         imageReader.setOnImageAvailableListener(imageAvailableListener, null);
         try {
@@ -404,9 +405,8 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
         for (String id : ids) {
             //获取当前摄像头的参数
             CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(id);
-            Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
-
-            getCameraConfig(characteristics);
+            Camera2ConfigManager.getInstance().init(characteristics);
+            Integer facing = Camera2ConfigManager.getInstance().getCameraFacing();
 
             if (facing != null) {
                 if (facing.equals(CameraCharacteristics.LENS_FACING_BACK)) {
@@ -419,225 +419,89 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
             }
             //获取默认镜头
             if (facing != null && facing.equals(cameraFacing)) {
-                StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-                if (map != null) {
-                    Size[] outputSize = map.getOutputSizes(ImageFormat.JPEG);
-                    int[] outputFormats = map.getOutputFormats();
-                    for (int format : outputFormats) {
-                        Logger.d(tag + "...可选择输出格式:" + format);
-                    }
-
-                    imageResolution.addAll(Arrays.asList(outputSize));
-                    for (Size size : outputSize) {
-                        Logger.d(tag + "...可选择输出分辨率:" + size.toString());
-                    }
-                    //默认选择了最大的图片比例
-                    Size largest = Collections.max(Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)), new CompareSizesByArea());
-                    Logger.d(tag + "...默认选择最大输出分辨率:" + largest.toString());
-//                    imageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(), ImageFormat.JPEG, /*maxImages*/2);
-                    imageReader = ImageReader.newInstance(240, 320, ImageFormat.JPEG, /*maxImages*/2);
-                    imageReader.setOnImageAvailableListener(imageAvailableListener, null);
-
-                    int displayRotation = defaultDisplay.getRotation();
-                    sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
-                    Logger.d(tag + "...displayRotation:" + displayRotation + "...sensorOrientation:" + sensorOrientation);
-                    boolean swappedDimensions = false;
-                    switch (displayRotation) {
-                        case Surface.ROTATION_0:
-                        case Surface.ROTATION_180:
-                            if (sensorOrientation == 90 || sensorOrientation == 270) {
-                                swappedDimensions = true;
-                            }
-                            break;
-                        case Surface.ROTATION_90:
-                        case Surface.ROTATION_270:
-                            if (sensorOrientation == 0 || sensorOrientation == 180) {
-                                swappedDimensions = true;
-                            }
-                            break;
-                        default:
-                            Logger.e(tag + " Display rotation is invalid: " + displayRotation);
-                    }
-
-                    Point displaySize = new Point();
-                    defaultDisplay.getSize(displaySize);
-                    int rotatedPreviewWidth = width;
-                    int rotatedPreviewHeight = height;
-                    int maxPreviewWidth = displaySize.x;
-                    int maxPreviewHeight = displaySize.y;
-
-                    if (swappedDimensions) {
-                        rotatedPreviewWidth = height;
-                        rotatedPreviewHeight = width;
-                        maxPreviewWidth = displaySize.y;
-                        maxPreviewHeight = displaySize.x;
-                    }
-
-                    if (maxPreviewWidth > MAX_PREVIEW_WIDTH) {
-                        maxPreviewWidth = MAX_PREVIEW_WIDTH;
-                    }
-
-                    if (maxPreviewHeight > MAX_PREVIEW_HEIGHT) {
-                        maxPreviewHeight = MAX_PREVIEW_HEIGHT;
-                    }
-
-                    // Danger, W.R.! Attempting to use too large a preview size could  exceed the camera
-                    // bus' bandwidth limitation, resulting in gorgeous previews but the storage of
-                    // garbage capture data.
-                    previewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth, maxPreviewHeight, largest);
-                    Logger.d(tag + "...PreviewSize:" + previewSize.toString());
-                    // We fit the aspect ratio of TextureView to the size of preview we picked.
-                    int orientation = getResources().getConfiguration().orientation;
-                    if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-//                        cameraView.setAspectRatio(SystemUtil.getScreenWidth(), SystemUtil.getScreenHeight());
-                        cameraView.setAspectRatio(previewSize.getWidth(), previewSize.getHeight());
-                    } else {
-//                        cameraView.setAspectRatio(SystemUtil.getScreenWidth(), SystemUtil.getScreenHeight());
-                        cameraView.setAspectRatio(previewSize.getHeight(), previewSize.getWidth());
-                    }
-
-                    // Check if the flash is supported.
-                    Boolean available = characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
-                    flashSupported = available == null ? false : available;
-                    Logger.d(tag + "...是否支持闪光灯:" + available + "..." + flashSupported);
-                    cameraID = id;
+                List<Size> outputSizes = Camera2ConfigManager.getInstance().getOutputSizes();
+                int[] outputFormats = Camera2ConfigManager.getInstance().getOutputFormats();
+                for (int format : outputFormats) {
+                    Logger.d(tag + "...可选择输出格式:" + format);
                 }
+
+                for (Size size : outputSizes) {
+                    Logger.d(tag + "...可选择输出分辨率:" + size.toString());
+                }
+
+
+                //默认选择了最大的图片比例
+                Size largest = Camera2ConfigManager.getInstance().getOutputSize();
+                Logger.d(tag + "...默认选择最大输出分辨率:" + largest.toString());
+//                    imageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(), ImageFormat.JPEG, /*maxImages*/2);
+                imageReader = ImageReader.newInstance(240, 320, ImageFormat.JPEG, /*maxImages*/2);
+                imageReader.setOnImageAvailableListener(imageAvailableListener, null);
+
+                int displayRotation = defaultDisplay.getRotation();
+                sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+                Logger.d(tag + "...displayRotation:" + displayRotation + "...sensorOrientation:" + sensorOrientation);
+                boolean swappedDimensions = false;
+                switch (displayRotation) {
+                    case Surface.ROTATION_0:
+                    case Surface.ROTATION_180:
+                        if (sensorOrientation == 90 || sensorOrientation == 270) {
+                            swappedDimensions = true;
+                        }
+                        break;
+                    case Surface.ROTATION_90:
+                    case Surface.ROTATION_270:
+                        if (sensorOrientation == 0 || sensorOrientation == 180) {
+                            swappedDimensions = true;
+                        }
+                        break;
+                    default:
+                        Logger.e(tag + " Display rotation is invalid: " + displayRotation);
+                }
+
+                Point displaySize = new Point();
+                defaultDisplay.getSize(displaySize);
+                int rotatedPreviewWidth = width;
+                int rotatedPreviewHeight = height;
+                int maxPreviewWidth = displaySize.x;
+                int maxPreviewHeight = displaySize.y;
+
+                if (swappedDimensions) {
+                    rotatedPreviewWidth = height;
+                    rotatedPreviewHeight = width;
+                    maxPreviewWidth = displaySize.y;
+                    maxPreviewHeight = displaySize.x;
+                }
+
+                if (maxPreviewWidth > MAX_PREVIEW_WIDTH) {
+                    maxPreviewWidth = MAX_PREVIEW_WIDTH;
+                }
+
+                if (maxPreviewHeight > MAX_PREVIEW_HEIGHT) {
+                    maxPreviewHeight = MAX_PREVIEW_HEIGHT;
+                }
+
+                // Danger, W.R.! Attempting to use too large a preview size could  exceed the camera
+                // bus' bandwidth limitation, resulting in gorgeous previews but the storage of
+                // garbage capture data.
+                previewSize = chooseOptimalSize(Camera2ConfigManager.getInstance().getOutputSizes(SurfaceTexture.class), rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth, maxPreviewHeight, largest);
+                Logger.d(tag + "...PreviewSize:" + previewSize.toString());
+                // We fit the aspect ratio of TextureView to the size of preview we picked.
+                int orientation = getResources().getConfiguration().orientation;
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+//                        cameraView.setAspectRatio(SystemUtil.getScreenWidth(), SystemUtil.getScreenHeight());
+//                    cameraView.setAspectRatio(previewSize.getWidth(), previewSize.getHeight());
+                } else {
+//                        cameraView.setAspectRatio(SystemUtil.getScreenWidth(), SystemUtil.getScreenHeight());
+//                    cameraView.setAspectRatio(previewSize.getHeight(), previewSize.getWidth());
+                }
+
+                // Check if the flash is supported.
+                Boolean available = characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
+                flashSupported = available == null ? false : available;
+                Logger.d(tag + "...是否支持闪光灯:" + available + "..." + flashSupported);
+                cameraID = id;
             }
         }
-    }
-
-    /**
-     * 镜头参数
-     */
-    private void getCameraConfig(CameraCharacteristics characteristics) {
-        //所有可以设置的CaptureRequest Key
-        List<CaptureRequest.Key<?>> availableCaptureRequestKeys = characteristics.getAvailableCaptureRequestKeys();
-        //所有可以获取的CaptureResult Key
-        List<CaptureResult.Key<?>> availableCaptureResultKeys = characteristics.getAvailableCaptureResultKeys();
-        //
-        List<CameraCharacteristics.Key<?>> keys = characteristics.getKeys();
-        Logger.d(tag + "...availableCaptureRequestKeys:" + availableCaptureRequestKeys.size() + "...availableCaptureResultKeys:" + availableCaptureResultKeys.size() + "...characteristicsKeys:" + keys.size());
-//        for (CaptureRequest.Key<?> requestKey : availableCaptureRequestKeys) {
-//            Logger.d(tag + "...RequestKey:" + requestKey.getName());
-//        }
-//        for (CaptureResult.Key<?> resultKey : availableCaptureResultKeys) {
-//            Logger.d(tag + "...ResultKey:" + resultKey.getName());
-//        }
-//        for (CameraCharacteristics.Key<?> key : keys) {
-//            Logger.d(tag + "...CameraCharacteristicsKey:" + key.getName());
-//        }
-
-
-        //像差校正模式?
-        int[] aberrationCorrectionModes = characteristics.get(CameraCharacteristics.COLOR_CORRECTION_AVAILABLE_ABERRATION_MODES);
-        //自动曝光反冲带模式?
-        int[] autoExposureAntibandingModes = characteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_ANTIBANDING_MODES);
-        //自动曝光模式?
-        int[] autoExposureModes = characteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_MODES);
-        //帧率范围
-        Range<Integer>[] frameRateRanges = characteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES);
-        Range<Integer> exposureCompensationRanges = characteristics.get(CameraCharacteristics.CONTROL_AE_COMPENSATION_RANGE);
-        Rational exposureCompensationSteps = characteristics.get(CameraCharacteristics.CONTROL_AE_COMPENSATION_STEP);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Boolean isSupportAELock = characteristics.get(CameraCharacteristics.CONTROL_AE_LOCK_AVAILABLE);
-        }
-        int[] autoFocusModes = characteristics.get(CameraCharacteristics.CONTROL_AF_AVAILABLE_MODES);
-        int[] colorEffects = characteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_EFFECTS);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            int[] controlModes = characteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_MODES);
-        }
-        int[] sceneModes = characteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_SCENE_MODES);
-        int[] videoStabilizationModes = characteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_VIDEO_STABILIZATION_MODES);
-        int[] autoWhiteBalanceModes = characteristics.get(CameraCharacteristics.CONTROL_AWB_AVAILABLE_MODES);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Boolean isSupportAWBLock = characteristics.get(CameraCharacteristics.CONTROL_AWB_LOCK_AVAILABLE);
-        }
-        Integer controlMaxRegionsAE = characteristics.get(CameraCharacteristics.CONTROL_MAX_REGIONS_AE);
-        Integer controlMaxRegionsAF = characteristics.get(CameraCharacteristics.CONTROL_MAX_REGIONS_AF);
-        Integer controlMaxRegionsAWB = characteristics.get(CameraCharacteristics.CONTROL_MAX_REGIONS_AWB);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Range<Integer> boostsRange = characteristics.get(CameraCharacteristics.CONTROL_POST_RAW_SENSITIVITY_BOOST_RANGE);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Boolean isExclusive = characteristics.get(CameraCharacteristics.DEPTH_DEPTH_IS_EXCLUSIVE);
-        }
-        int[] edgeEnhancementModes = characteristics.get(CameraCharacteristics.EDGE_AVAILABLE_EDGE_MODES);
-        Boolean hasFlashUnit = characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
-        int[] pixelCorrectionModes = characteristics.get(CameraCharacteristics.HOT_PIXEL_AVAILABLE_HOT_PIXEL_MODES);
-        Integer supportedHardwareLevel = characteristics.get(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL);
-        Size[] JPEGThumbnailSizes = characteristics.get(CameraCharacteristics.JPEG_AVAILABLE_THUMBNAIL_SIZES);
-        Integer cameraFacing = characteristics.get(CameraCharacteristics.LENS_FACING);//摄像头方向
-        float[] apertureSizeValues = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_APERTURES);
-        float[] neutralDensityFilterValues = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FILTER_DENSITIES);
-        float[] focalLengths = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS);
-        int[] opticalImageStabilizationModes = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_OPTICAL_STABILIZATION);
-        Integer lensFocusDistanceCalibrationQuality = characteristics.get(CameraCharacteristics.LENS_INFO_FOCUS_DISTANCE_CALIBRATION);
-        Float hyperfocalDistance = characteristics.get(CameraCharacteristics.LENS_INFO_HYPERFOCAL_DISTANCE);
-        Float shortestDistance = characteristics.get(CameraCharacteristics.LENS_INFO_MINIMUM_FOCUS_DISTANCE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            float[] intrinsicCalibration = characteristics.get(CameraCharacteristics.LENS_INTRINSIC_CALIBRATION);
-            float[] poseRotation = characteristics.get(CameraCharacteristics.LENS_POSE_ROTATION);
-            float[] poseTranslation = characteristics.get(CameraCharacteristics.LENS_POSE_TRANSLATION);
-            float[] radialDistortion = characteristics.get(CameraCharacteristics.LENS_RADIAL_DISTORTION);
-        }
-        int[] noiseReductionModes = characteristics.get(CameraCharacteristics.NOISE_REDUCTION_AVAILABLE_NOISE_REDUCTION_MODES);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Integer maxCaptureStall = characteristics.get(CameraCharacteristics.REPROCESS_MAX_CAPTURE_STALL);
-        }
-        int[] availableCapabilties = characteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Integer maxInputStreams = characteristics.get(CameraCharacteristics.REQUEST_MAX_NUM_INPUT_STREAMS);
-        }
-        Integer maxOutputProc = characteristics.get(CameraCharacteristics.REQUEST_MAX_NUM_OUTPUT_PROC);
-        Integer maxOutputProcStalling = characteristics.get(CameraCharacteristics.REQUEST_MAX_NUM_OUTPUT_PROC_STALLING);
-        Integer maxOutputRaw = characteristics.get(CameraCharacteristics.REQUEST_MAX_NUM_OUTPUT_RAW);
-        Integer partialResultCount = characteristics.get(CameraCharacteristics.REQUEST_PARTIAL_RESULT_COUNT);
-        Byte pipelineMaxDepth = characteristics.get(CameraCharacteristics.REQUEST_PIPELINE_MAX_DEPTH);
-        Float scalerAvailableMaxDigitalZoom = characteristics.get(CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM);
-        Integer cropType = characteristics.get(CameraCharacteristics.SCALER_CROPPING_TYPE);
-        StreamConfigurationMap streamConfigurationMap = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-        int[] sensorTestPatternModes = characteristics.get(CameraCharacteristics.SENSOR_AVAILABLE_TEST_PATTERN_MODES);
-        BlackLevelPattern blackLevelPattern = characteristics.get(CameraCharacteristics.SENSOR_BLACK_LEVEL_PATTERN);
-        ColorSpaceTransform sensorCalibrationTransform1 = characteristics.get(CameraCharacteristics.SENSOR_CALIBRATION_TRANSFORM1);
-        ColorSpaceTransform sensorCalibrationTransform2 = characteristics.get(CameraCharacteristics.SENSOR_CALIBRATION_TRANSFORM2);
-        ColorSpaceTransform sensorColorTransform1 = characteristics.get(CameraCharacteristics.SENSOR_COLOR_TRANSFORM1);
-        ColorSpaceTransform sensorColorTransform2 = characteristics.get(CameraCharacteristics.SENSOR_COLOR_TRANSFORM2);
-        ColorSpaceTransform sensorForwardMatrix1 = characteristics.get(CameraCharacteristics.SENSOR_FORWARD_MATRIX1);
-        ColorSpaceTransform sensorForwardMatrix2 = characteristics.get(CameraCharacteristics.SENSOR_FORWARD_MATRIX2);
-        Rect sensorInfoActiveArraySize = characteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE);
-        Integer arrangementOfColorFilters = characteristics.get(CameraCharacteristics.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT);
-        Range<Long> rangeOfExposureTimes = characteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Boolean lensShadingApplied = characteristics.get(CameraCharacteristics.SENSOR_INFO_LENS_SHADING_APPLIED);
-        }
-        Long maxFrameDuration = characteristics.get(CameraCharacteristics.SENSOR_INFO_MAX_FRAME_DURATION);
-        SizeF physicalDimensionOffullPixelArray = characteristics.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE);
-        Size fullPixelArray = characteristics.get(CameraCharacteristics.SENSOR_INFO_PIXEL_ARRAY_SIZE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Rect preCorrectionActiveArraySize = characteristics.get(CameraCharacteristics.SENSOR_INFO_PRE_CORRECTION_ACTIVE_ARRAY_SIZE);
-        }
-        Range<Integer> sensitivitiesRange = characteristics.get(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE);
-        Integer timestampSource = characteristics.get(CameraCharacteristics.SENSOR_INFO_TIMESTAMP_SOURCE);
-        Integer maxRawValue = characteristics.get(CameraCharacteristics.SENSOR_INFO_WHITE_LEVEL);
-        Integer maxAnalogSensitivity = characteristics.get(CameraCharacteristics.SENSOR_MAX_ANALOG_SENSITIVITY);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Rect[] blackRegions = characteristics.get(CameraCharacteristics.SENSOR_OPTICAL_BLACK_REGIONS);
-        }
-        Integer sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
-        Integer sensorReferenceIlluminant1 = characteristics.get(CameraCharacteristics.SENSOR_REFERENCE_ILLUMINANT1);
-        Byte sensorReferenceIlluminant2 = characteristics.get(CameraCharacteristics.SENSOR_REFERENCE_ILLUMINANT2);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            int[] shadingModes = characteristics.get(CameraCharacteristics.SHADING_AVAILABLE_MODES);
-        }
-        int[] faceDetectionModes = characteristics.get(CameraCharacteristics.STATISTICS_INFO_AVAILABLE_FACE_DETECT_MODES);
-        boolean[] hotPixelMapOutputModes = characteristics.get(CameraCharacteristics.STATISTICS_INFO_AVAILABLE_HOT_PIXEL_MAP_MODES);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            int[] lensShadingMapOutputModes = characteristics.get(CameraCharacteristics.STATISTICS_INFO_AVAILABLE_LENS_SHADING_MAP_MODES);
-        }
-        Integer maxFaceCount = characteristics.get(CameraCharacteristics.STATISTICS_INFO_MAX_FACE_COUNT);
-        Integer maxLatency = characteristics.get(CameraCharacteristics.SYNC_MAX_LATENCY);
-        int[] tonemappingModes = characteristics.get(CameraCharacteristics.TONEMAP_AVAILABLE_TONE_MAP_MODES);
-        Integer maxCurvePoints = characteristics.get(CameraCharacteristics.TONEMAP_MAX_CURVE_POINTS);
     }
 
     /**
@@ -678,15 +542,18 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
         // Pick the smallest of those big enough. If there is no one big enough, pick the
         // largest of those not big enough.
         if (bigEnough.size() > 0) {
-            return Collections.min(bigEnough, new CompareSizesByArea());
+            return Collections.min(bigEnough, new Camera2ConfigManager.CompareSizesByArea());
         } else if (notBigEnough.size() > 0) {
-            return Collections.max(notBigEnough, new CompareSizesByArea());
+            return Collections.max(notBigEnough, new Camera2ConfigManager.CompareSizesByArea());
         } else {
             Logger.e(tag + " Couldn't find any suitable preview size");
             return choices[0];
         }
     }
 
+    /**
+     * 设备旋转时,调整预览画面的显示
+     */
     private void configureTransform(int width, int height) {
         if (null == previewSize) {
             return;
@@ -700,9 +567,7 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
         if (Surface.ROTATION_90 == rotation || Surface.ROTATION_270 == rotation) {
             bufferRect.offset(centerX - bufferRect.centerX(), centerY - bufferRect.centerY());
             matrix.setRectToRect(viewRect, bufferRect, Matrix.ScaleToFit.FILL);
-            float scale = Math.max(
-                    (float) height / previewSize.getHeight(),
-                    (float) width / previewSize.getWidth());
+            float scale = Math.max((float) height / previewSize.getHeight(), (float) width / previewSize.getWidth());
             matrix.postScale(scale, scale, centerX, centerY);
             matrix.postRotate(90 * (rotation - 2), centerX, centerY);
         } else if (Surface.ROTATION_180 == rotation) {
@@ -1116,16 +981,5 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
         }
     }
 
-    /**
-     * Compares two {@code Size}s based on their areas.
-     */
-    private static class CompareSizesByArea implements Comparator<Size> {
 
-        @Override
-        public int compare(Size lhs, Size rhs) {
-            // We cast here to ensure the multiplications won't overflow
-            return Long.signum((long) lhs.getWidth() * lhs.getHeight() -
-                    (long) rhs.getWidth() * rhs.getHeight());
-        }
-    }
 }
