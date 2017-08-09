@@ -1,7 +1,10 @@
 package com.floatingmuseum.androidtest.functions.camera;
 
 import android.Manifest;
+import android.app.job.JobInfo;
+import android.content.ComponentName;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.ImageFormat;
@@ -26,6 +29,8 @@ import android.hardware.camera2.params.ColorSpaceTransform;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -51,6 +56,7 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.floatingmuseum.androidtest.BuildConfig;
 import com.floatingmuseum.androidtest.R;
 import com.floatingmuseum.androidtest.base.BaseActivity;
 import com.floatingmuseum.androidtest.utils.RxUtil;
@@ -433,8 +439,8 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
                 //默认选择了最大的图片比例
                 Size largest = Camera2ConfigManager.getInstance().getOutputSize();
                 Logger.d(tag + "...默认选择最大输出分辨率:" + largest.toString());
-//                    imageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(), ImageFormat.JPEG, /*maxImages*/2);
-                imageReader = ImageReader.newInstance(240, 320, ImageFormat.JPEG, /*maxImages*/2);
+                imageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(), ImageFormat.JPEG, /*maxImages*/2);
+//                imageReader = ImageReader.newInstance(240, 320, ImageFormat.JPEG, /*maxImages*/2);
                 imageReader.setOnImageAvailableListener(imageAvailableListener, null);
 
                 int displayRotation = defaultDisplay.getRotation();
@@ -766,7 +772,13 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
             return;
         }
         Logger.d(tag + "...拍照信息:format:" + image.getFormat() + "...width:" + image.getWidth() + "...height:" + image.getHeight() + "...时间戳:" + image.getTimestamp() + "..." + image.getPlanes()[0].getBuffer().remaining());
-        File photoFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), System.currentTimeMillis() + ".jpg");
+
+        // TODO: 2017/8/9 保存地址待可选
+        File dir = new File(Environment.getExternalStorageDirectory() + "/FloatingMuseum-Pictures");
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        File photoFile = new File(dir, System.currentTimeMillis() + ".jpg");
         Observable.just(photoFile)
                 .map(new Function<File, File>() {
                     @Override
@@ -798,6 +810,7 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
                     @Override
                     public void accept(@io.reactivex.annotations.NonNull File file) throws Exception {
                         if (file.exists()) {
+                            showPhoto(file);
                             ToastUtil.show("图片保存在:" + file.getAbsolutePath());
                             Logger.d(tag + "...图片保存成功:" + file.exists() + "..." + file.getAbsolutePath());
                         } else {
@@ -811,6 +824,20 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
                         throwable.printStackTrace();
                     }
                 });
+    }
+
+    /**
+     * 刷新设备中的图库
+     */
+    private void showPhoto(File photoFile) {
+        MediaScannerConnection.scanFile(this, new String[]{photoFile.getAbsolutePath()}, null, new MediaScannerConnection.OnScanCompletedListener() {
+            @Override
+            public void onScanCompleted(String path, Uri uri) {
+                Logger.d(tag + "...showPhoto...onScanCompleted");
+                sendBroadcast(new Intent("android.hardware.action.NEW_PICTURE", uri));
+                sendBroadcast(new Intent("com.android.camera.NEW_PICTURE", uri));
+            }
+        });
     }
 
     CameraCaptureSession.CaptureCallback captureCallback = new CameraCaptureSession.CaptureCallback() {
