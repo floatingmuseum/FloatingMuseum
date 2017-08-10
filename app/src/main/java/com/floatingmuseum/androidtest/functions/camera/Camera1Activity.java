@@ -1,17 +1,13 @@
 package com.floatingmuseum.androidtest.functions.camera;
 
 import android.Manifest;
-import android.app.job.JobInfo;
-import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
-import android.graphics.PixelFormat;
 import android.graphics.Point;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
@@ -24,9 +20,6 @@ import android.hardware.camera2.CaptureFailure;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
-import android.hardware.camera2.params.BlackLevelPattern;
-import android.hardware.camera2.params.ColorSpaceTransform;
-import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaScannerConnection;
@@ -40,23 +33,18 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
-import android.util.Range;
-import android.util.Rational;
 import android.util.Size;
-import android.util.SizeF;
 import android.util.SparseIntArray;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import com.floatingmuseum.androidtest.BuildConfig;
 import com.floatingmuseum.androidtest.R;
 import com.floatingmuseum.androidtest.base.BaseActivity;
 import com.floatingmuseum.androidtest.utils.RxUtil;
@@ -71,7 +59,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -173,7 +160,7 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
     private CaptureRequest.Builder previewRequestBuilder;
     private CaptureRequest previewRequest;
     private Display defaultDisplay;
-    private int sensorOrientation;
+    private Integer sensorOrientation;
     private PopupWindow settingsPopWindow;
 
     @Override
@@ -252,7 +239,7 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
     }
 
     private void showResolutionsDialog() {
-        final List<Size> resolutions = Camera2ConfigManager.getInstance().getOutputSizes();
+        final List<Size> resolutions = Camera2ConfigManager.getInstance().getOutputSizes(cameraID);
         if (resolutions.size() == 0) {
             return;
         }
@@ -284,6 +271,7 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
         // a camera and start preview from here (otherwise, we wait until the surface is ready in
         // the SurfaceTextureListener).
         if (cameraView.isAvailable()) {
+            Logger.d(tag + "...onResume...openCamera");
             openCamera(defaultFacing, cameraView.getWidth(), cameraView.getHeight());
         } else {
             cameraView.setSurfaceTextureListener(surfaceTextureListener);
@@ -411,8 +399,8 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
         for (String id : ids) {
             //获取当前摄像头的参数
             CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(id);
-            Camera2ConfigManager.getInstance().init(characteristics);
-            Integer facing = Camera2ConfigManager.getInstance().getCameraFacing();
+            Camera2ConfigManager.getInstance().init(id, characteristics);
+            Integer facing = Camera2ConfigManager.getInstance().getCameraFacing(id);
 
             if (facing != null) {
                 if (facing.equals(CameraCharacteristics.LENS_FACING_BACK)) {
@@ -425,26 +413,19 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
             }
             //获取默认镜头
             if (facing != null && facing.equals(cameraFacing)) {
-                List<Size> outputSizes = Camera2ConfigManager.getInstance().getOutputSizes();
-                int[] outputFormats = Camera2ConfigManager.getInstance().getOutputFormats();
+                int[] outputFormats = Camera2ConfigManager.getInstance().getOutputFormats(id);
                 for (int format : outputFormats) {
                     Logger.d(tag + "...可选择输出格式:" + format);
                 }
 
-                for (Size size : outputSizes) {
-                    Logger.d(tag + "...可选择输出分辨率:" + size.toString());
-                }
-
-
                 //默认选择了最大的图片比例
-                Size largest = Camera2ConfigManager.getInstance().getOutputSize();
-                Logger.d(tag + "...默认选择最大输出分辨率:" + largest.toString());
+                Size largest = Camera2ConfigManager.getInstance().getOutputSize(id);
                 imageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(), ImageFormat.JPEG, /*maxImages*/2);
 //                imageReader = ImageReader.newInstance(240, 320, ImageFormat.JPEG, /*maxImages*/2);
                 imageReader.setOnImageAvailableListener(imageAvailableListener, null);
 
                 int displayRotation = defaultDisplay.getRotation();
-                sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+                sensorOrientation = Camera2ConfigManager.getInstance().getSensorOrientation(id);
                 Logger.d(tag + "...displayRotation:" + displayRotation + "...sensorOrientation:" + sensorOrientation);
                 boolean swappedDimensions = false;
                 switch (displayRotation) {
@@ -489,16 +470,16 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
                 // Danger, W.R.! Attempting to use too large a preview size could  exceed the camera
                 // bus' bandwidth limitation, resulting in gorgeous previews but the storage of
                 // garbage capture data.
-                previewSize = chooseOptimalSize(Camera2ConfigManager.getInstance().getOutputSizes(SurfaceTexture.class), rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth, maxPreviewHeight, largest);
+                previewSize = chooseOptimalSize(Camera2ConfigManager.getInstance().getOutputSizes(id, SurfaceTexture.class), rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth, maxPreviewHeight, largest);
                 Logger.d(tag + "...PreviewSize:" + previewSize.toString());
                 // We fit the aspect ratio of TextureView to the size of preview we picked.
                 int orientation = getResources().getConfiguration().orientation;
                 if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
 //                        cameraView.setAspectRatio(SystemUtil.getScreenWidth(), SystemUtil.getScreenHeight());
-//                    cameraView.setAspectRatio(previewSize.getWidth(), previewSize.getHeight());
+                    cameraView.setAspectRatio(previewSize.getWidth(), previewSize.getHeight());
                 } else {
 //                        cameraView.setAspectRatio(SystemUtil.getScreenWidth(), SystemUtil.getScreenHeight());
-//                    cameraView.setAspectRatio(previewSize.getHeight(), previewSize.getWidth());
+                    cameraView.setAspectRatio(previewSize.getHeight(), previewSize.getWidth());
                 }
 
                 // Check if the flash is supported.
@@ -527,6 +508,10 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
      * @return The optimal {@code Size}, or an arbitrary one if none were big enough
      */
     private Size chooseOptimalSize(Size[] choices, int textureViewWidth, int textureViewHeight, int maxWidth, int maxHeight, Size aspectRatio) {
+        for (Size size : choices) {
+            Logger.d(tag + "...optimalSize...choices..." + size.toString());
+        }
+        Logger.d(tag + "...optimalSize...textureViewWidth:" + textureViewWidth + "...textureViewHeight:" + textureViewHeight + "...maxWidth:" + maxWidth + "...maxHeight:" + maxHeight + "...aspectRatio:" + aspectRatio.toString());
         // Collect the supported resolutions that are at least as big as the preview Surface
         List<Size> bigEnough = new ArrayList<>();
         // Collect the supported resolutions that are smaller than the preview Surface
@@ -534,8 +519,7 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
         int w = aspectRatio.getWidth();
         int h = aspectRatio.getHeight();
         for (Size option : choices) {
-            if (option.getWidth() <= maxWidth && option.getHeight() <= maxHeight &&
-                    option.getHeight() == option.getWidth() * h / w) {
+            if (option.getWidth() <= maxWidth && option.getHeight() <= maxHeight && option.getHeight() == option.getWidth() * h / w) {
                 if (option.getWidth() >= textureViewWidth &&
                         option.getHeight() >= textureViewHeight) {
                     bigEnough.add(option);
@@ -603,6 +587,7 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
         if (texture != null) {
             // We configure the size of default buffer to be the size of camera preview we want.
             texture.setDefaultBufferSize(previewSize.getWidth(), previewSize.getHeight());
+//            Logger.d(tag + "...CameraView宽:" + cameraView.getWidth() + "...高:" + cameraView.getHeight());
             // This is the output Surface we need to start preview.
             Surface surface = new Surface(texture);
             // We set up a CaptureRequest.Builder with the output Surface.
@@ -709,7 +694,7 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
     TextureView.SurfaceTextureListener surfaceTextureListener = new TextureView.SurfaceTextureListener() {
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-            Logger.d(tag + "...onSurfaceTextureAvailable:width:" + width + "...height:" + height);
+            Logger.d(tag + "...onSurfaceTextureAvailable:width:" + width + "...height:" + height + "...openCamera");
             openCamera(defaultFacing, width, height);
         }
 
@@ -826,20 +811,6 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
                 });
     }
 
-    /**
-     * 刷新设备中的图库
-     */
-    private void showPhoto(File photoFile) {
-        MediaScannerConnection.scanFile(this, new String[]{photoFile.getAbsolutePath()}, null, new MediaScannerConnection.OnScanCompletedListener() {
-            @Override
-            public void onScanCompleted(String path, Uri uri) {
-                Logger.d(tag + "...showPhoto...onScanCompleted");
-                sendBroadcast(new Intent("android.hardware.action.NEW_PICTURE", uri));
-                sendBroadcast(new Intent("com.android.camera.NEW_PICTURE", uri));
-            }
-        });
-    }
-
     CameraCaptureSession.CaptureCallback captureCallback = new CameraCaptureSession.CaptureCallback() {
 
         private void process(CaptureResult result) {
@@ -924,6 +895,9 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
         }
     };
 
+    /**
+     * 捕捉固定图片
+     */
     private void captureStillPicture() {
         if (device != null) {
             try {
@@ -958,6 +932,20 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * 刷新设备中的图库
+     */
+    private void showPhoto(File photoFile) {
+        MediaScannerConnection.scanFile(this, new String[]{photoFile.getAbsolutePath()}, null, new MediaScannerConnection.OnScanCompletedListener() {
+            @Override
+            public void onScanCompleted(String path, Uri uri) {
+                Logger.d(tag + "...showPhoto...onScanCompleted");
+                sendBroadcast(new Intent("android.hardware.action.NEW_PICTURE", uri));
+                sendBroadcast(new Intent("com.android.camera.NEW_PICTURE", uri));
+            }
+        });
     }
 
     /**
@@ -1007,6 +995,4 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
             e.printStackTrace();
         }
     }
-
-
 }

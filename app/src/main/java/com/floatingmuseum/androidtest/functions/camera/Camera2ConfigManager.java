@@ -22,7 +22,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collector;
 
 /**
  * Created by Floatingmuseum on 2017/8/1.
@@ -33,10 +36,10 @@ public class Camera2ConfigManager {
 
     private static Camera2ConfigManager manager;
     private String tag = Camera2ConfigManager.class.getSimpleName();
-    private Integer cameraFacing;
-    private StreamConfigurationMap streamConfigurationMap;
-    private List<Size> outputSizeList = new ArrayList<>();
-    private Size outputSize;
+    private String currentCameraID;
+    private Map<String, Size> outputSize = new HashMap<>();
+    private Map<String, List<Size>> outputSizes = new HashMap<>();
+    private Map<String, CameraCharacteristics> cameraConfig = new HashMap<>();
 
     private Camera2ConfigManager() {
     }
@@ -52,7 +55,8 @@ public class Camera2ConfigManager {
         return manager;
     }
 
-    public void init(CameraCharacteristics characteristics) {
+    public void init(String cameraID, CameraCharacteristics characteristics) {
+
         //所有可以设置的CaptureRequest Key
         List<CaptureRequest.Key<?>> availableCaptureRequestKeys = characteristics.getAvailableCaptureRequestKeys();
         //所有可以获取的CaptureResult Key
@@ -69,6 +73,12 @@ public class Camera2ConfigManager {
 //        for (CameraCharacteristics.Key<?> key : keys) {
 //            Logger.d(tag + "...CameraCharacteristicsKey:" + key.getName());
 //        }
+
+        cameraConfig.put(cameraID, characteristics);
+
+        if (true) {
+            return;
+        }
 
 
         //像差校正模式?
@@ -110,7 +120,7 @@ public class Camera2ConfigManager {
         Integer supportedHardwareLevel = characteristics.get(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL);
         Size[] JPEGThumbnailSizes = characteristics.get(CameraCharacteristics.JPEG_AVAILABLE_THUMBNAIL_SIZES);
         //摄像头方向
-        cameraFacing = characteristics.get(CameraCharacteristics.LENS_FACING);
+        Integer cameraFacing = characteristics.get(CameraCharacteristics.LENS_FACING);
         float[] apertureSizeValues = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_APERTURES);
         float[] neutralDensityFilterValues = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FILTER_DENSITIES);
         float[] focalLengths = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS);
@@ -139,8 +149,8 @@ public class Camera2ConfigManager {
         Byte pipelineMaxDepth = characteristics.get(CameraCharacteristics.REQUEST_PIPELINE_MAX_DEPTH);
         Float scalerAvailableMaxDigitalZoom = characteristics.get(CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM);
         Integer cropType = characteristics.get(CameraCharacteristics.SCALER_CROPPING_TYPE);
-        streamConfigurationMap = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-        initOutputSizes();
+        StreamConfigurationMap streamConfigurationMap = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+
         int[] sensorTestPatternModes = characteristics.get(CameraCharacteristics.SENSOR_AVAILABLE_TEST_PATTERN_MODES);
         BlackLevelPattern blackLevelPattern = characteristics.get(CameraCharacteristics.SENSOR_BLACK_LEVEL_PATTERN);
         ColorSpaceTransform sensorCalibrationTransform1 = characteristics.get(CameraCharacteristics.SENSOR_CALIBRATION_TRANSFORM1);
@@ -185,52 +195,73 @@ public class Camera2ConfigManager {
         Integer maxCurvePoints = characteristics.get(CameraCharacteristics.TONEMAP_MAX_CURVE_POINTS);
     }
 
-    private void initOutputSizes() {
-        Size[] outputSizes = streamConfigurationMap.getOutputSizes(ImageFormat.JPEG);
-        outputSizeList.clear();
-        outputSizeList.addAll(Arrays.asList(outputSizes));
-        outputSize = Collections.max(outputSizeList, new CompareSizesByArea());
-    }
-
     /**
      * 摄像头朝向
      */
-    public Integer getCameraFacing() {
-        return cameraFacing;
+    public Integer getCameraFacing(String cameraID) {
+        return cameraConfig.get(cameraID).get(CameraCharacteristics.LENS_FACING);
     }
 
     /**
      * 获取输出分辨率,默认是最大分辨率
      */
-    public Size getOutputSize() {
-        return outputSize;
+    public Size getOutputSize(String cameraID) {
+        Logger.d(tag + "...当前默认输出分辨率:" + outputSize.toString());
+        if (outputSize.containsKey(cameraID)) {
+            return outputSize.get(cameraID);
+        } else {
+            List<Size> outputSizeList = getOutputSizes(cameraID);
+            if (outputSizeList.isEmpty()) {
+                // 应该不会出现null吧
+                return null;
+            } else {
+                Size size = Collections.max(outputSizeList, new CompareSizesByArea());
+                outputSize.put(cameraID, size);
+                return size;
+            }
+        }
     }
 
     /**
      * 可输出分辨率
      */
-    public List<Size> getOutputSizes() {
-//        Size[] rawSize = streamConfigurationMap.getOutputSizes(ImageFormat.RAW_SENSOR);
-//        Size[] raw10Size = streamConfigurationMap.getOutputSizes(ImageFormat.RAW10);
-//        Size[] raw12Size = streamConfigurationMap.getOutputSizes(ImageFormat.RAW12);
-//        Size[] rawPrivateSize = streamConfigurationMap.getOutputSizes(ImageFormat.PRIVATE);
-        Logger.d(tag + "..." + streamConfigurationMap.toString());
-        return outputSizeList;
+    public List<Size> getOutputSizes(String cameraID) {
+        if (outputSizes.containsKey(cameraID)) {
+            return outputSizes.get(cameraID);
+        } else {
+            StreamConfigurationMap map = cameraConfig.get(cameraID).get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+            if (map != null) {
+                Size[] sizes = map.getOutputSizes(ImageFormat.JPEG);
+                List<Size> newSizeList = new ArrayList<>();
+                newSizeList.addAll(Arrays.asList(sizes));
+                outputSizes.put(cameraID, newSizeList);
+                return newSizeList;
+            } else {
+                return new ArrayList<>();
+            }
+        }
     }
 
     /**
      * 可输出分辨率
      */
     @Nullable
-    public <T> Size[] getOutputSizes(Class<T> clazz) {
-        return streamConfigurationMap.getOutputSizes(clazz);
+    public <T> Size[] getOutputSizes(String cameraID, Class<T> clazz) {
+        return cameraConfig.get(cameraID).get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getOutputSizes(clazz);
     }
 
     /**
      * 可输出格式
      */
-    public int[] getOutputFormats() {
-        return streamConfigurationMap.getOutputFormats();
+    public int[] getOutputFormats(String cameraID) {
+        return cameraConfig.get(cameraID).get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getOutputFormats();
+    }
+
+    /**
+     * 获取传感器方向
+     */
+    public Integer getSensorOrientation(String cameraID) {
+        return cameraConfig.get(cameraID).get(CameraCharacteristics.SENSOR_ORIENTATION);
     }
 
     /**
