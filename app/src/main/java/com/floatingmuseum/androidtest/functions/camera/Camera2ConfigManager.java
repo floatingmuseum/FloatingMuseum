@@ -25,7 +25,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
 
 /**
  * Created by Floatingmuseum on 2017/8/1.
@@ -35,7 +34,7 @@ import java.util.stream.Collector;
 public class Camera2ConfigManager {
 
     private static Camera2ConfigManager manager;
-    private String tag = Camera2ConfigManager.class.getSimpleName();
+    private String tag = Camera2ConfigManager.class.getSimpleName() + "日志";
     private String currentCameraID;
     private Map<String, Size> outputSize = new HashMap<>();
     private Map<String, List<Size>> outputSizes = new HashMap<>();

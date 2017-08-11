@@ -70,7 +70,10 @@
         <activity android:name=".functions.download.DownloadListActivity" />
         <activity
             android:name=".functions.camera.Camera1Activity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="portrait"
             android:theme="@style/ThemeFullscreen" />
+
         <activity
             android:name=".functions.camera.Camera2Activity"
             android:theme="@style/ThemeFullscreen" />

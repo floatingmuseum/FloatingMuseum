@@ -99,7 +99,7 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
         ORIENTATIONS.append(Surface.ROTATION_270, 180);
     }
 
-    private String tag = Camera1Activity.class.getSimpleName();
+    private String tag = Camera1Activity.class.getSimpleName() + "日志";
 
     /**
      * Camera state: Showing camera preview.
@@ -428,22 +428,22 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
                 sensorOrientation = Camera2ConfigManager.getInstance().getSensorOrientation(id);
                 Logger.d(tag + "...displayRotation:" + displayRotation + "...sensorOrientation:" + sensorOrientation);
                 boolean swappedDimensions = false;
-                switch (displayRotation) {
-                    case Surface.ROTATION_0:
-                    case Surface.ROTATION_180:
-                        if (sensorOrientation == 90 || sensorOrientation == 270) {
-                            swappedDimensions = true;
-                        }
-                        break;
-                    case Surface.ROTATION_90:
-                    case Surface.ROTATION_270:
-                        if (sensorOrientation == 0 || sensorOrientation == 180) {
-                            swappedDimensions = true;
-                        }
-                        break;
-                    default:
-                        Logger.e(tag + " Display rotation is invalid: " + displayRotation);
-                }
+//                switch (displayRotation) {
+//                    case Surface.ROTATION_0:
+//                    case Surface.ROTATION_180:
+//                        if (sensorOrientation == 90 || sensorOrientation == 270) {
+//                            swappedDimensions = true;
+//                        }
+//                        break;
+//                    case Surface.ROTATION_90:
+//                    case Surface.ROTATION_270:
+//                        if (sensorOrientation == 0 || sensorOrientation == 180) {
+//                            swappedDimensions = true;
+//                        }
+//                        break;
+//                    default:
+//                        Logger.e(tag + " Display rotation is invalid: " + displayRotation);
+//                }
 
                 Point displaySize = new Point();
                 defaultDisplay.getSize(displaySize);
@@ -471,7 +471,7 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
                 // bus' bandwidth limitation, resulting in gorgeous previews but the storage of
                 // garbage capture data.
                 previewSize = chooseOptimalSize(Camera2ConfigManager.getInstance().getOutputSizes(id, SurfaceTexture.class), rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth, maxPreviewHeight, largest);
-                Logger.d(tag + "...PreviewSize:" + previewSize.toString());
+                Logger.d(tag + "...PreviewSize:" + previewSize.toString() + "...屏幕分辨率...width:" + SystemUtil.getScreenWidth() + "...height:" + SystemUtil.getScreenHeight());
                 // We fit the aspect ratio of TextureView to the size of preview we picked.
                 int orientation = getResources().getConfiguration().orientation;
                 if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -520,8 +520,7 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
         int h = aspectRatio.getHeight();
         for (Size option : choices) {
             if (option.getWidth() <= maxWidth && option.getHeight() <= maxHeight && option.getHeight() == option.getWidth() * h / w) {
-                if (option.getWidth() >= textureViewWidth &&
-                        option.getHeight() >= textureViewHeight) {
+                if (option.getWidth() >= textureViewWidth && option.getHeight() >= textureViewHeight) {
                     bigEnough.add(option);
                 } else {
                     notBigEnough.add(option);
