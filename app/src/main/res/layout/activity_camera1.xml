@@ -11,22 +11,36 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <ImageView
-        android:id="@+id/iv_flash_mode"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="10dp"
-        app:srcCompat="@drawable/ic_flash_auto_white_36dp" />
+        android:layout_alignParentBottom="true">
 
-    <ImageView
-        android:id="@+id/iv_camera_facing"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_margin="10dp"
-        app:srcCompat="@drawable/ic_camera_front_white_36dp" />
+        <ImageView
+            android:id="@+id/iv_flash_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_margin="10dp"
+            app:srcCompat="@drawable/ic_flash_auto_white_36dp" />
+
+        <ImageView
+            android:id="@+id/iv_camera_facing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="10dp"
+            app:srcCompat="@drawable/ic_camera_front_white_36dp" />
+
+        <Button
+            android:id="@+id/bt_take_picture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"
+            android:text="Take picture" />
+    </RelativeLayout>
 
     <ImageView
         android:id="@+id/iv_settings"
@@ -36,11 +50,5 @@
         android:layout_margin="10dp"
         app:srcCompat="@drawable/ic_settings_white_36dp" />
 
-    <Button
-        android:id="@+id/bt_take_picture"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="Take picture" />
+
 </RelativeLayout>

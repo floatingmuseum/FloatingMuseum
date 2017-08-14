@@ -8,6 +8,7 @@ import android.content.res.Configuration;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
@@ -129,11 +130,14 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
      * Max preview width that is guaranteed by Camera2 API
      */
     private static final int MAX_PREVIEW_WIDTH = 1920;
+//    private static final int MAX_PREVIEW_WIDTH = SystemUtil.getScreenWidth();
 
     /**
      * Max preview height that is guaranteed by Camera2 API
      */
     private static final int MAX_PREVIEW_HEIGHT = 1080;
+//    private static final int MAX_PREVIEW_HEIGHT = SystemUtil.getScreenHeight();
+
     private Integer defaultFacing = CameraCharacteristics.LENS_FACING_BACK;
     /**
      * The current state of camera state for taking pictures.
@@ -471,9 +475,9 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
                 // bus' bandwidth limitation, resulting in gorgeous previews but the storage of
                 // garbage capture data.
                 previewSize = chooseOptimalSize(Camera2ConfigManager.getInstance().getOutputSizes(id, SurfaceTexture.class), rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth, maxPreviewHeight, largest);
-                Logger.d(tag + "...PreviewSize:" + previewSize.toString() + "...屏幕分辨率...width:" + SystemUtil.getScreenWidth() + "...height:" + SystemUtil.getScreenHeight());
                 // We fit the aspect ratio of TextureView to the size of preview we picked.
                 int orientation = getResources().getConfiguration().orientation;
+                Logger.d(tag + "...PreviewSize:" + previewSize.toString() + "...屏幕分辨率...width:" + SystemUtil.getScreenWidth() + "...height:" + SystemUtil.getScreenHeight() + "...方向:" + orientation);
                 if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
 //                        cameraView.setAspectRatio(SystemUtil.getScreenWidth(), SystemUtil.getScreenHeight());
                     cameraView.setAspectRatio(previewSize.getWidth(), previewSize.getHeight());
@@ -527,6 +531,9 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
                 }
             }
         }
+
+        Logger.d(tag + "...BigEnough:" + bigEnough);
+        Logger.d(tag + "...notBigEnough:" + notBigEnough);
 
         // Pick the smallest of those big enough. If there is no one big enough, pick the
         // largest of those not big enough.
@@ -610,7 +617,18 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
                             try {
                                 // Auto focus should be continuous for camera preview.
                                 previewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
-//                                previewRequestBuilder.set(CaptureRequest.SCALER_CROP_REGION,new Rect());
+
+//                                Logger.d(tag + "...最大变焦:" + Camera2ConfigManager.getInstance().getMaxDigitalZoom(cameraID));
+//                                Logger.d(tag+"..."+previewRequestBuilder.get(CaptureRequest.SCALER_CROP_REGION).toString());
+//                                Rect r = new Rect();
+//                                r.left = 0;
+//                                r.top = 0;
+//                                r.right = 1000;
+//                                r.bottom = 1000;
+//                                Logger.d(tag+"..."+r.toString());
+//                                //设置缩放
+//                                previewRequestBuilder.set(CaptureRequest.SCALER_CROP_REGION, r);
+//                                Logger.d(tag+"..."+previewRequestBuilder.get(CaptureRequest.SCALER_CROP_REGION).toString());
                                 // Flash is automatically enabled when necessary.
                                 setFlashMode(previewRequestBuilder);
                                 // Finally, we start displaying the camera preview.
@@ -629,6 +647,10 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
             );
 //            surface.release();
         }
+    }
+
+    private void setZoomTo(float value) {
+//         previewRequestBuilder.set(CaptureRequest.SCALER_CROP_REGION,);
     }
 
     private void setFlashMode(CaptureRequest.Builder previewRequestBuilder) {

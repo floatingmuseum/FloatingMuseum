@@ -79,7 +79,6 @@ public class Camera2ConfigManager {
             return;
         }
 
-
         //像差校正模式?
         int[] aberrationCorrectionModes = characteristics.get(CameraCharacteristics.COLOR_CORRECTION_AVAILABLE_ABERRATION_MODES);
         //自动曝光反冲带模式?
@@ -192,6 +191,12 @@ public class Camera2ConfigManager {
         Integer maxLatency = characteristics.get(CameraCharacteristics.SYNC_MAX_LATENCY);
         int[] tonemappingModes = characteristics.get(CameraCharacteristics.TONEMAP_AVAILABLE_TONE_MAP_MODES);
         Integer maxCurvePoints = characteristics.get(CameraCharacteristics.TONEMAP_MAX_CURVE_POINTS);
+    }
+
+    public Float getMaxDigitalZoom(String cameraID) {
+        Integer scalerCroppingType = cameraConfig.get(cameraID).get(CameraCharacteristics.SCALER_CROPPING_TYPE);
+        Logger.d(tag+"...ScalerCroppingType:"+scalerCroppingType);
+        return cameraConfig.get(cameraID).get(CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM);
     }
 
     /**

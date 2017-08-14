@@ -20,6 +20,8 @@ import com.orhanobut.logger.Logger;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -87,12 +89,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         Logger.d("差集测试...需要添加到数据库:" + tempList + "...数据是否改变:" + isChanged2);
         Logger.d("差集测试...耗时:" + (System.currentTimeMillis() - startTime));
 
-        requestPermission(needPermissions);
+        initPermission(needPermissions);
     }
 
-    private void requestPermission(String... permissions) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(permissions, 1024);
+    private void initPermission(String... permissions) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && permissions.length > 0) {
+            List<String> needRequests = new ArrayList<>();
+            for (String permission : permissions) {
+                if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                    needRequests.add(permission);
+                }
+            }
+            if (needRequests.size() != 0) {
+                requestPermissions(needRequests.toArray(new String[needRequests.size()]), 1024);
+            }
         }
     }
 
