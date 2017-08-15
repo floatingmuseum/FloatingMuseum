@@ -12,6 +12,7 @@
         android:layout_height="match_parent" />
 
     <RelativeLayout
+        android:id="@+id/bottom_settings"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true">
@@ -50,5 +51,11 @@
         android:layout_margin="10dp"
         app:srcCompat="@drawable/ic_settings_white_36dp" />
 
+    <SeekBar
+        android:id="@+id/sb_zoom"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_above="@+id/bottom_settings"
+        android:layout_marginBottom="10dp" />
 
 </RelativeLayout>

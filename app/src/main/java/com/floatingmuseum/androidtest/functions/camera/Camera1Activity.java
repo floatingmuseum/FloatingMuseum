@@ -44,6 +44,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.floatingmuseum.androidtest.R;
@@ -87,6 +88,8 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
     ImageView ivFlashMode;
     @BindView(R.id.iv_settings)
     ImageView ivSettings;
+    @BindView(R.id.sb_zoom)
+    SeekBar sbZoom;
 
     /**
      * Conversion from screen rotation to JPEG orientation.
@@ -166,6 +169,7 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
     private Display defaultDisplay;
     private Integer sensorOrientation;
     private PopupWindow settingsPopWindow;
+    private Rect originalZoomRect;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -182,6 +186,23 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
         defaultDisplay = getWindowManager().getDefaultDisplay();
 
         cameraView.setSurfaceTextureListener(surfaceTextureListener);
+        sbZoom.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                setZoomTo(progress);
+                Logger.d(tag + "...SeekBar...onProgressChanged:...progress:" + progress + "...fromUser:" + fromUser);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
     }
 
     @Override
@@ -430,6 +451,18 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
 
                 int displayRotation = defaultDisplay.getRotation();
                 sensorOrientation = Camera2ConfigManager.getInstance().getSensorOrientation(id);
+                Integer hardwareLevel = Camera2ConfigManager.getInstance().getHardwareLevel(id);
+                if (hardwareLevel == CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_LEGACY) {
+                    Logger.d(tag + "...Hardware Level: LEGACY");
+                } else if (hardwareLevel == CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_LIMITED) {
+                    Logger.d(tag + "...Hardware Level: LIMITED");
+                } else if (hardwareLevel == CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_FULL) {
+                    Logger.d(tag + "...Hardware Level: FULL");
+                } else if (hardwareLevel == CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_3) {
+                    Logger.d(tag + "...Hardware Level: 3");
+                } else {
+                    Logger.e(tag + "...Unknown Hardware Level!");
+                }
                 Logger.d(tag + "...displayRotation:" + displayRotation + "...sensorOrientation:" + sensorOrientation);
                 boolean swappedDimensions = false;
 //                switch (displayRotation) {
@@ -617,7 +650,9 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
                             try {
                                 // Auto focus should be continuous for camera preview.
                                 previewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
-
+                                if (originalZoomRect == null) {
+                                    originalZoomRect = previewRequestBuilder.get(CaptureRequest.SCALER_CROP_REGION);
+                                }
 //                                Logger.d(tag + "...最大变焦:" + Camera2ConfigManager.getInstance().getMaxDigitalZoom(cameraID));
 //                                Logger.d(tag+"..."+previewRequestBuilder.get(CaptureRequest.SCALER_CROP_REGION).toString());
 //                                Rect r = new Rect();
@@ -649,8 +684,24 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
         }
     }
 
-    private void setZoomTo(float value) {
-//         previewRequestBuilder.set(CaptureRequest.SCALER_CROP_REGION,);
+    private void setZoomTo(int value) {
+        // TODO: 2017/8/15 缩放之后拍照出现过卡死的情况
+//        Rect currentRect = previewRequestBuilder.get(CaptureRequest.SCALER_CROP_REGION);
+//        Logger.d(tag + "...设置缩放:" + value + "...currentRect:" + currentRect);
+        Rect rect = new Rect();
+        rect.left = originalZoomRect.left + value * 20;
+        rect.top = originalZoomRect.top + value * 20;
+        rect.right = originalZoomRect.right - value * 20;
+        rect.bottom = originalZoomRect.bottom - value * 20;
+        Rect activeRect = Camera2ConfigManager.getInstance().getActiveArraySize(cameraID);
+        Logger.d(tag + "...缩放:" + rect.toString() + "..." + originalZoomRect.toString() + "..." + activeRect.toString());
+        previewRequestBuilder.set(CaptureRequest.SCALER_CROP_REGION, rect);
+        previewRequest = previewRequestBuilder.build();
+        try {
+            captureSession.setRepeatingRequest(previewRequest, captureCallback, null);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setFlashMode(CaptureRequest.Builder previewRequestBuilder) {

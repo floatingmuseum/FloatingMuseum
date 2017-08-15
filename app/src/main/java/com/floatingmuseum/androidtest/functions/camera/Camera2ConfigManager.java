@@ -195,8 +195,20 @@ public class Camera2ConfigManager {
 
     public Float getMaxDigitalZoom(String cameraID) {
         Integer scalerCroppingType = cameraConfig.get(cameraID).get(CameraCharacteristics.SCALER_CROPPING_TYPE);
-        Logger.d(tag+"...ScalerCroppingType:"+scalerCroppingType);
+        Logger.d(tag + "...ScalerCroppingType:" + scalerCroppingType);
         return cameraConfig.get(cameraID).get(CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM);
+    }
+
+    /**
+     * 硬件支持等级
+     * LEGACY < LIMITED < FULL < LEVEL_3
+     */
+    public Integer getHardwareLevel(String cameraID) {
+        return cameraConfig.get(cameraID).get(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL);
+    }
+
+    public Rect getActiveArraySize(String cameraID) {
+        return cameraConfig.get(cameraID).get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE);
     }
 
     /**
