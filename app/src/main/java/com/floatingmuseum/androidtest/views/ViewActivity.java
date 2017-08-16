@@ -7,6 +7,7 @@ import android.widget.Button;
 
 import com.floatingmuseum.androidtest.R;
 import com.floatingmuseum.androidtest.base.BaseActivity;
+import com.floatingmuseum.androidtest.views.camera.CameraActivity;
 import com.floatingmuseum.androidtest.views.simple.SimpleViewActivity;
 import com.floatingmuseum.androidtest.views.tags.TagsActivity;
 
@@ -23,6 +24,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
     Button btTags;
     @BindView(R.id.bt_simple_view)
     Button btSimpleView;
+    @BindView(R.id.bt_photo_video)
+    Button btPhotoVideo;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -32,6 +35,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
         btSimpleView.setOnClickListener(this);
         btTags.setOnClickListener(this);
+        btPhotoVideo.setOnClickListener(this);
     }
 
 
@@ -44,6 +48,9 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
                 break;
             case R.id.bt_tags:
                 startActivity(TagsActivity.class);
+                break;
+            case R.id.bt_photo_video:
+                startActivity(CameraActivity.class);
                 break;
         }
     }

@@ -39,6 +39,8 @@ import android.util.SparseIntArray;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Surface;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
@@ -51,6 +53,7 @@ import com.floatingmuseum.androidtest.R;
 import com.floatingmuseum.androidtest.base.BaseActivity;
 import com.floatingmuseum.androidtest.utils.RxUtil;
 import com.floatingmuseum.androidtest.utils.SystemUtil;
+import com.floatingmuseum.androidtest.utils.TimeUtil;
 import com.floatingmuseum.androidtest.utils.ToastUtil;
 import com.orhanobut.logger.Logger;
 
@@ -520,9 +523,8 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
                 }
 
                 // Check if the flash is supported.
-                Boolean available = characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
-                flashSupported = available == null ? false : available;
-                Logger.d(tag + "...是否支持闪光灯:" + available + "..." + flashSupported);
+                flashSupported = Camera2ConfigManager.getInstance().isSupportFlash(id);
+                Logger.d(tag + "...是否支持闪光灯:" + flashSupported);
                 cameraID = id;
             }
         }
@@ -686,6 +688,7 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
 
     private void setZoomTo(int value) {
         // TODO: 2017/8/15 缩放之后拍照出现过卡死的情况
+        // TODO: 2017/8/16 缩放之后拍照,拍照后预览画面会闪回原始尺寸,然后回归缩放尺寸
 //        Rect currentRect = previewRequestBuilder.get(CaptureRequest.SCALER_CROP_REGION);
 //        Logger.d(tag + "...设置缩放:" + value + "...currentRect:" + currentRect);
         Rect rect = new Rect();
@@ -835,7 +838,11 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
         if (!dir.exists()) {
             dir.mkdirs();
         }
-        File photoFile = new File(dir, System.currentTimeMillis() + ".jpg");
+        long nanoTime = image.getTimestamp();
+        long milliseconds = nanoTime / 1000 / 1000;
+        String timeText = TimeUtil.getTime(milliseconds);
+        Logger.d(tag + "...照片日期:" + timeText);
+        File photoFile = new File(dir, timeText + ".jpg");
         Observable.just(photoFile)
                 .map(new Function<File, File>() {
                     @Override
@@ -895,12 +902,10 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
                     Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
                     if (afState == null) {
                         captureStillPicture();
-                    } else if (CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED == afState ||
-                            CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED == afState) {
+                    } else if (CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED == afState || CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED == afState) {
                         // CONTROL_AE_STATE can be null on some devices
                         Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
-                        if (aeState == null ||
-                                aeState == CaptureResult.CONTROL_AE_STATE_CONVERGED) {
+                        if (aeState == null || aeState == CaptureResult.CONTROL_AE_STATE_CONVERGED) {
                             state = STATE_PICTURE_TAKEN;
                             captureStillPicture();
                         } else {

@@ -1,4 +1,4 @@
-package com.floatingmuseum.androidtest.functions.camera;
+package com.floatingmuseum.androidtest.views.camera;
 
 import android.graphics.ImageFormat;
 import android.graphics.Rect;

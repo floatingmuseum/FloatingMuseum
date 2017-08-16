@@ -13,4 +13,9 @@
         android:id="@+id/bt_tags"
         style="@style/text_title"
         android:text="标签" />
+
+    <Button
+        android:id="@+id/bt_photo_video"
+        style="@style/text_title"
+        android:text="Photo and Video" />
 </LinearLayout>
