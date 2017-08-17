@@ -8,7 +8,27 @@ import android.content.Context;
 
 public class Camera1 extends CameraImpl {
 
-    public Camera1(Context context, CameraPreview preview, CameraView.CameraStateCallback stateCallback) {
-        super();
+    public Camera1(Context context, CameraPreview preview, CameraStateCallback stateCallback) {
+        super(context, preview, stateCallback);
+    }
+
+    @Override
+    public void setOutputs(int facing, int width, int height) {
+
+    }
+
+    @Override
+    public void configureTransform(int width, int height) {
+
+    }
+
+    @Override
+    public void openCamera() {
+
+    }
+
+    @Override
+    public void takePhoto() {
+
     }
 }

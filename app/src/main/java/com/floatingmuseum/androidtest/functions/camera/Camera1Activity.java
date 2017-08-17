@@ -990,7 +990,7 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
                 int rotation = defaultDisplay.getRotation();
                 captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getOrientation(rotation));
 
-                CameraCaptureSession.CaptureCallback CaptureCallback
+                CameraCaptureSession.CaptureCallback captureCallback
                         = new CameraCaptureSession.CaptureCallback() {
 
                     @Override
@@ -1004,7 +1004,7 @@ public class Camera1Activity extends BaseActivity implements View.OnClickListene
                 };
 
                 captureSession.stopRepeating();
-                captureSession.capture(captureBuilder.build(), CaptureCallback, null);
+                captureSession.capture(captureBuilder.build(), captureCallback, null);
             } catch (CameraAccessException e) {
                 e.printStackTrace();
             }

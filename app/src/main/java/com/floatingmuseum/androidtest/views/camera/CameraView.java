@@ -8,11 +8,13 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
+import java.io.File;
+
 /**
  * Created by Floatingmuseum on 2017/8/16.
  */
 
-public class CameraView extends FrameLayout {
+public class CameraView extends FrameLayout implements CameraStateCallback {
 
     public static final int CAMERA_FACING_FRONT = 0;
     public static final int CAMERA_FACING_BACK = 1;
@@ -21,6 +23,7 @@ public class CameraView extends FrameLayout {
     private Context context;
     private CameraPreview cameraPreview;
     private CameraImpl camera;
+    private CameraCallback cameraCallback;
     private int facing = CAMERA_FACING_BACK;
 
     public CameraView(@NonNull Context context) {
@@ -37,24 +40,39 @@ public class CameraView extends FrameLayout {
         initPreview(context);
     }
 
-    private void openCamera(Context context, int width, int height) {
-        CameraStateCallback stateCallback = new CameraStateCallback();
-        if (Build.VERSION.SDK_INT < 21) {
-            camera = new Camera1(context, cameraPreview,stateCallback);
-        } else {
-            camera = new Camera2(context, cameraPreview,stateCallback);
-        }
-    }
-
     private void initPreview(Context context) {
         if (Build.VERSION.SDK_INT < 14) {
-            cameraPreview = new SurfacePreview(context, this);
+            cameraPreview = new SurfacePreview(context, this, previewCallback);
         } else {
-            cameraPreview = new TexturePreview(context, this);
+            cameraPreview = new TexturePreview(context, this, previewCallback);
         }
     }
 
-    public class CameraStateCallback {
+    private void openCamera(Context context, int width, int height) {
+        if (Build.VERSION.SDK_INT < 21) {
+            camera = new Camera1(context, cameraPreview, this);
+        } else {
+            camera = new Camera2(context, cameraPreview, this);
+        }
+        camera.setOutputs(facing, width, height);
+        camera.configureTransform(width, height);
+        camera.openCamera();
+    }
+
+    public void setCameraCallback(CameraCallback cameraCallback) {
+        this.cameraCallback = cameraCallback;
+    }
+
+    @Override
+    public void onPhotoTaken(File photoFile) {
+        if (cameraCallback != null) {
+            cameraCallback.onPhotoTaken(photoFile);
+        }
+    }
+
+    public CameraImpl getCamera() {
+        // TODO: 2017/8/17 返回CameraImpl不太好 
+        return camera;
     }
 
     private PreviewCallback previewCallback = new PreviewCallback() {
@@ -65,7 +83,7 @@ public class CameraView extends FrameLayout {
 
         @Override
         void onPreviewSizeChanged(int width, int height) {
-
+            camera.configureTransform(width, height);
         }
     };
 }
