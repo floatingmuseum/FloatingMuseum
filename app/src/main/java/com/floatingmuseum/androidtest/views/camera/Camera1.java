@@ -31,4 +31,24 @@ public class Camera1 extends CameraImpl {
     public void takePhoto() {
 
     }
+
+    @Override
+    public void switchFlashMode(int flashMode) {
+
+    }
+
+    @Override
+    public int getFlashMode() {
+        return 0;
+    }
+
+    @Override
+    public void switchCameraFacing(int facing) {
+
+    }
+
+    @Override
+    public int getCameraFacing() {
+        return 0;
+    }
 }

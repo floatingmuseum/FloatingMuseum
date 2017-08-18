@@ -50,6 +50,14 @@ public abstract class CameraImpl {
 
     public abstract void takePhoto();
 
+    public abstract void switchFlashMode(int flashMode);
+
+    public abstract int getFlashMode();
+
+    public abstract void switchCameraFacing(int facing);
+
+    public abstract int getCameraFacing();
+
     protected void savePhoto(ImageReader reader){
         final Image image = reader.acquireNextImage();
         if (image != null) {

@@ -2,6 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@android:color/black"
     android:orientation="vertical">
 
     <com.floatingmuseum.androidtest.views.camera.CameraView
@@ -9,12 +11,50 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <Button
-        android:id="@+id/bt_take_photo"
+    <RelativeLayout
+        android:id="@+id/bottom_settings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <ImageView
+            android:id="@+id/iv_flash_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_margin="10dp"
+            app:srcCompat="@drawable/ic_flash_auto_white_36dp" />
+
+        <ImageView
+            android:id="@+id/iv_camera_facing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="10dp"
+            app:srcCompat="@drawable/ic_camera_front_white_36dp" />
+
+        <Button
+            android:id="@+id/bt_take_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"
+            android:text="Take photo" />
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/iv_settings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
+        android:layout_alignParentEnd="true"
         android:layout_margin="10dp"
-        android:text="Take photo" />
+        app:srcCompat="@drawable/ic_settings_white_36dp" />
+
+    <SeekBar
+        android:id="@+id/sb_zoom"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_above="@+id/bottom_settings"
+        android:layout_marginBottom="10dp" />
 </RelativeLayout>

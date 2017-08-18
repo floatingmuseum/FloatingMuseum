@@ -23,6 +23,7 @@ import android.media.ImageReader;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
@@ -89,6 +90,7 @@ public class Camera2 extends CameraImpl {
     private CameraCaptureSession captureSession;
     private int flashMode = CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH;
     private CaptureRequest previewCaptureRequest;
+    private Integer defaultFacing;
 
     public Camera2(Context context, CameraPreview preview, CameraStateCallback stateCallback) {
         super(context, preview, stateCallback);
@@ -102,7 +104,7 @@ public class Camera2 extends CameraImpl {
             for (String id : ids) {
                 CameraCharacteristics characteristics = manager.getCameraCharacteristics(id);
                 Camera2ConfigManager.getInstance().init(id, characteristics);
-                Integer cameraFacing = com.floatingmuseum.androidtest.functions.camera.Camera2ConfigManager.getInstance().getCameraFacing(id);
+                Integer cameraFacing = Camera2ConfigManager.getInstance().getCameraFacing(id);
 
                 if (cameraFacing != null) {
                     if (cameraFacing == CameraCharacteristics.LENS_FACING_BACK) {
@@ -113,25 +115,24 @@ public class Camera2 extends CameraImpl {
                         externalCameraID = id;
                     }
                 }
-
-                Integer requiredFacing = null;
-                if (CameraView.CAMERA_FACING_BACK == facing) {
-                    requiredFacing = facing;
-                } else if (CameraView.CAMERA_FACING_FRONT == facing) {
-                    requiredFacing = facing;
-                } else if (CameraView.CAMERA_FACING_OTHER == facing) {
-                    requiredFacing = facing;
+                if (CameraParam.CAMERA_FACING_BACK == facing) {
+                    defaultFacing = facing;
+                } else if (CameraParam.CAMERA_FACING_FRONT == facing) {
+                    defaultFacing = facing;
                 }
+//                else if (CameraParam.CAMERA_FACING_OTHER == facing) {
+//                    requiredFacing = facing;
+//                }
 
-                if (requiredFacing != null && requiredFacing.equals(cameraFacing)) {
+                if (defaultFacing != null && defaultFacing.equals(cameraFacing)) {
                     //默认选择了最大的图片比例
-                    Size largest = com.floatingmuseum.androidtest.functions.camera.Camera2ConfigManager.getInstance().getOutputSize(id);
+                    Size largest = Camera2ConfigManager.getInstance().getOutputSize(id);
                     /*maxImages*/
                     imageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(), ImageFormat.JPEG, /*maxImages*/2);
 //                imageReader = ImageReader.newInstance(240, 320, ImageFormat.JPEG, /*maxImages*/2);
                     imageReader.setOnImageAvailableListener(imageAvailableListener, null);
 
-                    sensorOrientation = com.floatingmuseum.androidtest.functions.camera.Camera2ConfigManager.getInstance().getSensorOrientation(id);
+                    sensorOrientation = Camera2ConfigManager.getInstance().getSensorOrientation(id);
                     display = ((Activity) context).getWindowManager().getDefaultDisplay();
                     int displayRotation = display.getRotation();
                     boolean swappedDimensions = false;
@@ -177,7 +178,7 @@ public class Camera2 extends CameraImpl {
                     // Danger, W.R.! Attempting to use too large a preview size could  exceed the camera
                     // bus' bandwidth limitation, resulting in gorgeous previews but the storage of
                     // garbage capture data.
-                    previewSize = chooseOptimalSize(com.floatingmuseum.androidtest.functions.camera.Camera2ConfigManager.getInstance().getOutputSizes(id, SurfaceTexture.class), rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth, maxPreviewHeight, largest);
+                    previewSize = chooseOptimalSize(Camera2ConfigManager.getInstance().getOutputSizes(id, SurfaceTexture.class), rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth, maxPreviewHeight, largest);
                     // We fit the aspect ratio of TextureView to the size of preview we picked.
                     int orientation = context.getResources().getConfiguration().orientation;
                     Log.d(tag, "PreviewSize:" + previewSize.toString() + "...屏幕分辨率...width:" + SystemUtil.getScreenWidth() + "...height:" + SystemUtil.getScreenHeight() + "...方向:" + orientation);
@@ -190,7 +191,7 @@ public class Camera2 extends CameraImpl {
                     }
 
                     // Check if the flash is supported.
-                    flashSupported = com.floatingmuseum.androidtest.functions.camera.Camera2ConfigManager.getInstance().isSupportFlash(id);
+                    flashSupported = Camera2ConfigManager.getInstance().isSupportFlash(id);
                     Log.d(tag, "是否支持闪光灯:" + flashSupported);
                     cameraID = id;
                 }
@@ -243,9 +244,9 @@ public class Camera2 extends CameraImpl {
         // Pick the smallest of those big enough. If there is no one big enough, pick the
         // largest of those not big enough.
         if (bigEnough.size() > 0) {
-            return Collections.min(bigEnough, new com.floatingmuseum.androidtest.functions.camera.Camera2ConfigManager.CompareSizesByArea());
+            return Collections.min(bigEnough, new Camera2ConfigManager.CompareSizesByArea());
         } else if (notBigEnough.size() > 0) {
-            return Collections.max(notBigEnough, new com.floatingmuseum.androidtest.functions.camera.Camera2ConfigManager.CompareSizesByArea());
+            return Collections.max(notBigEnough, new Camera2ConfigManager.CompareSizesByArea());
         } else {
             Log.d(tag, " Couldn't find any suitable preview size");
             return choices[0];
@@ -326,6 +327,8 @@ public class Camera2 extends CameraImpl {
             switch (flashMode) {
                 case CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH:
                     Logger.d(tag + "...闪光灯模式:始终打开");
+                    previewRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, flashMode);
+                    break;
                 case CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH:
                     Logger.d(tag + "...闪光灯模式:自动");
                     previewRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, flashMode);
@@ -476,6 +479,89 @@ public class Camera2 extends CameraImpl {
             device = null;
         }
     };
+
+    @Override
+    public void switchCameraFacing(int facing) {
+        if (CameraParam.CAMERA_FACING_BACK == facing && !cameraID.equals(backCameraID)) {
+            defaultFacing = CameraCharacteristics.LENS_FACING_FRONT;
+            switchCamera();
+        } else if (CameraParam.CAMERA_FACING_FRONT == facing && !cameraID.equals(frontCameraID)) {
+            defaultFacing = CameraCharacteristics.LENS_FACING_BACK;
+        } else {
+            throw new IllegalArgumentException("Wrong facing argument..");
+        }
+    }
+
+    private void switchCamera() {
+        closeCamera();
+        setOutputs(defaultFacing, preview.previewWidth, preview.previewHeight);
+        configureTransform(preview.previewWidth, preview.previewHeight);
+        openCamera();
+    }
+
+    private void closeCamera() {
+        if (null != captureSession) {
+            captureSession.close();
+            captureSession = null;
+        }
+        if (null != device) {
+            device.close();
+            device = null;
+        }
+        if (null != imageReader) {
+            imageReader.close();
+            imageReader = null;
+        }
+    }
+
+    @Override
+    public int getCameraFacing() {
+        if (TextUtils.isEmpty(cameraID)) {
+            return -1;
+        } else {
+            if (cameraID.equals(backCameraID)) {
+                return CameraParam.CAMERA_FACING_BACK;
+            } else if (cameraID.equals(frontCameraID)) {
+                return CameraParam.CAMERA_FACING_FRONT;
+            } else {
+                return -2;
+            }
+        }
+    }
+
+    @Override
+    public void switchFlashMode(int mode) {
+        if (flashSupported) {
+            if (CameraParam.FLASH_MODE_AUTO == mode) {
+                flashMode = CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH;
+            } else if (CameraParam.FLASH_MODE_CLOSE == mode) {
+                flashMode = CaptureRequest.FLASH_MODE_OFF;
+            } else if (CameraParam.FLASH_MODE_OPEN == mode) {
+                flashMode = CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH;
+            } else {
+                throw new IllegalArgumentException("Wrong flash mode.");
+            }
+        } else {
+            Log.d(tag, "This camera not supported flash.");
+        }
+    }
+
+    @Override
+    public int getFlashMode() {
+        if (flashSupported) {
+            if (CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH == flashMode) {
+                return CameraParam.FLASH_MODE_AUTO;
+            } else if (CaptureRequest.FLASH_MODE_OFF == flashMode) {
+                return CameraParam.FLASH_MODE_CLOSE;
+            } else if (CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH == flashMode) {
+                return CameraParam.FLASH_MODE_OPEN;
+            } else {
+                return -2;
+            }
+        } else {
+            return -1;
+        }
+    }
 
     CameraCaptureSession.CaptureCallback captureCallback = new CameraCaptureSession.CaptureCallback() {
 

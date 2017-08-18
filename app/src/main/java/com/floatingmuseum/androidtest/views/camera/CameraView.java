@@ -2,10 +2,13 @@ package com.floatingmuseum.androidtest.views.camera;
 
 import android.content.Context;
 import android.os.Build;
+import android.provider.ContactsContract;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.util.Size;
 import android.widget.FrameLayout;
 
 import java.io.File;
@@ -16,15 +19,12 @@ import java.io.File;
 
 public class CameraView extends FrameLayout implements CameraStateCallback {
 
-    public static final int CAMERA_FACING_FRONT = 0;
-    public static final int CAMERA_FACING_BACK = 1;
-    public static final int CAMERA_FACING_OTHER = 2;
-
+    private static String TAG = CameraView.class.getSimpleName();
     private Context context;
     private CameraPreview cameraPreview;
     private CameraImpl camera;
     private CameraCallback cameraCallback;
-    private int facing = CAMERA_FACING_BACK;
+    private Photographer photographer;
 
     public CameraView(@NonNull Context context) {
         this(context, null);
@@ -38,6 +38,8 @@ public class CameraView extends FrameLayout implements CameraStateCallback {
         super(context, attrs, defStyleAttr);
         this.context = context;
         initPreview(context);
+        photographer = new Photographer();
+        Log.d(TAG, "Photographer new:" + photographer);
     }
 
     private void initPreview(Context context) {
@@ -54,9 +56,10 @@ public class CameraView extends FrameLayout implements CameraStateCallback {
         } else {
             camera = new Camera2(context, cameraPreview, this);
         }
-        camera.setOutputs(facing, width, height);
+        camera.setOutputs(CameraParam.CAMERA_FACING_BACK, width, height);
         camera.configureTransform(width, height);
         camera.openCamera();
+
     }
 
     public void setCameraCallback(CameraCallback cameraCallback) {
@@ -70,9 +73,8 @@ public class CameraView extends FrameLayout implements CameraStateCallback {
         }
     }
 
-    public CameraImpl getCamera() {
-        // TODO: 2017/8/17 返回CameraImpl不太好 
-        return camera;
+    public Photographer getPhotographer() {
+        return photographer;
     }
 
     private PreviewCallback previewCallback = new PreviewCallback() {
@@ -86,4 +88,42 @@ public class CameraView extends FrameLayout implements CameraStateCallback {
             camera.configureTransform(width, height);
         }
     };
+
+    public class Photographer {
+
+        private Photographer() {
+        }
+
+        public void takePhoto() {
+            camera.takePhoto();
+        }
+
+        public void setFlashMode(int flashMode) {
+            camera.switchFlashMode(flashMode);
+        }
+
+        public int getFlashMode() {
+            return camera.getFlashMode();
+        }
+
+        public void switchCamera(int facing) {
+            camera.switchCameraFacing(facing);
+        }
+
+        public int getCameraFacing() {
+            return camera.getCameraFacing();
+        }
+
+        public void getResolutions(String cameraID) {
+        }
+
+        public void setResolution(Size size) {
+        }
+
+        /**
+         * @param value 0 to 100
+         */
+        public void zoomTo(int value) {
+        }
+    }
 }

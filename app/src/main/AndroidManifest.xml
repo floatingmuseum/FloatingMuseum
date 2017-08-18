@@ -98,6 +98,11 @@
         <activity android:name=".thirdpartys.virtualapk.VirtualApkActivity" />
         <activity android:name=".thirdpartys.replugin.RePluginActivity" />
         <activity android:name=".thirdpartys.exo.ExoPlayerActivity" />
+        <activity
+            android:name=".views.camera.CameraActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="portrait"
+            android:theme="@style/ThemeFullscreen" />
         <!--<activity android:name=".functions.media.MediaActivity"/>-->
         <!-- <activity android:name=".functions.nsd.NsdChatActivity"/> -->
         <!-- <activity android:name=".functions.nsd.NsdActivity"/> -->
