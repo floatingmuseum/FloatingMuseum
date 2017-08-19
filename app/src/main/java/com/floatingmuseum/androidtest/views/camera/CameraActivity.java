@@ -107,6 +107,7 @@ public class CameraActivity extends BaseActivity implements CameraCallback, View
 
     private void switchCameraFacing() {
         int facing = photographer.getCameraFacing();
+        Log.d(TAG, "switchCameraFacing:" + facing);
         if (CameraParam.CAMERA_FACING_BACK == facing) {
             photographer.switchCamera(CameraParam.CAMERA_FACING_FRONT);
             setImage(ivCameraFacing, R.drawable.ic_camera_front_white_36dp);

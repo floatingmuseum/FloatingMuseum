@@ -18,7 +18,6 @@ import android.hardware.camera2.CaptureFailure;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
-import android.media.Image;
 import android.media.ImageReader;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -45,7 +44,7 @@ import java.util.List;
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class Camera2 extends CameraImpl {
 
-    private String tag = Camera2.class.getSimpleName();
+    private static String TAG = Camera2.class.getSimpleName();
     /**
      * Max preview width that is guaranteed by Camera2 API
      */
@@ -99,6 +98,7 @@ public class Camera2 extends CameraImpl {
 
     @Override
     public void setOutputs(int facing, int width, int height) {
+        // TODO: 2017/8/19 获取设备有几个相机和后面的参数设置可以分成两个方法,不需要多次获取相机
         try {
             String[] ids = manager.getCameraIdList();
             for (String id : ids) {
@@ -109,91 +109,90 @@ public class Camera2 extends CameraImpl {
                 if (cameraFacing != null) {
                     if (cameraFacing == CameraCharacteristics.LENS_FACING_BACK) {
                         backCameraID = id;
+                        if (CameraParam.CAMERA_FACING_BACK == facing) {
+                            defaultFacing = cameraFacing;
+                        }
                     } else if (cameraFacing == CameraCharacteristics.LENS_FACING_FRONT) {
                         frontCameraID = id;
+                        if (CameraParam.CAMERA_FACING_FRONT == facing) {
+                            defaultFacing = cameraFacing;
+                        }
                     } else if (cameraFacing == CameraCharacteristics.LENS_FACING_EXTERNAL) {
                         externalCameraID = id;
                     }
-                }
-                if (CameraParam.CAMERA_FACING_BACK == facing) {
-                    defaultFacing = facing;
-                } else if (CameraParam.CAMERA_FACING_FRONT == facing) {
-                    defaultFacing = facing;
-                }
-//                else if (CameraParam.CAMERA_FACING_OTHER == facing) {
-//                    requiredFacing = facing;
-//                }
 
-                if (defaultFacing != null && defaultFacing.equals(cameraFacing)) {
-                    //默认选择了最大的图片比例
-                    Size largest = Camera2ConfigManager.getInstance().getOutputSize(id);
+
+                    if (defaultFacing != null && defaultFacing.equals(cameraFacing)) {
+                        //默认选择了最大的图片比例
+                        Size largest = Camera2ConfigManager.getInstance().getOutputSize(id);
                     /*maxImages*/
-                    imageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(), ImageFormat.JPEG, /*maxImages*/2);
+                        imageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(), ImageFormat.JPEG, /*maxImages*/2);
 //                imageReader = ImageReader.newInstance(240, 320, ImageFormat.JPEG, /*maxImages*/2);
-                    imageReader.setOnImageAvailableListener(imageAvailableListener, null);
+                        imageReader.setOnImageAvailableListener(imageAvailableListener, null);
 
-                    sensorOrientation = Camera2ConfigManager.getInstance().getSensorOrientation(id);
-                    display = ((Activity) context).getWindowManager().getDefaultDisplay();
-                    int displayRotation = display.getRotation();
-                    boolean swappedDimensions = false;
-                    switch (displayRotation) {
-                        case Surface.ROTATION_0:
-                        case Surface.ROTATION_180:
-                            if (sensorOrientation == 90 || sensorOrientation == 270) {
-                                swappedDimensions = true;
-                            }
-                            break;
-                        case Surface.ROTATION_90:
-                        case Surface.ROTATION_270:
-                            if (sensorOrientation == 0 || sensorOrientation == 180) {
-                                swappedDimensions = true;
-                            }
-                            break;
-                        default:
-                            Log.d(tag, " Display rotation is invalid: " + displayRotation);
-                    }
+                        sensorOrientation = Camera2ConfigManager.getInstance().getSensorOrientation(id);
+                        display = ((Activity) context).getWindowManager().getDefaultDisplay();
+                        int displayRotation = display.getRotation();
+                        boolean swappedDimensions = false;
+                        switch (displayRotation) {
+                            case Surface.ROTATION_0:
+                            case Surface.ROTATION_180:
+                                if (sensorOrientation == 90 || sensorOrientation == 270) {
+                                    swappedDimensions = true;
+                                }
+                                break;
+                            case Surface.ROTATION_90:
+                            case Surface.ROTATION_270:
+                                if (sensorOrientation == 0 || sensorOrientation == 180) {
+                                    swappedDimensions = true;
+                                }
+                                break;
+                            default:
+                                Log.d(TAG, " Display rotation is invalid: " + displayRotation);
+                        }
 
-                    Point displaySize = new Point();
-                    display.getSize(displaySize);
-                    int rotatedPreviewWidth = width;
-                    int rotatedPreviewHeight = height;
-                    int maxPreviewWidth = displaySize.x;
-                    int maxPreviewHeight = displaySize.y;
+                        Point displaySize = new Point();
+                        display.getSize(displaySize);
+                        int rotatedPreviewWidth = width;
+                        int rotatedPreviewHeight = height;
+                        int maxPreviewWidth = displaySize.x;
+                        int maxPreviewHeight = displaySize.y;
 
-                    if (swappedDimensions) {
-                        rotatedPreviewWidth = height;
-                        rotatedPreviewHeight = width;
-                        maxPreviewWidth = displaySize.y;
-                        maxPreviewHeight = displaySize.x;
-                    }
+                        if (swappedDimensions) {
+                            rotatedPreviewWidth = height;
+                            rotatedPreviewHeight = width;
+                            maxPreviewWidth = displaySize.y;
+                            maxPreviewHeight = displaySize.x;
+                        }
 
-                    if (maxPreviewWidth > MAX_PREVIEW_WIDTH) {
-                        maxPreviewWidth = MAX_PREVIEW_WIDTH;
-                    }
+                        if (maxPreviewWidth > MAX_PREVIEW_WIDTH) {
+                            maxPreviewWidth = MAX_PREVIEW_WIDTH;
+                        }
 
-                    if (maxPreviewHeight > MAX_PREVIEW_HEIGHT) {
-                        maxPreviewHeight = MAX_PREVIEW_HEIGHT;
-                    }
+                        if (maxPreviewHeight > MAX_PREVIEW_HEIGHT) {
+                            maxPreviewHeight = MAX_PREVIEW_HEIGHT;
+                        }
 
-                    // Danger, W.R.! Attempting to use too large a preview size could  exceed the camera
-                    // bus' bandwidth limitation, resulting in gorgeous previews but the storage of
-                    // garbage capture data.
-                    previewSize = chooseOptimalSize(Camera2ConfigManager.getInstance().getOutputSizes(id, SurfaceTexture.class), rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth, maxPreviewHeight, largest);
-                    // We fit the aspect ratio of TextureView to the size of preview we picked.
-                    int orientation = context.getResources().getConfiguration().orientation;
-                    Log.d(tag, "PreviewSize:" + previewSize.toString() + "...屏幕分辨率...width:" + SystemUtil.getScreenWidth() + "...height:" + SystemUtil.getScreenHeight() + "...方向:" + orientation);
-                    if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                        // Danger, W.R.! Attempting to use too large a preview size could  exceed the camera
+                        // bus' bandwidth limitation, resulting in gorgeous previews but the storage of
+                        // garbage capture data.
+                        previewSize = chooseOptimalSize(Camera2ConfigManager.getInstance().getOutputSizes(id, SurfaceTexture.class), rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth, maxPreviewHeight, largest);
+                        // We fit the aspect ratio of TextureView to the size of preview we picked.
+                        int orientation = context.getResources().getConfiguration().orientation;
+                        Log.d(TAG, "PreviewSize:" + previewSize.toString() + "...屏幕分辨率...width:" + SystemUtil.getScreenWidth() + "...height:" + SystemUtil.getScreenHeight() + "...方向:" + orientation);
+                        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
 //                        cameraView.setAspectRatio(SystemUtil.getScreenWidth(), SystemUtil.getScreenHeight());
-                        preview.setAspectRatio(previewSize.getWidth(), previewSize.getHeight());
-                    } else {
+                            preview.setAspectRatio(previewSize.getWidth(), previewSize.getHeight());
+                        } else {
 //                        cameraView.setAspectRatio(SystemUtil.getScreenWidth(), SystemUtil.getScreenHeight());
-                        preview.setAspectRatio(previewSize.getHeight(), previewSize.getWidth());
-                    }
+                            preview.setAspectRatio(previewSize.getHeight(), previewSize.getWidth());
+                        }
 
-                    // Check if the flash is supported.
-                    flashSupported = Camera2ConfigManager.getInstance().isSupportFlash(id);
-                    Log.d(tag, "是否支持闪光灯:" + flashSupported);
-                    cameraID = id;
+                        // Check if the flash is supported.
+                        flashSupported = Camera2ConfigManager.getInstance().isSupportFlash(id);
+                        Log.d(TAG, "是否支持闪光灯:" + flashSupported);
+                        cameraID = id;
+                    }
                 }
             }
         } catch (CameraAccessException e) {
@@ -219,9 +218,9 @@ public class Camera2 extends CameraImpl {
      */
     private Size chooseOptimalSize(Size[] choices, int textureViewWidth, int textureViewHeight, int maxWidth, int maxHeight, Size aspectRatio) {
         for (Size size : choices) {
-            Log.d(tag, "optimalSize...choices..." + size.toString());
+            Log.d(TAG, "optimalSize...choices..." + size.toString());
         }
-        Log.d(tag, "optimalSize...textureViewWidth:" + textureViewWidth + "...textureViewHeight:" + textureViewHeight + "...maxWidth:" + maxWidth + "...maxHeight:" + maxHeight + "...aspectRatio:" + aspectRatio.toString());
+        Log.d(TAG, "optimalSize...textureViewWidth:" + textureViewWidth + "...textureViewHeight:" + textureViewHeight + "...maxWidth:" + maxWidth + "...maxHeight:" + maxHeight + "...aspectRatio:" + aspectRatio.toString());
         // Collect the supported resolutions that are at least as big as the preview Surface
         List<Size> bigEnough = new ArrayList<>();
         // Collect the supported resolutions that are smaller than the preview Surface
@@ -238,8 +237,8 @@ public class Camera2 extends CameraImpl {
             }
         }
 
-        Log.d(tag, "BigEnough:" + bigEnough);
-        Log.d(tag, "notBigEnough:" + notBigEnough);
+        Log.d(TAG, "BigEnough:" + bigEnough);
+        Log.d(TAG, "notBigEnough:" + notBigEnough);
 
         // Pick the smallest of those big enough. If there is no one big enough, pick the
         // largest of those not big enough.
@@ -248,7 +247,7 @@ public class Camera2 extends CameraImpl {
         } else if (notBigEnough.size() > 0) {
             return Collections.max(notBigEnough, new Camera2ConfigManager.CompareSizesByArea());
         } else {
-            Log.d(tag, " Couldn't find any suitable preview size");
+            Log.d(TAG, " Couldn't find any suitable preview size");
             return choices[0];
         }
     }
@@ -313,11 +312,11 @@ public class Camera2 extends CameraImpl {
 
                 @Override
                 public void onConfigureFailed(@NonNull CameraCaptureSession session) {
-                    Log.d(tag, "Camera " + cameraID + "...Create capture session failed.");
+                    Log.d(TAG, "Camera " + cameraID + "...Create capture session failed.");
                 }
             }, null);
         } else {
-            Log.d(tag, "Surface is null.");
+            Log.d(TAG, "Surface is null.");
         }
     }
 
@@ -326,21 +325,21 @@ public class Camera2 extends CameraImpl {
             //设置闪光灯为自动模式
             switch (flashMode) {
                 case CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH:
-                    Logger.d(tag + "...闪光灯模式:始终打开");
+                    Logger.d(TAG + "...闪光灯模式:始终打开");
                     previewRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, flashMode);
                     break;
                 case CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH:
-                    Logger.d(tag + "...闪光灯模式:自动");
+                    Logger.d(TAG + "...闪光灯模式:自动");
                     previewRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, flashMode);
                     break;
                 case CaptureRequest.FLASH_MODE_OFF:
-                    Logger.d(tag + "...闪光灯模式:始终关闭");
+                    Logger.d(TAG + "...闪光灯模式:始终关闭");
                     previewRequestBuilder.set(CaptureRequest.FLASH_MODE, flashMode);
                     break;
             }
         } else {
             //不支持闪光灯,有时是因为某个镜头不包含闪光灯功能,比如前置摄像头
-            Log.d(tag, "Camera:" + cameraID + " not support flash.");
+            Log.d(TAG, "Camera:" + cameraID + " not support flash.");
 //            ToastUtil.show("Flash is not supported.");
         }
     }
@@ -401,7 +400,7 @@ public class Camera2 extends CameraImpl {
                                                    @NonNull CaptureRequest request,
                                                    @NonNull TotalCaptureResult result) {
 //                        ToastUtil.show("Saved: " + photoFile);
-//                        Logger.d(tag + "..." + photoFile.toString());
+//                        Logger.d(TAG + "..." + photoFile.toString());
                         unlockFocus();
                     }
                 };
@@ -456,7 +455,7 @@ public class Camera2 extends CameraImpl {
     CameraDevice.StateCallback cameraStateCallback = new CameraDevice.StateCallback() {
         @Override
         public void onOpened(@NonNull CameraDevice camera) {
-            Log.d(tag, "CameraDevice...onOpened");
+            Log.d(TAG, "CameraDevice...onOpened");
             device = camera;
             try {
                 createPreviewSession();
@@ -467,14 +466,14 @@ public class Camera2 extends CameraImpl {
 
         @Override
         public void onDisconnected(@NonNull CameraDevice camera) {
-            Log.d(tag, "CameraDevice...onDisconnected");
+            Log.d(TAG, "CameraDevice...onDisconnected");
             camera.close();
             device = null;
         }
 
         @Override
         public void onError(@NonNull CameraDevice camera, int error) {
-            Log.d(tag, "CameraDevice...onError:" + error);
+            Log.d(TAG, "CameraDevice...onError:" + error);
             camera.close();
             device = null;
         }
@@ -483,10 +482,11 @@ public class Camera2 extends CameraImpl {
     @Override
     public void switchCameraFacing(int facing) {
         if (CameraParam.CAMERA_FACING_BACK == facing && !cameraID.equals(backCameraID)) {
-            defaultFacing = CameraCharacteristics.LENS_FACING_FRONT;
+            defaultFacing = CameraCharacteristics.LENS_FACING_BACK;
             switchCamera();
         } else if (CameraParam.CAMERA_FACING_FRONT == facing && !cameraID.equals(frontCameraID)) {
-            defaultFacing = CameraCharacteristics.LENS_FACING_BACK;
+            defaultFacing = CameraCharacteristics.LENS_FACING_FRONT;
+            switchCamera();
         } else {
             throw new IllegalArgumentException("Wrong facing argument..");
         }
@@ -516,6 +516,7 @@ public class Camera2 extends CameraImpl {
 
     @Override
     public int getCameraFacing() {
+        Log.d(TAG, "CameraID:" + cameraID + "...backID:" + backCameraID + "...FrontID:" + frontCameraID);
         if (TextUtils.isEmpty(cameraID)) {
             return -1;
         } else {
@@ -542,7 +543,7 @@ public class Camera2 extends CameraImpl {
                 throw new IllegalArgumentException("Wrong flash mode.");
             }
         } else {
-            Log.d(tag, "This camera not supported flash.");
+            Log.d(TAG, "This camera not supported flash.");
         }
     }
 
