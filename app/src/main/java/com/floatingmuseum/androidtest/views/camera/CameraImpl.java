@@ -102,4 +102,6 @@ public abstract class CameraImpl {
             Log.d(TAG, "Image not available.");
         }
     }
+
+    public abstract void closeCamera();
 }

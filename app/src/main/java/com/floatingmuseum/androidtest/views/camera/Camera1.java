@@ -51,4 +51,9 @@ public class Camera1 extends CameraImpl {
     public int getCameraFacing() {
         return 0;
     }
+
+    @Override
+    public void closeCamera() {
+
+    }
 }

@@ -40,4 +40,10 @@ class SurfacePreview extends CameraPreview {
 //        surfaceView.getHolder().
         return null;
     }
+
+    @Override
+    public boolean isAvailable() {
+        return true;
+//        return surfaceView.getHolder().isCreating();
+    }
 }

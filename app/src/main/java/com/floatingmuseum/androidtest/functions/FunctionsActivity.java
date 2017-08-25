@@ -7,6 +7,7 @@ import android.widget.Button;
 
 import com.floatingmuseum.androidtest.R;
 import com.floatingmuseum.androidtest.base.BaseActivity;
+import com.floatingmuseum.androidtest.functions.accessibility.AccessibilityHelperActivity;
 import com.floatingmuseum.androidtest.functions.aidl.AidlActivity;
 import com.floatingmuseum.androidtest.functions.analysesystem.AnalyseSystemActivity;
 import com.floatingmuseum.androidtest.functions.autoinstall.AutoInstallActivity;
@@ -14,8 +15,6 @@ import com.floatingmuseum.androidtest.functions.bluetooth.BluetoothActivity;
 import com.floatingmuseum.androidtest.functions.camera.Camera1Activity;
 import com.floatingmuseum.androidtest.functions.camera.Camera2Activity;
 import com.floatingmuseum.androidtest.functions.catchtime.CatchTimeActivity;
-import com.floatingmuseum.androidtest.functions.communicate.CommunicateActivity;
-import com.floatingmuseum.androidtest.functions.download.DownloadListActivity;
 import com.floatingmuseum.androidtest.functions.exception.ExceptionActivity;
 import com.floatingmuseum.androidtest.functions.getcolor.GetSystemColorActivity;
 import com.floatingmuseum.androidtest.functions.hotspot.ClientActivity;
@@ -48,14 +47,10 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
     Button btCamera;
     @BindView(R.id.bt_exception)
     Button btException;
-    @BindView(R.id.bt_download)
-    Button btDownload;
     @BindView(R.id.bt_catch_time)
     Button btCatchTime;
     @BindView(R.id.bt_analyse_system)
     Button btAnalyseSystem;
-    @BindView(R.id.bt_communicate)
-    Button btCommunicate;
     @BindView(R.id.bt_bluetooth)
     Button btBluetooth;
     @BindView(R.id.bt_hot_spot)
@@ -86,6 +81,8 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
     Button btAidlTest;
     @BindView(R.id.bt_other_process)
     Button btOtherProcess;
+    @BindView(R.id.bt_accessibility_helper)
+    Button btAccessibilityHelper;
 //    @BindView(R.id.bt_nsd)
 //    Button btNsd;
 //    @BindView(R.id.bt_nsd_server)
@@ -103,10 +100,8 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
         btShell.setOnClickListener(this);
         btCamera.setOnClickListener(this);
         btException.setOnClickListener(this);
-        btDownload.setOnClickListener(this);
         btCatchTime.setOnClickListener(this);
         btAnalyseSystem.setOnClickListener(this);
-        btCommunicate.setOnClickListener(this);
         btBluetooth.setOnClickListener(this);
         btHotSpot.setOnClickListener(this);
         btSocket.setOnClickListener(this);
@@ -121,6 +116,7 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
         btGetColor.setOnClickListener(this);
         btAidlTest.setOnClickListener(this);
         btOtherProcess.setOnClickListener(this);
+        btAccessibilityHelper.setOnClickListener(this);
 //        btNsd.setOnClickListener(this);
 //        btNsdServer.setOnClickListener(this);
 //        btNsdClient.setOnClickListener(this);
@@ -142,17 +138,11 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
             case R.id.bt_exception:
                 startActivity(ExceptionActivity.class);
                 break;
-            case R.id.bt_download:
-                startActivity(DownloadListActivity.class);
-                break;
             case R.id.bt_catch_time:
                 startActivity(CatchTimeActivity.class);
                 break;
             case R.id.bt_analyse_system:
                 startActivity(AnalyseSystemActivity.class);
-                break;
-            case R.id.bt_communicate:
-                startActivity(CommunicateActivity.class);
                 break;
             case R.id.bt_bluetooth:
                 startActivity(BluetoothActivity.class);
@@ -198,6 +188,9 @@ public class FunctionsActivity extends BaseActivity implements View.OnClickListe
                 break;
             case R.id.bt_other_process:
                 startActivity(OtherProcessActivity.class);
+                break;
+            case R.id.bt_accessibility_helper:
+                startActivity(AccessibilityHelperActivity.class);
                 break;
 //            case R.id.bt_nsd:
 //                startActivity(NsdActivity.class);

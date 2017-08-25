@@ -93,4 +93,5 @@
     <string name="auto_install_service_description">辅助自动安装</string>
     <string name="app_using_time">设备应用使用时间统计</string>
     <string name="floating_museum_service_id">Floatingmuseum_connection_service</string>
+    <string name="test_accessibility_service_description">测试辅助Helper类</string>
 </resources>

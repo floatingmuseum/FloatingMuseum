@@ -27,5 +27,7 @@ public abstract class CameraPreview {
     public abstract void setTransform(Matrix matrix);
 
     @Nullable
-    public abstract Surface getSurface(int width,int height);
+    public abstract Surface getSurface(int width, int height);
+
+    public abstract boolean isAvailable();
 }

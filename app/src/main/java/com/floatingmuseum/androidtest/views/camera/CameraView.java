@@ -94,6 +94,18 @@ public class CameraView extends FrameLayout implements CameraStateCallback {
         private Photographer() {
         }
 
+        public void openCamera() {
+            if (cameraPreview.isAvailable()){
+                CameraView.this.openCamera(context, cameraPreview.previewWidth, cameraPreview.previewHeight);
+            }else{
+                initPreview(context);
+            }
+        }
+
+        public void closeCamera() {
+            camera.closeCamera();
+        }
+
         public void takePhoto() {
             camera.takePhoto();
         }

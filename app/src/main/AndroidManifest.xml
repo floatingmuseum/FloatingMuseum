@@ -67,7 +67,6 @@
         <activity android:name=".functions.shell.ShellActivity" />
         <activity android:name=".functions.qr.QRCodeActivity" />
         <activity android:name=".functions.catchtime.CatchTimeActivity" />
-        <activity android:name=".functions.download.DownloadListActivity" />
         <activity
             android:name=".functions.camera.Camera1Activity"
             android:configChanges="orientation|screenSize|keyboardHidden"
@@ -79,7 +78,6 @@
             android:theme="@style/ThemeFullscreen" />
         <activity android:name=".functions.exception.ExceptionActivity" />
         <activity android:name=".functions.analysesystem.AnalyseSystemActivity" />
-        <activity android:name=".functions.communicate.CommunicateActivity" />
         <activity android:name=".functions.bluetooth.BluetoothActivity" />
         <activity android:name=".functions.hotspot.HotSpotActivity" />
         <activity android:name=".functions.hotspot.ServerActivity" />
@@ -98,6 +96,7 @@
         <activity android:name=".thirdpartys.virtualapk.VirtualApkActivity" />
         <activity android:name=".thirdpartys.replugin.RePluginActivity" />
         <activity android:name=".thirdpartys.exo.ExoPlayerActivity" />
+        <activity android:name=".functions.accessibility.AccessibilityHelperActivity"/>
         <activity
             android:name=".views.camera.CameraActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
@@ -109,7 +108,22 @@
         <!-- <activity android:name=".functions.nsd.NsdServerActivity"/> -->
         <!-- <activity android:name=".functions.nsd.NsdClientActivity"/> -->
 
-        <service android:name=".functions.catchtime.CatchTimeService" />
+        <service android:name=".functions.accessibility.TestService"
+            android:label="Floatingmuseum智能辅助测试"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/test_accessibility" />
+            <!--
+        创建一个Service类集成AccessibilityService来处理接收到的事件
+        label:是你在系统设置辅助功能中显示的名称。
+        resource：指向你配置的xml文件。
+        其他都是固定的。
+            -->
+        </service>
         <service
             android:name=".functions.autoinstall.AutoInstallService"
             android:label="Floatingmuseum的智能安装"
@@ -146,6 +160,7 @@
         其他都是固定的。
             -->
         </service>
+        <service android:name=".functions.catchtime.CatchTimeService" />
         <service android:name=".functions.launcher.LauncherCheckService" />
         <service android:name=".functions.phoenixservice.PhoenixService" />
         <service

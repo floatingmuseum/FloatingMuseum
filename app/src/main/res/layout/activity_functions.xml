@@ -7,7 +7,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-
+        <Button
+            android:id="@+id/bt_accessibility_helper"
+            style="@style/text_title"
+            android:text="Accessibility helper" />
         <Button
             android:id="@+id/bt_other_process"
             style="@style/text_title"
@@ -59,11 +62,6 @@
             android:text="Exception" />
 
         <Button
-            android:id="@+id/bt_download"
-            style="@style/text_title"
-            android:text="Download List" />
-
-        <Button
             android:id="@+id/bt_catch_time"
             style="@style/text_title"
             android:text="App Time Count" />
@@ -72,11 +70,6 @@
             android:id="@+id/bt_analyse_system"
             style="@style/text_title"
             android:text="Get system info" />
-
-        <Button
-            android:id="@+id/bt_communicate"
-            style="@style/text_title"
-            android:text="Communicate with other device" />
 
         <Button
             android:id="@+id/bt_bluetooth"

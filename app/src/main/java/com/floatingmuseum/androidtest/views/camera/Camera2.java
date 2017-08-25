@@ -499,7 +499,8 @@ public class Camera2 extends CameraImpl {
         openCamera();
     }
 
-    private void closeCamera() {
+    @Override
+    public void closeCamera() {
         if (null != captureSession) {
             captureSession.close();
             captureSession = null;

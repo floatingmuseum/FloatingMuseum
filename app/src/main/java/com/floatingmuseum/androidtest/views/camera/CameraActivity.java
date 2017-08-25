@@ -60,12 +60,14 @@ public class CameraActivity extends BaseActivity implements CameraCallback, View
     @Override
     protected void onResume() {
         super.onResume();
+        photographer.openCamera();
         // TODO: 2017/8/17 open camera
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        photographer.closeCamera();
         // TODO: 2017/8/17 close camera
     }
 

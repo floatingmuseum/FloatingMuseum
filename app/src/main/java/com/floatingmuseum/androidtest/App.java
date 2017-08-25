@@ -14,7 +14,6 @@ import com.qihoo360.replugin.RePluginEventCallbacks;
 import com.qihoo360.replugin.model.PluginInfo;
 import com.wanjian.cockroach.Cockroach;
 
-import floatingmuseum.sonic.Sonic;
 import io.realm.Realm;
 
 /**
@@ -33,7 +32,6 @@ public class App extends MultiDexApplication {
         context = this;
 //        OkGo.init(this);
         Realm.init(this);
-        Sonic.getInstance().init(this);
         BlockCanary.install(this, new AppBlockCanaryContext()).start();
         initFileDownloader();
 

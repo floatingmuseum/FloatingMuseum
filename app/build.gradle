@@ -67,7 +67,6 @@ dependencies {
     //play service
     compile 'com.google.android.gms:play-services-nearby:11.0.1'
     compile 'com.android.support:multidex:1.0.1'
-    compile 'com.floatingmuseum:sonic:1.0.2'
     //阻塞检查
     debugCompile 'com.github.markzhai:blockcanary-android:1.4.0'
     releaseCompile 'com.github.markzhai:blockcanary-no-op:1.4.0'

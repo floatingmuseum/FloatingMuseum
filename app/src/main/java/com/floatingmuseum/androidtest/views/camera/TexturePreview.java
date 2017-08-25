@@ -74,4 +74,9 @@ public class TexturePreview extends CameraPreview implements TextureView.Surface
         }
         return null;
     }
+
+    @Override
+    public boolean isAvailable() {
+        return textureView.isAvailable();
+    }
 }
