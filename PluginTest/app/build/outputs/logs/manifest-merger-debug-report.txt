@@ -1,0 +1,292 @@
+-- Merging decision tree log ---
+manifest
+ADDED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml:2:1-21:12
+	package
+		ADDED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml:3:5-40
+		INJECTED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml
+		INJECTED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml
+	android:versionName
+		INJECTED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml
+		INJECTED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml:2:11-69
+	android:versionCode
+		INJECTED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml
+		INJECTED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml
+application
+ADDED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml:5:5-19:19
+MERGED from [com.android.support.constraint:constraint-layout:1.0.2] C:\Users\ÑÒ\.android\build-cache\abb7071cc61ef1ab5704621bbc01a7a3e2726148\output\AndroidManifest.xml:9:5-20
+MERGED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:17:5-122:19
+MERGED from [com.android.support:appcompat-v7:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\d89bf9e953ef88019d30dec4e887e038b9278220\output\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-v4:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\2bdf2317da8a477ef3fcd7d7d54b852ef815c0f6\output\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-media-compat:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\146f9e31a0aca189f667b5cba0b0d55032660bb0\output\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-fragment:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\76418e7eb95d37a1f81ea21619b4b8c8c96ffb50\output\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-core-ui:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\ed99fc26f60b719c87739e0393b140349eeb9391\output\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-core-utils:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\3d5e6ab455a43d450316806b16474f35314bf9d2\output\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:animated-vector-drawable:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\bc8b5fc9eed1eb45d739b6d98f40a24eaae2ad88\output\AndroidManifest.xml:26:5-20
+MERGED from [com.android.support:support-vector-drawable:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\f3752367169dd84531892c8503b837a81c461d84\output\AndroidManifest.xml:26:5-20
+MERGED from [com.android.support:support-compat:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\44872ec03dd8e23485ad63d7898873b41f39c8e9\output\AndroidManifest.xml:29:5-20
+	android:label
+		ADDED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml:8:9-41
+	android:supportsRtl
+		ADDED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml:10:9-35
+	android:roundIcon
+		ADDED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml:9:9-54
+	android:allowBackup
+		ADDED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml:6:9-35
+	android:icon
+		ADDED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml:7:9-43
+	android:theme
+		ADDED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml:11:9-40
+activity#floatingmuseum.plugintest.PluginActivity
+ADDED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml:12:9-18:20
+	android:name
+		ADDED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml:12:19-49
+intent-filter#android.intent.action.MAIN+android.intent.category.LAUNCHER
+ADDED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml:13:13-17:29
+action#android.intent.action.MAIN
+ADDED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml:14:17-69
+	android:name
+		ADDED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml:14:25-66
+category#android.intent.category.LAUNCHER
+ADDED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml:16:17-77
+	android:name
+		ADDED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml:16:27-74
+uses-sdk
+INJECTED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
+MERGED from [com.android.support.constraint:constraint-layout:1.0.2] C:\Users\ÑÒ\.android\build-cache\abb7071cc61ef1ab5704621bbc01a7a3e2726148\output\AndroidManifest.xml:5:5-7:41
+MERGED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:7:5-9:41
+MERGED from [com.android.support:appcompat-v7:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\d89bf9e953ef88019d30dec4e887e038b9278220\output\AndroidManifest.xml:21:5-23:78
+MERGED from [com.android.support:support-v4:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\2bdf2317da8a477ef3fcd7d7d54b852ef815c0f6\output\AndroidManifest.xml:21:5-23:54
+MERGED from [com.android.support:support-media-compat:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\146f9e31a0aca189f667b5cba0b0d55032660bb0\output\AndroidManifest.xml:21:5-23:63
+MERGED from [com.android.support:support-fragment:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\76418e7eb95d37a1f81ea21619b4b8c8c96ffb50\output\AndroidManifest.xml:21:5-23:60
+MERGED from [com.android.support:support-core-ui:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\ed99fc26f60b719c87739e0393b140349eeb9391\output\AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support:support-core-utils:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\3d5e6ab455a43d450316806b16474f35314bf9d2\output\AndroidManifest.xml:21:5-23:61
+MERGED from [com.android.support:animated-vector-drawable:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\bc8b5fc9eed1eb45d739b6d98f40a24eaae2ad88\output\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-vector-drawable:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\f3752367169dd84531892c8503b837a81c461d84\output\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-compat:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\44872ec03dd8e23485ad63d7898873b41f39c8e9\output\AndroidManifest.xml:21:5-23:58
+	tools:overrideLibrary
+		ADDED from [com.android.support:appcompat-v7:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\d89bf9e953ef88019d30dec4e887e038b9278220\output\AndroidManifest.xml:23:9-75
+	android:targetSdkVersion
+		INJECTED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml
+		INJECTED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml
+		INJECTED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml
+uses-permission#android.permission.INTERNET
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:11:5-67
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:11:22-64
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:12:5-79
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:12:22-76
+uses-permission#android.permission.CHANGE_NETWORK_STATE
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:13:5-79
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:13:22-76
+uses-permission#android.permission.READ_EXTERNAL_STORAGE
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:14:5-80
+IMPLIED from E:\workspace\FloatingMuseum\PluginTest\app\src\main\AndroidManifest.xml:2:1-21:12 reason: com.didi.virtualapk.core requested WRITE_EXTERNAL_STORAGE
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:14:22-77
+uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:15:5-81
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:15:22-78
+activity#com.didi.virtualapk.core.A$1
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:20:9-22:45
+	android:launchMode
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:22:13-42
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:21:13-56
+activity#com.didi.virtualapk.core.A$2
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:23:9-26:64
+	android:launchMode
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:25:13-42
+	android:theme
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:26:13-61
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:24:13-56
+activity#com.didi.virtualapk.core.B$1
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:29:9-31:46
+	android:launchMode
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:31:13-43
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:30:13-56
+activity#com.didi.virtualapk.core.B$2
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:32:9-34:46
+	android:launchMode
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:34:13-43
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:33:13-56
+activity#com.didi.virtualapk.core.B$3
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:35:9-37:46
+	android:launchMode
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:37:13-43
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:36:13-56
+activity#com.didi.virtualapk.core.B$4
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:38:9-40:46
+	android:launchMode
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:40:13-43
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:39:13-56
+activity#com.didi.virtualapk.core.B$5
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:41:9-43:46
+	android:launchMode
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:43:13-43
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:42:13-56
+activity#com.didi.virtualapk.core.B$6
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:44:9-46:46
+	android:launchMode
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:46:13-43
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:45:13-56
+activity#com.didi.virtualapk.core.B$7
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:47:9-49:46
+	android:launchMode
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:49:13-43
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:48:13-56
+activity#com.didi.virtualapk.core.B$8
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:50:9-52:46
+	android:launchMode
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:52:13-43
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:51:13-56
+activity#com.didi.virtualapk.core.C$1
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:55:9-57:47
+	android:launchMode
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:57:13-44
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:56:13-56
+activity#com.didi.virtualapk.core.C$2
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:58:9-60:47
+	android:launchMode
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:60:13-44
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:59:13-56
+activity#com.didi.virtualapk.core.C$3
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:61:9-63:47
+	android:launchMode
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:63:13-44
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:62:13-56
+activity#com.didi.virtualapk.core.C$4
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:64:9-66:47
+	android:launchMode
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:66:13-44
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:65:13-56
+activity#com.didi.virtualapk.core.C$5
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:67:9-69:47
+	android:launchMode
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:69:13-44
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:68:13-56
+activity#com.didi.virtualapk.core.C$6
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:70:9-72:47
+	android:launchMode
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:72:13-44
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:71:13-56
+activity#com.didi.virtualapk.core.C$7
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:73:9-75:47
+	android:launchMode
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:75:13-44
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:74:13-56
+activity#com.didi.virtualapk.core.C$8
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:76:9-78:47
+	android:launchMode
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:78:13-44
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:77:13-56
+activity#com.didi.virtualapk.core.D$1
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:81:9-83:51
+	android:launchMode
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:83:13-48
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:82:13-56
+activity#com.didi.virtualapk.core.D$2
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:84:9-86:51
+	android:launchMode
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:86:13-48
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:85:13-56
+activity#com.didi.virtualapk.core.D$3
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:87:9-89:51
+	android:launchMode
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:89:13-48
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:88:13-56
+activity#com.didi.virtualapk.core.D$4
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:90:9-92:51
+	android:launchMode
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:92:13-48
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:91:13-56
+activity#com.didi.virtualapk.core.D$5
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:93:9-95:51
+	android:launchMode
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:95:13-48
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:94:13-56
+activity#com.didi.virtualapk.core.D$6
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:96:9-98:51
+	android:launchMode
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:98:13-48
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:97:13-56
+activity#com.didi.virtualapk.core.D$7
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:99:9-101:51
+	android:launchMode
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:101:13-48
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:100:13-56
+activity#com.didi.virtualapk.core.D$8
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:102:9-104:51
+	android:launchMode
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:104:13-48
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:103:13-56
+service#com.didi.virtualapk.delegate.LocalService
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:107:9-77
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:107:18-74
+service#com.didi.virtualapk.delegate.RemoteService
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:110:9-116:19
+	android:process
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:112:13-38
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:111:13-70
+intent-filter#${applicationId}.intent.ACTION_DAEMON_SERVICE
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:113:13-115:29
+action#${applicationId}.intent.ACTION_DAEMON_SERVICE
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:114:17-88
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:114:25-85
+provider#com.didi.virtualapk.delegate.RemoteContentProvider
+ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:118:9-121:41
+	android:authorities
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:120:13-71
+	android:process
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:121:13-38
+	android:name
+		ADDED from [com.didi.virtualapk:core:0.9.0] C:\Users\ÑÒ\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\AndroidManifest.xml:119:13-78
+meta-data#android.support.VERSION
+ADDED from [com.android.support:appcompat-v7:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\d89bf9e953ef88019d30dec4e887e038b9278220\output\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-v4:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\2bdf2317da8a477ef3fcd7d7d54b852ef815c0f6\output\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-media-compat:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\146f9e31a0aca189f667b5cba0b0d55032660bb0\output\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-fragment:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\76418e7eb95d37a1f81ea21619b4b8c8c96ffb50\output\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-core-ui:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\ed99fc26f60b719c87739e0393b140349eeb9391\output\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-core-utils:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\3d5e6ab455a43d450316806b16474f35314bf9d2\output\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:animated-vector-drawable:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\bc8b5fc9eed1eb45d739b6d98f40a24eaae2ad88\output\AndroidManifest.xml:22:5-24:41
+MERGED from [com.android.support:support-vector-drawable:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\f3752367169dd84531892c8503b837a81c461d84\output\AndroidManifest.xml:22:5-24:41
+MERGED from [com.android.support:support-compat:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\44872ec03dd8e23485ad63d7898873b41f39c8e9\output\AndroidManifest.xml:25:5-27:41
+	android:value
+		ADDED from [com.android.support:appcompat-v7:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\d89bf9e953ef88019d30dec4e887e038b9278220\output\AndroidManifest.xml:27:9-38
+	android:name
+		ADDED from [com.android.support:appcompat-v7:26.0.0-alpha1] C:\Users\ÑÒ\.android\build-cache\d89bf9e953ef88019d30dec4e887e038b9278220\output\AndroidManifest.xml:26:9-47

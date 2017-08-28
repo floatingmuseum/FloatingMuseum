@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="false"
+        jar="C:\Users\岩\.android\build-cache\6832d82b20e02f14f976c4eeeafc7c1259ae101a\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="26.0.0"
+        sha1="1b1933d5bbec4144944c15035fe3efbb170f410a">
+        <dex dex="E:\workspace\PluginTest\app\build\intermediates\pre-dexed\debug\classes_ce09ce2a362b18da8008d5e870442e60dfcc836b.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\softwares\AndroidSdk\extras\m2repository\com\android\support\constraint\constraint-layout-solver\1.0.2\constraint-layout-solver-1.0.2.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="26.0.0"
+        sha1="b9cd8fc6bd15cb915735d34535db30ece0c44603">
+        <dex dex="E:\workspace\PluginTest\app\build\intermediates\pre-dexed\debug\constraint-layout-solver-1.0.2_a224207dbba3318a226298eaf1326d521f148764.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\岩\.android\build-cache\abb7071cc61ef1ab5704621bbc01a7a3e2726148\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="26.0.0"
+        sha1="44ee06abb66da30f5855e6bf54574e64cdcd982a">
+        <dex dex="E:\workspace\PluginTest\app\build\intermediates\pre-dexed\debug\classes_6664822f2996cbd29dec4b535cedffaf11fea6c7.jar" />
+    </item>
+
+</items>

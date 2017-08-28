@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "E:\\workspace\\FloatingMuseum\\PluginTest\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-hdpi\\ic_launcher_round.png",
+        "source": "E:\\workspace\\FloatingMuseum\\PluginTest\\app\\src\\main\\res\\mipmap-hdpi\\ic_launcher_round.png"
+    },
+    {
+        "merged": "E:\\workspace\\PluginTest\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-hdpi\\ic_launcher_round.png",
+        "source": "E:\\workspace\\PluginTest\\app\\src\\main\\res\\mipmap-hdpi\\ic_launcher_round.png"
+    },
+    {
+        "merged": "E:\\workspace\\PluginTest\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-hdpi\\ic_launcher.png",
+        "source": "E:\\workspace\\PluginTest\\app\\src\\main\\res\\mipmap-hdpi\\ic_launcher.png"
+    },
+    {
+        "merged": "E:\\workspace\\FloatingMuseum\\PluginTest\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-hdpi\\ic_launcher.png",
+        "source": "E:\\workspace\\FloatingMuseum\\PluginTest\\app\\src\\main\\res\\mipmap-hdpi\\ic_launcher.png"
+    }
+]

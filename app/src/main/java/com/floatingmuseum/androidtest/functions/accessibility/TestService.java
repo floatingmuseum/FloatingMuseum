@@ -36,10 +36,11 @@ public class TestService extends AccessibilityService {
         Logger.d("辅助助手...onAccessibilityEvent...接收事件:" + event.getWindowId() + "...已处理:" + handledArray.get(event.getWindowId()));
         if (!handledArray.get(event.getWindowId())) {
             Logger.d("辅助助手...onAccessibilityEvent...接收事件:" + event.getWindowId());
-            AccessibilityNodeInfo target = AccessibilityHelper.serachTarget(event, targetText);
+            AccessibilityNodeInfo target = AccessibilityHelper.searchTarget(event, targetText);
             if (target != null && targetText.equals(target.getText())) {
                 Logger.d("辅助助手...onAccessibilityEvent...事件查询结果:" + target.getWindowId() + target.getText() + "...详情:" + target.toString());
                 handledArray.put(event.getWindowId(), true);
+                AccessibilityHelper.doAction(target, AccessibilityNodeInfo.ACTION_CLICK);
             } else {
                 Logger.d("辅助助手...onAccessibilityEvent...事件查询结果:" + event.getWindowId() + "...null");
             }
