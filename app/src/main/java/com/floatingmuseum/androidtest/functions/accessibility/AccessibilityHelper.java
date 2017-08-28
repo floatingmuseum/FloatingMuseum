@@ -50,16 +50,16 @@ public class AccessibilityHelper {
     }
 
     @Nullable
-    public static AccessibilityNodeInfo findTarget(AccessibilityEvent event, String targetText) {
+    public static AccessibilityNodeInfo serachTarget(AccessibilityEvent event, String targetText) {
         AccessibilityNodeInfo nodeInfo = event.getSource();
         if (nodeInfo != null) {
-            return recursiveFind(nodeInfo, targetText);
+            return recursiveSearch(nodeInfo, targetText);
         }
         return null;
     }
 
     @Nullable
-    private static AccessibilityNodeInfo recursiveFind(AccessibilityNodeInfo nodeInfo, String targetText) {
+    private static AccessibilityNodeInfo recursiveSearch(AccessibilityNodeInfo nodeInfo, String targetText) {
         int count = nodeInfo.getChildCount();
         if (count == 0) {
             return matchingNodeText(nodeInfo, targetText);
@@ -67,11 +67,11 @@ public class AccessibilityHelper {
             for (int i = 0; i < count; i++) {
                 AccessibilityNodeInfo childNodeInfo = nodeInfo.getChild(i);
                 if (childNodeInfo != null) {
-                    return recursiveFind(childNodeInfo, targetText);
+                    return recursiveSearch(childNodeInfo, targetText);
                 }
             }
         }
-        return nodeInfo;
+        return null;
     }
 
     @Nullable
