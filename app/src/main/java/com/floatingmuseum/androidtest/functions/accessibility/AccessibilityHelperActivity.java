@@ -68,6 +68,7 @@ public class AccessibilityHelperActivity extends BaseActivity {
 //        }
 
         checkServiceState();
+        SettingsChecker.isiInstallNonMarketsAppsEnabled(this);
     }
 
     private void helpOpen() {
