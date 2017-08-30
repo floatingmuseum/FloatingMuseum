@@ -93,6 +93,7 @@ public class AccessibilityHelper {
 //        doScroll(nodeInfo);
         // TODO: 2017/8/28 如果需要查询的目标处于需要滑动才可见的底部，则保存一个可滑动的node,以便执行滑动.
         int count = nodeInfo.getChildCount();
+
         if (count == 0) {
             return matchingTargetNodeText(nodeInfo, targetText);
         } else {
@@ -137,6 +138,7 @@ public class AccessibilityHelper {
     @Nullable
     private static AccessibilityNodeInfo matchingTargetNodeText(AccessibilityNodeInfo nodeInfo, String targetText) {
         CharSequence nodeText = nodeInfo.getText();
+        Logger.d("辅助助手...matchingTargetNodeText()...节点类名:" + nodeInfo.getClassName() + "...包名:" + nodeInfo.getPackageName());
         if (!TextUtils.isEmpty(nodeText)) {
             Logger.d("辅助助手...matchingTargetNodeText()..." + nodeText.toString() + "...类名:" + nodeInfo.getClassName() + "...包名:" + nodeInfo.getPackageName());
             if (targetText.equals(nodeText.toString())) {
@@ -160,6 +162,10 @@ public class AccessibilityHelper {
         /**
          * 如果想执行点击操作,但是当前节点不存在此操作,则向上查找父控件是否存在点击操作.
          */
+        if (nodeInfo == null) {
+            return;
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             List<AccessibilityNodeInfo.AccessibilityAction> actionList = nodeInfo.getActionList();
             for (AccessibilityNodeInfo.AccessibilityAction accessibilityAction : actionList) {

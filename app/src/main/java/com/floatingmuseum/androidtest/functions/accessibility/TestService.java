@@ -1,6 +1,7 @@
 package com.floatingmuseum.androidtest.functions.accessibility;
 
 import android.accessibilityservice.AccessibilityService;
+import android.text.TextUtils;
 import android.util.SparseBooleanArray;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -22,12 +23,26 @@ public class TestService extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        String targetText = "设备管理器";
+        String targetText = "未知来源";
 //        String targetText = "有权查看使用情况的应用";
+//        performGlobalAction(GLOBAL_ACTION_BACK);
 
 //        AccessibilityHelper.listAllNode(event.getSource());
 //        AccessibilityHelper.listAllNode(getRootInActiveWindow());
         AccessibilityNodeInfo nodeInfo = getRootInActiveWindow();
+        CharSequence csPackageName = event.getPackageName();
+        CharSequence csClassName = event.getClassName();
+
+        String packageName = null;
+        String className = null;
+        if (!TextUtils.isEmpty(csPackageName)){
+            packageName = csPackageName.toString();
+        }
+        if (!TextUtils.isEmpty(csClassName)){
+            className = csClassName.toString();
+        }
+
+        Logger.d("辅助助手...onAccessibilityEvent...**********开始**********包名:"+packageName+"...类名:"+className+"..."+event.toString());
         if (nodeInfo != null) {
             int eventType = event.getEventType();
             if (eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
@@ -46,6 +61,7 @@ public class TestService extends AccessibilityService {
                 }
             }
         }
+        Logger.d("辅助助手...onAccessibilityEvent...**********结束**********");
     }
 
     @Override
