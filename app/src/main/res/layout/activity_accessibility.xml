@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -9,11 +10,58 @@
         style="@style/text_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        tools:text="辅助状态:" />
 
     <Button
         android:id="@+id/bt_help_open"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="辅助打开指定服务" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@android:color/black" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="需要打开的服务:"
+        android:textColor="@android:color/black"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/tv_default_launcher"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        tools:text="是否默认启动器:" />
+
+    <TextView
+        android:id="@+id/tv_install_non_market_apps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        tools:text="是否可安装未知来源应用:" />
+
+    <TextView
+        android:id="@+id/tv_device_admin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        tools:text="是否开启设备管理者:" />
+
+    <TextView
+        android:id="@+id/tv_check_usage_stats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        tools:text="是否有权查看应用使用情况:" />
+
+    <Button
+        android:id="@+id/bt_open_settings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="通过辅助助手自动打开设置" />
 </LinearLayout>

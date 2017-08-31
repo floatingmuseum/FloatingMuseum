@@ -1,17 +1,56 @@
 package com.floatingmuseum.androidtest.functions.accessibility;
 
+import android.app.AppOpsManager;
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.provider.Settings;
+import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 
 import com.orhanobut.logger.Logger;
+
+import java.util.List;
 
 /**
  * Created by Floatingmuseum on 2017/8/29.
  */
 
 public class SettingsChecker {
+
+    public static boolean isDefaultLauncher(Context context) {
+        PackageManager localPackageManager = context.getPackageManager();
+        Intent intent = new Intent("android.intent.action.MAIN");
+        intent.addCategory("android.intent.category.HOME");
+        String str = localPackageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY).activityInfo.packageName;
+        Logger.d("权限检测...isDefaultLauncher()..." + str);
+        return "com.example.edcationcloud".equals(str);
+    }
+
+    public static boolean isDeviceAdminEnabled(Context context) {
+        DevicePolicyManager manager = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        List<ComponentName> activeAdmins = manager.getActiveAdmins();
+        if (activeAdmins != null) {
+            for (ComponentName admin : activeAdmins) {
+                Logger.d("权限检测...isDeviceManagerEnabled()..." + admin.toString());
+                if ("com.example.edcationcloud".equals(admin.getPackageName())) {
+                    Logger.d("权限检测...isDeviceManagerEnabled()..." + admin.toString());
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public static boolean hasUsageStatsPermission(Context context) {
+        AppOpsManager Manager = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
+        int mode = Manager.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, android.os.Process.myUid(), context.getPackageName());
+        return mode == AppOpsManager.MODE_ALLOWED;
+    }
 
     /**
      * 安装未知来源的应用开关是否打开
