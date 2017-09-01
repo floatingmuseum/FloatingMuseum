@@ -40,7 +40,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private String[] needPermissions = {Manifest.permission.RECORD_AUDIO,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.CAMERA};
+            Manifest.permission.CAMERA,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +99,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             List<String> needRequests = new ArrayList<>();
             for (String permission : permissions) {
                 if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                    Logger.d("申请权限:" + permission);
                     needRequests.add(permission);
+                } else {
+                    Logger.d("拥有此权限:" + permission);
                 }
             }
             if (needRequests.size() != 0) {
@@ -110,8 +115,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == 1024) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                for (String permission : permissions) {
+                    Logger.d("权限获取成功:" + permission);
+                }
                 ToastUtil.show("权限获取成功");
             } else {
+                for (String permission : permissions) {
+                    Logger.d("权限获取被拒绝:" + permission);
+                }
                 ToastUtil.show("权限获取被拒绝");
             }
         } else {
