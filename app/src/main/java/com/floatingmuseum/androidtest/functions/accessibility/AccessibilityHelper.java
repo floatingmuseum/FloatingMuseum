@@ -91,10 +91,42 @@ public class AccessibilityHelper {
     private static SparseArray targets = new SparseArray();
 
     @Nullable
-    public static AccessibilityNodeInfo searchTarget(AccessibilityNodeInfo nodeInfo, String targetText,SearchParams params) {
+    public static AccessibilityNodeInfo searchTarget(AccessibilityNodeInfo nodeInfo, String targetText, SearchParams params) {
 //        AccessibilityNodeInfo nodeInfo = event.getSource();
         if (nodeInfo != null) {
-            return recursiveSearch(nodeInfo, targetText);
+            return recursiveSearch(nodeInfo, targetText, params);
+        }
+        return null;
+    }
+
+    @Nullable
+    private static AccessibilityNodeInfo recursiveSearch(AccessibilityNodeInfo nodeInfo, String targetText, SearchParams params) {
+//        doScroll(nodeInfo);
+        // TODO: 2017/8/28 如果需要查询的目标处于需要滑动才可见的底部，则保存一个可滑动的node,以便执行滑动.
+        int count = nodeInfo.getChildCount();
+
+        if (count == 0) {
+            return matchingTargetNodeText(nodeInfo, targetText, params);
+        } else {
+            for (int i = 0; i < count; i++) {
+                //如果递归查询已经找到目标,则不再继续挖掘,逐层向上返回.
+                AccessibilityNodeInfo result = targetArray.get(nodeInfo.getWindowId());
+                if (result != null) {
+                    return result;
+                }
+
+                AccessibilityNodeInfo childNodeInfo = nodeInfo.getChild(i);
+                AccessibilityNodeInfo target;
+                if (childNodeInfo != null) {
+                    target = recursiveSearch(childNodeInfo, targetText);
+                    if (target != null) {
+                        //如果遍历返回的结果不为Null,则找到目标node,存储node
+                        targetArray.clear();
+                        Logger.d("辅助助手...matchingTargetNodeText()...存储目标..." + target.getText().toString() + "..." + target.getClassName() + "...ParentNode:" + target.getParent());
+                        targetArray.put(nodeInfo.getWindowId(), target);
+                    }
+                }
+            }
         }
         return null;
     }
@@ -122,7 +154,7 @@ public class AccessibilityHelper {
                     if (target != null) {
                         //如果遍历返回的结果不为Null,则找到目标node,存储node
                         targetArray.clear();
-                        Logger.d("辅助助手...matchingTargetNodeText()...存储目标..." + target.getText().toString() + "..." + target.getClassName()+"...ParentNode:"+target.getParent());
+                        Logger.d("辅助助手...matchingTargetNodeText()...存储目标..." + target.getText().toString() + "..." + target.getClassName() + "...ParentNode:" + target.getParent());
                         targetArray.put(nodeInfo.getWindowId(), target);
                     }
                 }
@@ -147,11 +179,41 @@ public class AccessibilityHelper {
     }
 
     @Nullable
+    private static AccessibilityNodeInfo matchingTargetNodeText(AccessibilityNodeInfo nodeInfo, String targetText, SearchParams params) {
+        CharSequence nodeText = nodeInfo.getText();
+        Logger.d("辅助助手...matchingTargetNodeText()...节点类名:" + nodeInfo.getClassName() + "...包名:" + nodeInfo.getPackageName() + "...ParentNode:" + nodeInfo.getParent());
+        if (!TextUtils.isEmpty(nodeText)) {
+            Logger.d("辅助助手...matchingTargetNodeText()..." + nodeText.toString() + "...类名:" + nodeInfo.getClassName() + "...包名:" + nodeInfo.getPackageName() + "...ParentNode:" + nodeInfo.getParent());
+            if (matchingTargetParams(nodeInfo, params)) {
+                if (targetText.equals(nodeText.toString())) {
+                    Logger.d("辅助助手...matchingTargetNodeText()...找到目标..." + nodeText.toString());
+                    return nodeInfo;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 如果前提条件都满足,再检查最终目标.
+     */
+    private static boolean matchingTargetParams(AccessibilityNodeInfo nodeInfo, SearchParams params) {
+        if (!params.isPreconditionsSatisfied()) {
+            params.confirmPrecondition(nodeInfo.getText().toString());
+            return false;
+        } else if (!params.isPreconditionsWithSameParentSatisfied()) {
+            params.confirmPreconditionsWithSameParent(nodeInfo.getText().toString(), nodeInfo);
+            return params.isPreconditionsWithSameParentSatisfied();
+        }
+        return true;
+    }
+
+    @Nullable
     private static AccessibilityNodeInfo matchingTargetNodeText(AccessibilityNodeInfo nodeInfo, String targetText) {
         CharSequence nodeText = nodeInfo.getText();
-        Logger.d("辅助助手...matchingTargetNodeText()...节点类名:" + nodeInfo.getClassName() + "...包名:" + nodeInfo.getPackageName()+"...ParentNode:"+nodeInfo.getParent());
+        Logger.d("辅助助手...matchingTargetNodeText()...节点类名:" + nodeInfo.getClassName() + "...包名:" + nodeInfo.getPackageName() + "...ParentNode:" + nodeInfo.getParent());
         if (!TextUtils.isEmpty(nodeText)) {
-            Logger.d("辅助助手...matchingTargetNodeText()..." + nodeText.toString() + "...类名:" + nodeInfo.getClassName() + "...包名:" + nodeInfo.getPackageName()+"...ParentNode:"+nodeInfo.getParent());
+            Logger.d("辅助助手...matchingTargetNodeText()..." + nodeText.toString() + "...类名:" + nodeInfo.getClassName() + "...包名:" + nodeInfo.getPackageName() + "...ParentNode:" + nodeInfo.getParent());
             if (targetText.equals(nodeText.toString())) {
                 Logger.d("辅助助手...matchingTargetNodeText()...找到目标..." + nodeText.toString());
                 return nodeInfo;
@@ -176,8 +238,8 @@ public class AccessibilityHelper {
         if (nodeInfo == null) {
             Logger.d("辅助助手...doAction...nodeInfo:" + nodeInfo);
             return;
-        }else{
-            Logger.d("辅助助手...doAction...nodeInfo:" + nodeInfo.toString()+"...ParentNode:"+nodeInfo.getParent());
+        } else {
+            Logger.d("辅助助手...doAction...nodeInfo:" + nodeInfo.toString() + "...ParentNode:" + nodeInfo.getParent());
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
