@@ -88,6 +88,17 @@ public class AccessibilityHelper {
         return null;
     }
 
+    private static SparseArray targets = new SparseArray();
+
+    @Nullable
+    public static AccessibilityNodeInfo searchTarget(AccessibilityNodeInfo nodeInfo, String targetText,SearchParams params) {
+//        AccessibilityNodeInfo nodeInfo = event.getSource();
+        if (nodeInfo != null) {
+            return recursiveSearch(nodeInfo, targetText);
+        }
+        return null;
+    }
+
     @Nullable
     private static AccessibilityNodeInfo recursiveSearch(AccessibilityNodeInfo nodeInfo, String targetText) {
 //        doScroll(nodeInfo);
@@ -111,7 +122,7 @@ public class AccessibilityHelper {
                     if (target != null) {
                         //如果遍历返回的结果不为Null,则找到目标node,存储node
                         targetArray.clear();
-                        Logger.d("辅助助手...matchingTargetNodeText()...存储目标..." + target.getText().toString() + "..." + target.getClassName());
+                        Logger.d("辅助助手...matchingTargetNodeText()...存储目标..." + target.getText().toString() + "..." + target.getClassName()+"...ParentNode:"+target.getParent());
                         targetArray.put(nodeInfo.getWindowId(), target);
                     }
                 }
@@ -138,9 +149,9 @@ public class AccessibilityHelper {
     @Nullable
     private static AccessibilityNodeInfo matchingTargetNodeText(AccessibilityNodeInfo nodeInfo, String targetText) {
         CharSequence nodeText = nodeInfo.getText();
-        Logger.d("辅助助手...matchingTargetNodeText()...节点类名:" + nodeInfo.getClassName() + "...包名:" + nodeInfo.getPackageName());
+        Logger.d("辅助助手...matchingTargetNodeText()...节点类名:" + nodeInfo.getClassName() + "...包名:" + nodeInfo.getPackageName()+"...ParentNode:"+nodeInfo.getParent());
         if (!TextUtils.isEmpty(nodeText)) {
-            Logger.d("辅助助手...matchingTargetNodeText()..." + nodeText.toString() + "...类名:" + nodeInfo.getClassName() + "...包名:" + nodeInfo.getPackageName());
+            Logger.d("辅助助手...matchingTargetNodeText()..." + nodeText.toString() + "...类名:" + nodeInfo.getClassName() + "...包名:" + nodeInfo.getPackageName()+"...ParentNode:"+nodeInfo.getParent());
             if (targetText.equals(nodeText.toString())) {
                 Logger.d("辅助助手...matchingTargetNodeText()...找到目标..." + nodeText.toString());
                 return nodeInfo;
@@ -163,7 +174,10 @@ public class AccessibilityHelper {
          * 如果想执行点击操作,但是当前节点不存在此操作,则向上查找父控件是否存在点击操作.
          */
         if (nodeInfo == null) {
+            Logger.d("辅助助手...doAction...nodeInfo:" + nodeInfo);
             return;
+        }else{
+            Logger.d("辅助助手...doAction...nodeInfo:" + nodeInfo.toString()+"...ParentNode:"+nodeInfo.getParent());
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

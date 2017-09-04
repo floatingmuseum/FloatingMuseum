@@ -63,6 +63,7 @@ public class TestService extends AccessibilityService {
 //        }
 //        Logger.d("辅助助手...onAccessibilityEvent...**********结束**********");
         SettingInitManager.getInstance().initUsageStats(this,getRootInActiveWindow());
+//        SettingInitManager.getInstance().initUsageStats(this,event.getSource());
     }
 
     @Override
