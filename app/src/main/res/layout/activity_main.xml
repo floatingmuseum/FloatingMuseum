@@ -9,16 +9,19 @@
     tools:context="com.floatingmuseum.androidtest.MainActivity">
 
     <Button
+        android:visibility="gone"
         android:id="@+id/bt_views"
         style="@style/text_title"
         android:text="View相关" />
 
     <Button
+        android:visibility="gone"
         android:id="@+id/bt_functions"
         style="@style/text_title"
         android:text="功能相关" />
 
     <Button
+        android:visibility="gone"
         android:id="@+id/bt_third_parties"
         style="@style/text_title"
         android:text="第三方相关" />
@@ -26,6 +29,5 @@
     <TextView
         android:id="@+id/tv_test_blur_text"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20sp" />
+        android:layout_height="wrap_content" />
 </LinearLayout>

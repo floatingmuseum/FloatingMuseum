@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 
 import android.os.Environment;
+import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -114,49 +115,27 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void testBlurText() {
-        MaskFilterSpan maskFilterSpan1 = new MaskFilterSpan(new BlurMaskFilter(20, BlurMaskFilter.Blur.NORMAL));
-        MaskFilterSpan maskFilterSpan2 = new MaskFilterSpan(new BlurMaskFilter(10, BlurMaskFilter.Blur.NORMAL));
-        final String text = "This is a fantastic movie -- as long as Batman vs. Superman or Suicide Squad are used as a reference bar.\n" +
-                "I'm so disappointed in this movie it almost makes angry.\n" +
-                "WW was supposed to be a \"strong independent woman\" and yet [spoiler]she falls in love with literally the first man she sees[/spoiler].\n" +
-                "I just found her incredibly naive.\n" +
-                "Which movie trope did the film not deliver? \n" +
-                "We have the super-hot main character every man has to drool over in his first scene and the anglo-saxon [spoiler]love interest that honourably sacrifices himself for no reason (well, only so we don't have to deal with the question how growing old with a non-ageing goddess would be).[/spoiler]\n" +
-                "We have the forgettable side-character #1 that is only here for comic relief, #2 that's only there to make the protagonist question her loyalty and #3 with a troubled past that the protagonist can help overcome. \n" +
-                "And of course the german bad guys played by non-germans speaking in english with a ridiculous -- what they think ought to pass as a -- german accent. Here is the thing: germans don't speak with other germans in english with a distinct german fake accent. Let them speak german and add subtitles (ugh, reading...) or let them speak normal english.\n" +
-                "But arriving in the war zone we can finally see her compassionately putting actions to her words:[spoiler] You've been in these trenches for a year without winning? Let me show you how an immortal demi-god handles this.[/spoiler]\n" +
+        String text = "Alec Baldwin nailed his job; \n" +
+                "The animators nailed their job (seriously, the art style and changes were amazing);\n" +
+                "The ideas guy nailed his job ([spoiler]It's all the imagination of the kid[/spoiler]);\n" +
+                "The writers just let the story down :( ([spoiler]Although at the beginning it's clear that the whole shebang is the older kid's imagination, the writers probably realised that the script was too short and so the end got changed to something that makes no sense. Why would Tim receive the kid for a second time? - unless it was all a dream...[/spoiler] ).\n" +
                 "\n" +
-                "But, yes, the Captain Americaesque fight scenes against unnamed goons looked nice...";
-//        String text = "abcdefg hijklmn. opq rst uvw xyz 1234567890 abcdefg hijklmn opq rst uvw xyz 1234567890";
-        final SpannableString spanText = new SpannableString(text);
+                "All in all, a good movie, amazing acting and animating, partly let down by a badly written ending to the story. 8/10.";
+        SpannableString spanText = new SpannableString(text);
         List<Pair<Integer, Integer>> spoilersContainer = new ArrayList<>();
         getSpoilerIndex(text, 0, spoilersContainer);
-        for (final Pair<Integer, Integer> pair : spoilersContainer) {
-//            spanText.setSpan(new RemoveMaskSpan(spanText,pair.first,pair.second), pair.first, pair.second, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-            spanText.setSpan(new BackgroundColorSpan(Color.DKGRAY), pair.first, pair.second, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        for (Pair<Integer, Integer> pair : spoilersContainer) {
+            MaskFilterSpan blurSpan = new MaskFilterSpan(new BlurMaskFilter(20, BlurMaskFilter.Blur.NORMAL));
+            BackgroundColorSpan backgroundColorSpan = new BackgroundColorSpan(Color.DKGRAY);
+            spanText.setSpan(backgroundColorSpan, pair.first, pair.second, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+//            spanText.setSpan(blurSpan, pair.first, pair.second, Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
+            spanText.setSpan(new RemoveMaskSpan(spanText, backgroundColorSpan, pair.first, pair.second), pair.first, pair.second, Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
+//            spanText.setSpan(new StrikethroughSpan(), pair.first, pair.second, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+//            spanText.setSpan(new BackgroundColorSpan(Color.DKGRAY), pair.first, pair.second, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
             Logger.d("评论内容...剧透位置:" + pair.toString());
         }
-
-//        spanText.setSpan(maskFilterSpan1, 5, 10, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-//        spanText.setSpan(maskFilterSpan2, 15, 20, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-
-//        spanText.setSpan(new ForegroundColorSpan(Color.RED),5,10, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-//        spanText.setSpan(new ForegroundColorSpan(Color.RED),15,20, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-
-//        spanText.setSpan(new BackgroundColorSpan(Color.BLACK),5,10, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-//        spanText.setSpan(new BackgroundColorSpan(Color.BLACK),15,20, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-//        spanText.setSpan(new StrikethroughSpan(),5,10, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-//        spanText.setSpan(new StrikethroughSpan(),15,20, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-
+        tvTestBlurText.setMovementMethod(LinkMovementMethod.getInstance());
         tvTestBlurText.setText(spanText);
-//        movementmethod
-//        tvTestBlurText.setMovementMethod(ScrollingMovementMethod.getInstance());
-        tvTestBlurText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                tvTestBlurText.setText(text);
-            }
-        });
     }
 
     private void getSpoilerIndex(String rawComment, int beginIndex, List<Pair<Integer, Integer>> spoilersContainer) {
