@@ -20,13 +20,12 @@ public class ToastUtil {
      */
     public static void show(String content) {
         if (toast == null) {
-            toast.makeText(App.context, content, Toast.LENGTH_SHORT)
-                    .show();
+            toast = Toast.makeText(App.context, content, Toast.LENGTH_SHORT);
         } else {
             toast.setText(content);
             toast.setDuration(Toast.LENGTH_LONG);
-            toast.show();
         }
+        toast.show();
     }
 
     /**
